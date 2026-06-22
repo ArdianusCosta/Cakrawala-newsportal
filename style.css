@@ -69,6 +69,29 @@
     margin-bottom: 8px;
   }
 
+  @media (max-width: 767.98px) {
+    .headline .headline-title {
+      position: static;
+      bottom: auto;
+      left: auto;
+      right: auto;
+      width: auto;
+      padding: 1rem 0 0;
+      background: transparent;
+      color: #212529;
+    }
+
+    .headline .headline-title h3,
+    .headline .headline-title small,
+    .headline .category-label {
+      color: inherit;
+    }
+
+    .headline-link::after {
+      background: transparent;
+    }
+  }
+
   .article-card {
     border-radius: .25rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
