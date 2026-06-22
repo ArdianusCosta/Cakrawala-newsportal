@@ -1,0 +1,115 @@
+  .headline {
+    position: relative;
+    border-radius: .25rem; /* sama dengan card Bootstrap */
+    overflow: hidden; /* biar gambar & overlay ikut radius */
+    margin-bottom: 30px;
+  }
+
+  .headline-link {
+    position: relative;
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    border-radius: .25rem; /* ikuti card */
+    overflow: hidden;
+  }
+
+  .headline img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+    border-radius: .25rem; /* ikuti card */
+  }
+
+  /* Overlay full block */
+  .headline-link::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: .25rem; /* ikuti card */
+    background: rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease;
+  }
+
+  .headline-link:hover::after {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .headline .headline-title {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    color: #fff;
+    z-index: 2;
+  }
+
+  .headline .headline-title h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 5px 0;
+  }
+
+  .headline .headline-title small {
+    font-size: 0.9rem;
+    color: #f1f1f1;
+  }
+
+  .headline .category-label {
+    display: inline-block;
+    background: #dc3545;
+    color: #fff;
+    font-size: 0.9rem;
+    padding: 3px 8px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+  }
+
+  .article-card {
+    border-radius: .25rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-left:10px;
+  }
+  .article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+
+  /* Landscape thumbnail (16:9) */
+  .thumb-landscape {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
+    overflow: hidden;
+    border-radius: .25rem 0 0 .25rem;
+  }
+  .thumb-landscape img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  /* Compact style */
+  .article-card h6 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .article-card p {
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+
+  .badge-category {
+    display: inline-block;
+    background-color: #dc3545; /* merah bootstrap */
+    color: #fff;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
