@@ -39,6 +39,8 @@ if(isset($_POST['register'])) {
 <head>
     <meta charset="utf-8" />
     <title>Cakrawala | Penulis</title>
+     
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
     <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
@@ -69,32 +71,29 @@ if(isset($_POST['register'])) {
 
                                 <div class="form-group ">
                                     <div class="col-xs-12">
-                                        <input class="form-control" type="text" required name="username" placeholder="Name">
+                                        <label>Nama</label>
+                                        <input class="form-control" type="text" required name="username" placeholder="Masukan nama lengkap">
                                     </div>
                                 </div>
 
                                 <div class="form-group ">
                                     <div class="col-xs-12">
-                                        <input class="form-control" type="email" required name="email" placeholder="Email">
+                                        <label>Email</label>
+                                        <input class="form-control" type="email" required name="email" placeholder="Masukan alamat email">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <div class="col-xs-12">
-                                        <input class="form-control" type="password" name="password" required placeholder="Password">
+                                        <label>Password</label>
+                                        <input class="form-control" type="password" name="password" required placeholder="Masukan password">
                                     </div>
                                 </div>
 
-                                 <div class="form-group text-center m-t-10">
-                                    <p>Sudah punya akun? <a href="index.php">Login</a></p>
+                                <div class="text-center">
+                                    <p class="mb-2">Sudah memiliki akun?<a href="index.php"> Login</a></p>
+                                    <button type="submit" name="register" class="btn w-md btn-bordered btn-danger">Daftar</button>
                                 </div>
-
-                                <div class="form-group account-btn text-center m-t-10">
-                                    <div class="col-xs-12">
-                                        <button class="btn w-md btn-bordered btn-danger waves-effect waves-light" type="submit" name="register">Daftar</button>
-                                    </div>
-                                </div>
-
                             </form>
                         </div>
                     </div>

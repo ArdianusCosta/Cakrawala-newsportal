@@ -31,7 +31,9 @@ $error="Something went wrong . Please try again.";
 <html lang="en">
     <head>
 
-        <title>Cakrawala | Edit Sub Category</title>
+        <title>Cakrawala | Edit Sub Kategory</title>
+         
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
 
         <!-- App css -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -70,16 +72,16 @@ $error="Something went wrong . Please try again.";
                         <div class="row">
 							<div class="col-xs-12">
 								<div class="page-title-box">
-                                    <h4 class="page-title">Add Sub-Category</h4>
+                                    <h4 class="page-title">Edit Sub Kategory</h4>
                                     <ol class="breadcrumb p-0 m-0">
                                         <li>
-                                            <a href="#">Admin</a>
+                                            <a href="#">Cakrawala</a>
                                         </li>
                                         <li>
-                                            <a href="#">Category </a>
+                                            <a href="#">Kelola Kategori</a>
                                         </li>
                                         <li class="active">
-                                            Add Sub-Category
+                                            Tambah Sub Kategori
                                         </li>
                                     </ol>
                                     <div class="clearfix"></div>

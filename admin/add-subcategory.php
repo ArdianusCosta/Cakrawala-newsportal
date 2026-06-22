@@ -31,7 +31,9 @@ $error="Something went wrong . Please try again.";
 <html lang="en">
     <head>
 
-        <title>Cakrawala | Add Sub Category</title>
+        <title>Cakrawala | Tambah Sub Category</title>
+         
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
 
         <!-- App css -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />

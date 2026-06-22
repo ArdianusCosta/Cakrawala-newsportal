@@ -30,7 +30,8 @@ else {
 <head>
     <meta charset="utf-8" />
     <title>Cakrawala | Add Admin</title>
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
+     
+    <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
     <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
@@ -106,7 +107,7 @@ else {
 
                                 <div class="checkbox checkbox-primary m-b-20">
                                     <input id="checkbox1" type="checkbox" name="is_active" value="1" checked>
-                                    <label for="checkbox1"> Aktifkan Admin </label>
+                                    <label for="checkbox1"> Aktifkan Akun </label>
                                 </div>
 
                                 <button type="submit" name="submit" class="btn btn-success">Save</button>

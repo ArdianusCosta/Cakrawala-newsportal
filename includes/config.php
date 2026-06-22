@@ -1,12 +1,15 @@
 <?php
-define('DB_SERVER','localhost');
-define('DB_USER','root');
-define('DB_PASS' ,'');
-define('DB_NAME','newsportal');
-$con = mysqli_connect(DB_SERVER,DB_USER,DB_PASS,DB_NAME);
-// Check connection
-if (mysqli_connect_errno())
-{
- echo "Failed to connect to MySQL: " . mysqli_connect_error();
+// Konfigurasi koneksi ke database
+$host = "localhost"; // Host MySQL
+$username = "u828472685_cakrawala"; // Username MySQL
+$password = "Cakrawala123!"; // Password MySQL
+$database = "u828472685_cakrawala"; // Nama Database
+// Buat koneksi ke database
+$con = mysqli_connect($host, $username, $password, $database);
+
+// Periksa koneksi
+if (!$con) {
+    die("Koneksi gagal: " . mysqli_connect_error());
 }
+
 ?>

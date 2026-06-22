@@ -25,7 +25,7 @@
             bottom: -8px;
             width: 30px;
             height: 2px;
-            background: #6c5ce7;
+            background: #fb0000ff;
         }
         
         .footer-links {
@@ -59,10 +59,11 @@
             color: #ffffff;
             margin-right: 10px;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
         
         .social-links a:hover {
-            background: #6c5ce7;
+            background: #fb0000ff;
             transform: translateY(-3px);
         }
         
@@ -74,20 +75,20 @@
         
         .newsletter-input:focus {
             background: rgba(255,255,255,0.15);
-            border-color: #6c5ce7;
+            border-color: #fb0000ff;
             color: #ffffff;
             box-shadow: none;
         }
         
         .btn-subscribe {
-            background: #6c5ce7;
+            background: #fb0000ff;
             border: none;
             padding: 0.5rem 1.5rem;
             transition: all 0.3s ease;
         }
         
         .btn-subscribe:hover {
-            background: #5a4bd1;
+            background: #fb0000ff;
             transform: translateY(-2px);
         }
         
@@ -96,7 +97,7 @@
         }
         
         .footer-bottom a {
-            color: #6c5ce7;
+            color: #fb0000ff;
             text-decoration: none;
         }
         
@@ -111,57 +112,59 @@
             <div class="row g-4">
                 <!-- Company Info -->
                 <div class="col-lg-4 col-md-6">
-                    <h3 class="footer-title">About Company</h3>
-                    <p class="mb-4">We're dedicated to delivering innovative solutions that empower businesses to thrive in the digital age.</p>
+                    <h3 class="footer-title">
+                        <img src="images/Logo.png" class="img-fluid">
+                    </h3>
+                    <p class="mb-4">Jl. Jenderal R.S. Sukamto No.60 Pondok Kopi, Duren Sawit Jakarta Timur</p>
                     <div class="social-links mb-4">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="www.facebook.com"><i class="fab fa-facebook-f"></i></a>
+                        <a href="mailto:suratkabarcakrawala@gmail.com"><i class="fa-regular fa-envelope"></i></a>
+                        <a href="www.instagram.com"><i class="fab fa-instagram"></i></a>
+                        <a href="wa.me/628111516310"><i class="fa-solid fa-phone"></i></a>
+                        <a href="www.youtube.com"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
 
                 <!-- Quick Links -->
                 <div class="col-lg-2 col-md-6">
-                    <h3 class="footer-title">Quick Links</h3>
+                    <h3 class="footer-title">Kategori</h3>
                     <ul class="footer-links">
-                        <!-- Menu Static -->
+                         <!-- Menu Dinamis dari Category -->
+                        <?php 
+                        $query=mysqli_query($con,"SELECT id,CategoryName FROM tblcategory WHERE Is_Active=1");
+                        while($row=mysqli_fetch_array($query)) {
+                        $isActive = ($currentCat == $row['id']) ? 'active' : '';
+                        ?>
                         <li class="nav-item">
-                          <a class="nav-link px-3" href="about-us.php">About</a>
+                            <a class="nav-link <?php echo $isActive; ?>" 
+                            href="category.php?catid=<?php echo htmlentities($row['id']); ?>">
+                            <?php echo htmlentities($row['CategoryName']); ?>
+                            </a>
                         </li>
-                        <li class="nav-item">
-                          <a class="nav-link px-3" href="index.php">News</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link px-3" href="contact-us.php">Contact Us</a>
-                        </li>
+                        <?php } ?>
                     </ul>
                 </div>
 
                 <!-- Support -->
                 <div class="col-lg-2 col-md-6">
-                    <h3 class="footer-title">Support</h3>
+                    <h3 class="footer-title">Tentang Kami  </h3>
                     <ul class="footer-links">
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Community</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="about-us.php">Tentang Kami</a></li>
+                        <li><a href="contact-us.php">Hubungi Kami</a></li>
                     </ul>
                 </div>
 
                 <!-- Newsletter -->
                 <div class="col-lg-4 col-md-6">
-                    <h3 class="footer-title">Newsletter</h3>
-                    <p class= "mb-4">Subscribe to our newsletter for updates, news, and exclusive offers.</p>
+                    <h3 class="footer-title">Surat Kabar</h3>
+                    <p class= "mb-4">Berlangganan Surat Kabar Mingguan Cakrawala melalui email kami</p>
                     <form class="mb-4">
                         <div class="input-group">
                             <input type="email" class="form-control newsletter-input" placeholder="Enter your email">
-                            <button class="btn btn-subscribe text-white" type="submit">Subscribe</button>
+                            <button class="btn btn-subscribe text-white" type="submit">Berlangganan</button>
                         </div>
                     </form>
-                    <p class="small">By subscribing, you agree to our Privacy Policy and consent to receive updates.</p>
+                    <p class="small">Dengan berlangganan kamu menyetujui peraturan dari Cakrawala</p>
                 </div>
             </div>
         </div>
@@ -171,7 +174,7 @@
             <div class="container">
                 <div class="row py-3">
                     <div class="col-md-6 text-center text-md-start">
-                        <p class="mb-0">2025 &copy; PT Cakrawala Pers Media</p>
+                        <p class="mb-0">2026 &copy; PT Cakrawala Pers Media</p>
                     </div>
                     <div class="col-md-6 text-center text-md-end">
                         <p class="mb-0">  </a></p>

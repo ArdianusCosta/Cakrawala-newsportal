@@ -26,14 +26,10 @@ if(isset($_GET['action']) && $_GET['action']=='del'){
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-        <meta name="author" content="Coderthemes">
-
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
+    
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
         <!-- App title -->
-        <title>Cakrawala | Manage Posts</title>
+        <title>Cakrawala | Kelola Artikel</title>
 
         <!--Morris Chart CSS -->
 		<link rel="stylesheet" href="../plugins/morris/morris.css">
@@ -86,16 +82,14 @@ if(isset($_GET['action']) && $_GET['action']=='del'){
                         <div class="row">
 							<div class="col-xs-12">
 								<div class="page-title-box">
-                                    <h4 class="page-title">Manage Posts </h4>
+                                    <h4 class="page-title">Kelola Artikel </h4>
                                     <ol class="breadcrumb p-0 m-0">
                                         <li>
-                                            <a href="#">Admin</a>
+                                            <a href="#">Cakrawala</a>
                                         </li>
-                                        <li>
-                                            <a href="#">Posts</a>
-                                        </li>
+                                      
                                         <li class="active">
-                                            Manage Post  
+                                            Kelola Artikel 
                                         </li>
                                     </ol>
                                     <div class="clearfix"></div>
@@ -105,18 +99,18 @@ if(isset($_GET['action']) && $_GET['action']=='del'){
                         <!-- end row -->
 
                         <div class="row">
-                            <div class="col-sm-12">
+                            
                                 <div class="card-box">
                                     <div class="table-responsive">
                                         <table class="table table-colored table-centered table-inverse m-0">
                                         <thead>
                                         <tr>
-                                            <th>Title</th>
-                                            <th>Category</th>
-                                            <th>Subcategory</th>
-                                            <th>Author</th>
+                                            <th>Judul</th>
+                                            <th>Kategori</th>
+                                            <th>Sub Kategori</th>
+                                            <th>Penulis</th>
                                             <th>Status</th>
-                                            <th>Action</th>
+                                            <th>Aksi</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -212,7 +206,7 @@ if(isset($_GET['action']) && $_GET['action']=='del'){
                                         </div>
 
                                 </div>
-                            </div>
+                            
                         </div>
 
 

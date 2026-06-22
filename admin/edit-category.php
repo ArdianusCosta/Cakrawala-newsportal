@@ -32,6 +32,8 @@ $error="Something went wrong . Please try again.";
 
         <title>Cakrawala | Add Category</title>
 
+         
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
         <!-- App css -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/core.css" rel="stylesheet" type="text/css" />

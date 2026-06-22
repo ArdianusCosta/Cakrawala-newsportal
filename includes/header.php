@@ -9,6 +9,7 @@ $currentCat = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
 
 <head>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
 </head>
 
 <!-- Navbar Atas (Logo + Search) -->
@@ -16,7 +17,7 @@ $currentCat = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
   <div class="container d-flex justify-content-between align-items-center">
     <!-- Logo -->
     <a class="navbar-brand" href="index.php">
-      <img src="images/Logo.png" height="50" alt="Logo">
+      <img src="images/Logo-Black.png" height="50" alt="Logo">
     </a>
 
   <!-- Search Widget -->
@@ -87,39 +88,81 @@ $currentCat = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
 
 <!-- Tambahkan padding di body agar konten tidak ketutup navbar -->
 <style>
-  body {
-    padding-top: 120px; /* Sesuaikan dengan tinggi navbar total */
-  }
-  .navbar {
-    transition: box-shadow 0.3s ease;
-  }
-  .navbar.shadow {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+/* ====== Atur jarak body supaya tidak ketutup ====== */
+body {
+  padding-top: 120px; /* tinggi gabungan navbar */
+}
+
+/* ====== Navbar atas selalu lebih tinggi ====== */
+nav.navbar.fixed-top:first-of-type {
+  z-index: 1030;
+}
+
+/* ====== Navbar bawah nempel di bawah navbar atas ====== */
+nav.navbar.fixed-top:nth-of-type(2) {
+  top: 75px;
+  z-index: 1025;
+}
+
+/* ====== Responsive fix untuk mobile ====== */
+@media (max-width: 991.98px) {
+  /* Collapse menu kategori muncul fixed di bawah kedua navbar */
+  .navbar.navbar-light:nth-of-type(2) .collapse {
+    position: fixed;
+    top: 120px;   /* total tinggi navbar atas + bawah */
+    left: 0;
+    right: 0;
+    background: #fff;
+    z-index: 1040;
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+    max-height: 60vh;       /* batasi tinggi */
+    overflow-y: auto;       /* bisa scroll kalau panjang */
   }
 
-  /* Style menu aktif */
-  .nav-link.active {
-    color: red !important;
-    border-bottom: 2px solid red;
+  /* Menu kategori ditumpuk vertikal */
+  .navbar-nav {
+    flex-direction: column;
+    text-align: center;
   }
 
-    /* Supaya input dan tombol rapi */
-  .input-group {
-    position: relative;
-  }
-  .input-group .form-control {
-    padding-right: 15px; /* beri ruang untuk ikon */
-  }
-  .input-group button {
-    top: 50%;
-    transform: translateY(-50%);
+  /* Form search biar full width */
+  .card-body form.w-50 {
+    width: 100% !important;
   }
 
+  /* Tombol Tulis Berita lebih kecil */
   .btn-danger {
-    font-weight: 500;
+    min-width: auto;
+    padding: 6px 12px;
+    font-size: 12px;
   }
-  .bi {
-    font-size: 18px;
+
+  /* Sosial media icon lebih kecil */
+  .btn-light {
+    width: 35px !important;
+    height: 35px !important;
+    padding: 6px !important;
   }
+}
+
+/* ====== Tambahan UX untuk kategori panjang di desktop ====== */
+@media (min-width: 992px) {
+  .navbar-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .navbar-nav .nav-item {
+    flex: 0 0 auto;
+  }
+}
+
+/* ====== Style menu aktif ====== */
+.nav-link.active {
+  color: red !important;
+  border-bottom: 2px solid red;
+}
+
 
 </style>

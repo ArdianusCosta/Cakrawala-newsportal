@@ -10,6 +10,7 @@ include('includes/config.php');
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Cakrawala | Home Page</title>
 
+<link rel="icon" href="images/Logo.ico" type="image/x-icon">
 <!-- CSS -->
 <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
@@ -25,15 +26,18 @@ include('includes/config.php');
     <!-- ===== HEADLINE SECTION ===== -->
     <div class="container-fluid position-relative headline">
     <?php 
-    $headlineQuery = mysqli_query(
+        $headlineQuery = mysqli_query(
         $con, 
-        "SELECT p.*, c.CategoryName 
-         FROM tblposts p 
-         LEFT JOIN tblcategory c ON c.id = p.CategoryId 
-         WHERE p.Is_Active = 1
-         ORDER BY p.PostingDate DESC 
-         LIMIT 1"
+        "SELECT p.*, c.CategoryName, a.AdminUserName as author
+          FROM tblposts p 
+          LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+          LEFT JOIN tbladmin a ON a.id = p.PostedBy
+          WHERE p.Is_Active = 1
+          ORDER BY p.PostingDate DESC 
+          LIMIT 1
+          "
     );
+
     $headline = mysqli_fetch_array($headlineQuery);
     if($headline):
     ?>
@@ -42,7 +46,12 @@ include('includes/config.php');
         <div class="headline-title">
           <div class="category-label"><?php echo htmlentities($headline['CategoryName']); ?></div>
           <h3><?php echo htmlentities($headline['PostTitle']); ?></h3>
-          <small><?php echo date("d M Y", strtotime($headline['PostingDate'])); ?></small>
+          <small>
+            <?php echo date("d M Y", strtotime($headline['PostingDate'])); ?> | 
+            <?php echo htmlentities($headline['author']); ?>
+            <?php echo htmlentities($headline['views']); ?> views
+          </small>
+
         </div>
       </a>
     <?php endif; ?>
@@ -54,26 +63,26 @@ include('includes/config.php');
       <!-- TERPOPULER -->
       <h4 class="mt-4 mb-3">Terpopuler</h4>
       <?php
-      $populerQuery = mysqli_query($con, "SELECT 
-            tblposts.id as pid,
-            tblposts.PostTitle as posttitle,
-            tblcategory.CategoryName as category,
-            tblcategory.id as cid,
-            tbladmin.AdminUserName as aid,
-            tblsubcategory.Subcategory as subcategory,
-            tblposts.PostDetails as postdetails,
-            tblposts.PostingDate as postingdate,
-            tblposts.PostUrl as url,
-            tblposts.PostImage as PostImage,
-            tblposts.PostedBy as postedby,
-            tblposts.Views as views
-        FROM tblposts 
-        LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId 
-        LEFT JOIN tblsubcategory ON tblsubcategory.SubCategoryId = tblposts.SubCategoryId
-        LEFT JOIN tbladmin ON tbladmin.AdminUserName = tblposts.PostedBy
-        WHERE tblposts.Is_Active = 1
-        ORDER BY tblposts.Views DESC 
-        LIMIT 5");
+      $populerQuery = mysqli_query($con, " SELECT 
+          p.id as pid,
+          p.PostTitle as posttitle,
+          c.CategoryName as category,
+          s.Subcategory as subcategory,
+          p.PostDetails as postdetails,
+          p.PostingDate as postingdate,
+          p.PostUrl as url,
+          p.PostImage as PostImage,
+          p.Views as views,
+          a.AdminUserName as author
+        FROM tblposts p
+        LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+        LEFT JOIN tblsubcategory s ON s.SubCategoryId = p.SubCategoryId
+        LEFT JOIN tbladmin a ON a.id = p.PostedBy
+        WHERE p.Is_Active = 1
+        ORDER BY p.Views DESC 
+        LIMIT 5
+      ");
+
 
       while ($row = mysqli_fetch_array($populerQuery)) {
       ?>
@@ -93,8 +102,12 @@ include('includes/config.php');
                 <?php echo substr(strip_tags($row['postdetails']),0,100); ?>...
               </p>
               <small class="text-secondary mt-auto" style="font-size: 0.8rem;">
-                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | <?php echo htmlentities($row['postedby']); ?> | <?php echo htmlentities($row['category']); ?> | <?php echo htmlentities($row['views']); ?> views
+                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+                <?php echo htmlentities($row['author']); ?> | 
+                <?php echo htmlentities($row['category']); ?> | 
+                <?php echo htmlentities($row['views']); ?> views
               </small>
+
             </div>
           </div>
         </a>
@@ -115,17 +128,22 @@ include('includes/config.php');
       <div class="row">
         <?php
         $terbaruQuery = mysqli_query($con, "SELECT 
-            tblposts.id as pid,
-            tblposts.PostTitle as posttitle,
-            tblcategory.CategoryName as category,
-            tblposts.PostImage as PostImage,
-            tblposts.PostingDate as postingdate,
-            tblposts.PostDetails as postdetails
-          FROM tblposts 
-          LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId 
-          WHERE tblposts.Is_Active = 1
-          ORDER BY tblposts.PostingDate DESC 
-          LIMIT 4");
+              p.id as pid,
+              p.PostTitle as posttitle,
+              c.CategoryName as category,
+              p.PostImage as PostImage,
+              p.PostingDate as postingdate,
+              p.PostDetails as postdetails,
+              p.Views as views,
+              a.AdminUserName as author
+          FROM tblposts p
+          LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+          LEFT JOIN tbladmin a ON a.id = p.PostedBy
+          WHERE p.Is_Active = 1
+          ORDER BY p.PostingDate DESC 
+          LIMIT 4
+        ");
+
 
         while ($row = mysqli_fetch_array($terbaruQuery)) {
         ?>
@@ -139,8 +157,15 @@ include('includes/config.php');
               </div>
               <div class="mb-1"><span class="badge-category" style="font-size: 0.75rem;"><?php echo htmlentities($row['category']); ?></span></div>
               <h2 class="mb-1" style="font-size: 1.5rem; font-weight:600px; line-height:1.4em;"><?php echo htmlentities($row['posttitle']); ?></h2>
-              <small class="text-muted" style="font-size: 0.8rem;"><?php echo date("d M Y", strtotime($row['postingdate'])); ?> | <?php echo htmlentities($row['category']); ?></small>
-            </a>
+              <small class="text-muted" style="font-size: 0.8rem;">
+                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+                <?php echo htmlentities($row['author']); ?> | 
+                <?php echo htmlentities($row['category']); ?> | 
+                <?php echo htmlentities($row['views']); ?> views
+              </small>
+
+
+              </a>
           </div>
         <?php } ?>
       </div>
@@ -166,13 +191,17 @@ include('includes/config.php');
             tblposts.PostDetails as postdetails,
             tblposts.PostingDate as postingdate,
             tblposts.PostUrl as url,
-            tblposts.PostImage as PostImage
+            tblposts.PostImage as PostImage,
+            tblposts.Views as views,
+            a.AdminUserName as author
           FROM tblposts 
           LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId 
           LEFT JOIN tblsubcategory ON tblsubcategory.SubCategoryId = tblposts.SubCategoryId 
+          LEFT JOIN tbladmin a ON a.id = tblposts.PostedBy
           WHERE tblposts.Is_Active = 1
           ORDER BY tblposts.PostingDate DESC 
-          LIMIT $offset, $no_of_records_per_page");
+          LIMIT $offset, $no_of_records_per_page
+          ");
 
       while ($row=mysqli_fetch_array($query)) {
       ?>
@@ -189,8 +218,14 @@ include('includes/config.php');
               <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
               <h3 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h3>
               <p class="text-muted mb-1" style="font-size: 0.85rem;"><?php echo substr(strip_tags($row['postdetails']),0,100); ?>...</p>
-              <small class="text-secondary mt-auto" style="font-size: 0.8rem;"><?php echo date("d M Y", strtotime($row['postingdate'])); ?> | <?php echo htmlentities($row['category']); ?></small>
-            </div>
+              <small class="text-secondary mt-auto" style="font-size: 0.8rem;">
+                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+                <?php echo htmlentities($row['category']); ?> | 
+                <?php echo htmlentities($row['author']); ?> | 
+                <?php echo htmlentities($row['views']); ?> views
+              </small>
+
+              </div>
           </div>
         </a>
       <?php } ?>
@@ -219,11 +254,16 @@ include('includes/config.php');
     while ($cat = mysqli_fetch_array($catQuery)) {
       $catId = $cat['id'];
       $catName = $cat['CategoryName'];
-      $postQuery = mysqli_query($con, "SELECT id, PostTitle, PostImage, PostingDate, PostDetails 
-                                      FROM tblposts 
-                                      WHERE CategoryId = '$catId' AND Is_Active = 1
-                                      ORDER BY PostingDate DESC LIMIT 2");
-    ?>
+      $postQuery = mysqli_query($con, "
+        SELECT p.id, p.PostTitle, p.PostImage, p.PostingDate, p.PostDetails, 
+        p.Views as views, a.AdminUserName as author
+        FROM tblposts p
+        LEFT JOIN tbladmin a ON a.id = p.PostedBy
+        WHERE p.CategoryId = '$catId' AND p.Is_Active = 1
+        ORDER BY p.PostingDate DESC 
+        LIMIT 2
+      ");
+      ?>
       <div class="col-md-6 mb-4">
         <h5 class="mb-3"><span class="badge badge-danger"><?php echo htmlentities($catName); ?></span></h5>
         <div class="row">
@@ -239,7 +279,13 @@ include('includes/config.php');
                   <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>" class="text-dark text-decoration-none">
                     <h6 class="mb-1" style="font-size:1rem; font-weight:600;"><?php echo htmlentities($post['PostTitle']); ?></h6>
                   </a>
-                  <small class="text-muted d-block mb-1"><?php echo date("d M Y", strtotime($post['PostingDate'])); ?></small>
+                  <small class="text-muted d-block mb-1">
+                    <?php echo date("d M Y", strtotime($post['PostingDate'])); ?> | 
+                    <?php echo htmlentities($post['author']); ?> | 
+                    <?php echo htmlentities($post['views']); ?> views
+                  </small>
+
+
                   <p class="text-muted mb-0" style="font-size:0.85rem;"><?php echo substr(strip_tags($post['PostDetails']),0,80); ?>...</p>
                 </div>
               </div>

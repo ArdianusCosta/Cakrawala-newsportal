@@ -44,7 +44,13 @@ if($role == 3) {
     $check = $con->prepare("SELECT status, end_date FROM tblauthors WHERE user_id=? ORDER BY id DESC LIMIT 1");
     $check->bind_param("i", $user_id);
     $check->execute();
-    $res = $check->get_result()->fetch_assoc();
+    $check->store_result();
+    $check->bind_result($status, $end_date);
+    $res = null;
+    if ($check->num_rows > 0 && $check->fetch()) {
+        $res = ['status' => $status, 'end_date' => $end_date];
+    }
+
     if($res) {
         $today = date("Y-m-d");
         if($res['status'] == 'approved' && $res['end_date'] >= $today) {
@@ -97,21 +103,25 @@ $penulis_account_pages = ['subscribe.php', 'profile.php'];
 
                 <?php if ($role == 3): ?>
                     <li>
-                         <?php if($can_post): ?>
-                        <a href="add-post.php" class="waves-effect <?= ($current_page == 'add-post.php') ? 'active' : '' ?>">
-                            <i class="mdi mdi-pencil"></i> <span> Tambah Artikel </span>
-                            <?php else: ?>
-                                <li><a style="color:gray; cursor:not-allowed;">Tambah Artikel (Terkunci)</a></li>
-                            <?php endif; ?>
-                        </a>
+                        <?php if ($can_post): ?>
+                            <a href="add-post.php" class="waves-effect <?= ($current_page == 'add-post.php') ? 'active' : '' ?>">
+                                <i class="mdi mdi-pencil"></i> <span> Tambah Artikel </span>
+                            </a>
+                        <?php else: ?>
+                            <a style="color:gray; cursor:not-allowed;" class="waves-effect">
+                                <i class="mdi mdi-pencil"></i> <span> Tambah Artikel (Terkunci) </span>
+                            </a>
+                        <?php endif; ?>
 
                         <a href="manage-posts.php" class="<?= ($current_page == 'manage-posts.php') ? 'active' : '' ?>">
-                            <i class="mdi mdi-format-list-bulleted"></i> <span> Kelola Artikel </span></a>
+                            <i class="mdi mdi-format-list-bulleted"></i> <span> Kelola Artikel </span>
+                        </a>
                         <a href="trash-posts.php" class="<?= ($current_page == 'trash-posts.php') ? 'active' : '' ?>">
-                             <i class="mdi mdi-delete"></i><span>Artikel Dihapus</span></a>
-
+                            <i class="mdi mdi-delete"></i> <span> Artikel Dihapus </span>
+                        </a>
                     </li>
                 <?php endif; ?>
+
 
                 <?php if($role == 1 || $role == 2 ): ?>
                 <li class="has_sub">
@@ -121,6 +131,7 @@ $penulis_account_pages = ['subscribe.php', 'profile.php'];
                     <ul class="list-unstyled">
                         <?php if($role == 1 || $role == 2): ?>
                             <li><a href="add-post.php" class="<?= ($current_page == 'add-post.php') ? 'active' : '' ?>">Tambah Artikel</a></li>
+                            
                         <?php elseif($role == 3): ?>
                             <?php if($can_post): ?>
                                 <li><a href="add-post.php" class="<?= ($current_page == 'add-post.php') ? 'active' : '' ?>">Tambah Artikel</a></li>
@@ -155,23 +166,18 @@ $penulis_account_pages = ['subscribe.php', 'profile.php'];
                         <span class="menu-arrow"></span>
                     </a>
                     <ul class="list-unstyled">
-                        <li><a href="manage-authors.php" class="<?= ($current_page == 'manage-authors.php') ? 'active' : '' ?>">Langganan penulis</a></li>
-                        <li><a href="author-list.php" class="<?= ($current_page == 'author-list.php') ? 'active' : '' ?>">Daftar Penulis</a></li>
+                        <li><a href="manage-authors.php" class="<?= ($current_page == 'manage-authors.php') ? 'active' : '' ?>">Langganan Pengguna</a></li>
+                        <li><a href="author-list.php" class="<?= ($current_page == 'author-list.php') ? 'active' : '' ?>">Daftar Pengguna</a></li>
                         <li><a href="add_admin.php" class="<?= ($current_page == 'add_admin.php') ? 'active' : '' ?>">Tambah Pengguna</a></li>
                     </ul>
                 </li>
                 <?php endif; ?>
 
                 <?php if($role == 3): ?>
-                <li class="has_sub">
-                    <a href="javascript:void(0);" class="waves-effect <?= in_array($current_page, $penulis_account_pages) ? 'active' : '' ?>">
-                        <i class="mdi mdi-account"></i> <span> Akun Saya </span> 
-                        <span class="menu-arrow"></span>
+                <li>
+                    <a href="profile.php" class="waves-effect <?= in_array($current_page, $penulis_account_pages) ? 'active' : '' ?>">
+                        <i class="mdi mdi-account"></i> <span> Akun Saya </span>
                     </a>
-                    <ul class="list-unstyled">
-                        <li><a href="subscribe.php" class="<?= ($current_page == 'subscribe.php') ? 'active' : '' ?>">Langganan</a></li>
-                        <li><a href="profile.php" class="<?= ($current_page == 'profile.php') ? 'active' : '' ?>">Lihat Profil</a></li>
-                    </ul>
                 </li>
                 <?php endif; ?>
             </ul>

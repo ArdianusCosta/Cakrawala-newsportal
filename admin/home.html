@@ -1,0 +1,193 @@
+<?php
+session_start();
+include('includes/config.php');
+
+// Aktifkan debug supaya tahu masalah di hosting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+if (isset($_POST['login'])) {
+    $uname    = trim($_POST['username']);
+    $password = $_POST['password'];
+
+    $stmt = $con->prepare("
+        SELECT id, AdminUserName, AdminEmailId, AdminPassword, role 
+        FROM tbladmin 
+        WHERE (AdminUserName=? OR AdminEmailId=?) 
+        AND Is_Active=1
+        LIMIT 1
+    ");
+    if (!$stmt) {
+        die("SQL Error: " . $con->error);
+    }
+
+    $stmt->bind_param("ss", $uname, $uname);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($id, $AdminUserName, $AdminEmailId, $AdminPassword, $role);
+    $stmt->fetch();
+    
+    if ($stmt->num_rows > 0) {
+        // CEK PASSWORD: Mendukung MD5 dan bcrypt
+        $valid = false;
+        
+        // Cek apakah ini hash bcrypt (dimulai dengan $2y$ atau $2a$ dan panjang 60)
+        if (strlen($AdminPassword) == 60 && (substr($AdminPassword, 0, 4) == '$2y$' || substr($AdminPassword, 0, 4) == '$2a$')) {
+            // Ini hash bcrypt - gunakan password_verify
+            $valid = password_verify($password, $AdminPassword);
+            
+            // Debug (bisa dihapus setelah testing)
+            error_log("Using bcrypt verification for user: $uname");
+        } 
+        // Cek apakah ini hash MD5 (panjang 32 karakter, hanya hex)
+        else if (strlen($AdminPassword) == 32 && ctype_xdigit($AdminPassword)) {
+            // Ini hash MD5 - bandingkan dengan md5(password)
+            $valid = (md5($password) === $AdminPassword);
+            
+            // Debug (bisa dihapus setelah testing)
+            error_log("Using MD5 verification for user: $uname");
+            
+            // Jika password benar dengan MD5, upgrade ke bcrypt
+            if ($valid) {
+                // Generate bcrypt hash
+                $newBcryptHash = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Update database ke bcrypt
+                $updateStmt = $con->prepare("UPDATE tbladmin SET AdminPassword = ? WHERE id = ?");
+                $updateStmt->bind_param("si", $newBcryptHash, $id);
+                if ($updateStmt->execute()) {
+                    error_log("Upgraded user $uname from MD5 to bcrypt");
+                }
+                $updateStmt->close();
+            }
+        } 
+        else {
+            // Format tidak dikenal - coba kedua metode sebagai fallback
+            error_log("Unknown hash format for user $uname, trying both methods");
+            $valid = (password_verify($password, $AdminPassword) || md5($password) === $AdminPassword);
+        }
+        
+        if ($valid) {
+            // Set session
+            $_SESSION['id']    = $id;
+            $_SESSION['login'] = $AdminUserName;
+            $_SESSION['role']  = $role;
+            
+            // Log successful login
+            error_log("Successful login for user: $uname with role: $role");
+
+            // Redirect sesuai role
+            switch ((int)$role) {
+                case 1:
+                    header("Location: dashboard.php"); // admin
+                    exit;
+                case 2:
+                    header("Location: staff-dashboard.php"); // staff
+                    exit;
+                case 3:
+                    header("Location: penulis.php"); // penulis
+                    exit;
+                default:
+                    echo "<script>alert('Role tidak valid: $role');</script>";
+                    session_destroy();
+            }
+        } else {
+            echo "<script>alert('Password salah!');</script>";
+            error_log("Failed password attempt for user: $uname");
+        }
+    } else {
+        echo "<script>alert('User tidak ditemukan atau tidak aktif!');</script>";
+        error_log("User not found or inactive: $uname");
+    }
+
+    $stmt->close();
+}
+?>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Portal Media Pers Cakrawala">
+        <meta name="author" content="PT Cakrawala Media">
+
+        <title>Cakrawala | Login</title>
+         
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
+
+        <!-- App css -->
+        <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/icons.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
+
+        <script src="assets/js/modernizr.min.js"></script>
+    </head>
+
+    <body class="bg-transparent">
+        <!-- HOME -->
+        <section>
+            <div class="container-alt">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="wrapper-page">
+                            <div class="m-t-40 account-pages">
+                                <div class="text-center account-logo-box">
+                                    <h2 class="text-uppercase">
+                                        <a href="index.html" class="text-success">
+                                            <span><img src="assets/images/Logo.png" alt="" height="56"></span>
+                                        </a>
+                                    </h2>
+                                </div>
+                                <div class="account-content">
+                                    <form method="post" action="">
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="text" name="username" class="form-control" required placeholder="Masukkan email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Password</label>
+                                            <input type="password" name="password" class="form-control" required placeholder="Masukkan password">
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="mb-2">Belum memiliki akun?<a href="register-author.php"> Daftar</a></p>
+                                            <button type="submit" name="login" class="btn w-md btn-bordered btn-danger">Login</button>
+                                        </div>
+                                    </form>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                            <!-- end card-box-->
+                        </div>
+                        <!-- end wrapper -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END HOME -->
+
+        <script>
+            var resizefunc = [];
+        </script>
+
+        <!-- jQuery  -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/bootstrap.min.js"></script>
+        <script src="assets/js/detect.js"></script>
+        <script src="assets/js/fastclick.js"></script>
+        <script src="assets/js/jquery.blockUI.js"></script>
+        <script src="assets/js/waves.js"></script>
+        <script src="assets/js/jquery.slimscroll.js"></script>
+        <script src="assets/js/jquery.scrollTo.min.js"></script>
+
+        <!-- App js -->
+        <script src="assets/js/jquery.core.js"></script>
+        <script src="assets/js/jquery.app.js"></script>
+    </body>
+</html>

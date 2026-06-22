@@ -12,13 +12,12 @@ else{
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-        <meta name="author" content="Coderthemes">
+        
         <!-- App title -->
         <title>Cakrawala | Admin Dashboard</title>
 		<link rel="stylesheet" href="../plugins/morris/morris.css">
-
+ 
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
         <!-- App css -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
@@ -227,6 +226,235 @@ else{
                         </a>
                     </div>
 
+                    <div class="themed-grid-col">
+                            <div class="pb-3">
+                                <div class="card-box widget-box-one">
+                                    <div class="wigdet-one-content">
+                                        <p class="m-0 text-uppercase font-600 font-secondary text-overflow text-danger" 
+                                        title="User This Month">Statistik</p>
+
+                                      <?php
+                                        // Total views
+                                        $qTotal = mysqli_query($con, "SELECT SUM(views) as total_views FROM tblposts WHERE Is_Active=1");
+                                        $rTotal = mysqli_fetch_assoc($qTotal);
+                                        $totalViews = isset($rTotal['total_views']) ? (int)$rTotal['total_views'] : 0;
+
+                                        /* ---------------------------
+                                        1) Data Bar Chart = Views per Minggu (5 minggu terakhir)
+                                        --------------------------- */
+                                        $qWeeklyViews = mysqli_query($con, "
+                                            SELECT YEARWEEK(PostingDate, 1) as yearweek,
+                                                MIN(DATE(PostingDate)) as week_start,
+                                                SUM(views) as total_views
+                                            FROM tblposts
+                                            WHERE Is_Active=1
+                                            GROUP BY YEARWEEK(PostingDate, 1)
+                                            ORDER BY yearweek DESC
+                                            LIMIT 5
+                                        ");
+                                        $weeks = [];
+                                        $viewsPerWeek = [];
+                                        $temp = [];
+                                        while($row = mysqli_fetch_assoc($qWeeklyViews)){
+                                            $temp[] = [
+                                                'label' => date('d M', strtotime($row['week_start'])),
+                                                'views' => (int)$row['total_views']
+                                            ];
+                                        }
+                                        // balik lagi supaya urut dari lama → terbaru
+                                        $temp = array_reverse($temp);
+                                        foreach($temp as $t){
+                                            $weeks[] = $t['label'];
+                                            $viewsPerWeek[] = $t['views'];
+                                        }
+
+                                        /* ---------------------------
+                                        2) Data Pie Chart = Jumlah posting per kategori (tanpa limit)
+                                        --------------------------- */
+                                        $qCategory = mysqli_query($con, "
+                                            SELECT c.CategoryName, COUNT(p.id) as total_posts
+                                            FROM tblcategory c
+                                            LEFT JOIN tblposts p ON p.CategoryId = c.id AND p.Is_Active=1
+                                            GROUP BY c.id, c.CategoryName
+                                            ORDER BY total_posts DESC
+                                        ");
+                                        $catLabels = [];
+                                        $catCounts = [];
+                                        while($row = mysqli_fetch_assoc($qCategory)){
+                                            $catLabels[] = $row['CategoryName'];
+                                            $catCounts[] = (int)$row['total_posts'];
+                                        }
+
+                                        /* ---------------------------
+                                        3) Data Line Chart = Jumlah artikel per minggu (5 minggu terakhir)
+                                        --------------------------- */
+                                        $qWeeklyPosts = mysqli_query($con, "
+                                            SELECT YEARWEEK(PostingDate, 1) as yearweek,
+                                                MIN(DATE(PostingDate)) as week_start,
+                                                COUNT(id) as total_posts
+                                            FROM tblposts
+                                            WHERE Is_Active=1
+                                            GROUP BY YEARWEEK(PostingDate, 1)
+                                            ORDER BY yearweek DESC
+                                            LIMIT 5
+                                        ");
+                                        $weeksPosts = [];
+                                        $postsPerWeek = [];
+                                        $temp = [];
+                                        while($row = mysqli_fetch_assoc($qWeeklyPosts)){
+                                            $temp[] = [
+                                                'label' => date('d M', strtotime($row['week_start'])),
+                                                'posts' => (int)$row['total_posts']
+                                            ];
+                                        }
+                                        $temp = array_reverse($temp);
+                                        foreach($temp as $t){
+                                            $weeksPosts[] = $t['label'];
+                                            $postsPerWeek[] = $t['posts'];
+                                        }
+                                        ?>
+
+
+                                        <div class="row align-items-center">
+                                            <div class="col-6 col-md-4">
+                                                <h6 class="text-center mt-2">Pengunjung per Minggu</h6>
+                                                <div style="height:250px;">
+                                                    <canvas id="chart-bar"></canvas>
+                                                </div> 
+                                            </div>
+
+                                            <div class="col-6 col-md-4">
+                                                <h6 class="text-center mt-2">Posts per Kategori</h6>
+                                                <div style="height:250px;">
+                                                    <canvas id="chart-pie"></canvas>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-6 col-md-4">
+                                                <h6 class="text-center mt-2">Artikel per Minggu</h6>
+                                                <div style="height:250px;">
+                                                    <canvas id="chart-line"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                        const weeks       = <?php echo json_encode($weeks, JSON_UNESCAPED_UNICODE); ?>;
+                                        const viewsPerWeek= <?php echo json_encode($viewsPerWeek); ?>;
+
+                                        const catLabels   = <?php echo json_encode($catLabels, JSON_UNESCAPED_UNICODE); ?>;
+                                        const catCounts   = <?php echo json_encode($catCounts); ?>;
+
+                                        const weeksPosts  = <?php echo json_encode($weeksPosts, JSON_UNESCAPED_UNICODE); ?>;
+                                        const postsPerWeek= <?php echo json_encode($postsPerWeek); ?>;
+                                        </script>
+
+                                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                                        <script>
+                                        // Bar Chart - Views per Week
+                                        const ctxBar = document.getElementById('chart-bar').getContext('2d');
+                                        const barChart = new Chart(ctxBar, {
+                                            type: 'bar',
+                                            data: {
+                                                labels: weeks,
+                                                datasets: [{
+                                                    label: 'Total Views',
+                                                    data: viewsPerWeek,
+                                                    backgroundColor: '#007bff'
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    legend: { display: false },
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: ctx => ctx.parsed.y.toLocaleString() + ' views'
+                                                        }
+                                                    }
+                                                },
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: v => v.toLocaleString()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+
+                                        // Pie Chart - Posts per Category
+                                        const ctxPie = document.getElementById('chart-pie').getContext('2d');
+                                        const pieChart = new Chart(ctxPie, {
+                                            type: 'pie',
+                                            data: {
+                                                labels: catLabels,
+                                                datasets: [{
+                                                    data: catCounts,
+                                                    backgroundColor: ['#dc3545','#28a745','#007bff','#ffc107','#17a2b8','#6f42c1','#20c997']
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(ctx){
+                                                                return ctx.label + ': ' + ctx.parsed.toLocaleString() + ' posts';
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+
+                                        // Line Chart - Posts per Week
+                                        const ctxLine = document.getElementById('chart-line').getContext('2d');
+                                        const lineChart = new Chart(ctxLine, {
+                                            type: 'line',
+                                            data: {
+                                                labels: weeksPosts,
+                                                datasets: [{
+                                                    label: 'Total Posts',
+                                                    data: postsPerWeek,
+                                                    fill: false,
+                                                    tension: 0.3,
+                                                    borderColor: '#28a745',
+                                                    backgroundColor: '#28a745'
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: ctx => ctx.parsed.y.toLocaleString() + ' posts'
+                                                        }
+                                                    }
+                                                },
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: v => v.toLocaleString()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        </script>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
                     <div class="row mb-3"> 
                         <div class="col-md-8 themed-grid-col"> 
                             <div class="pb-3">
@@ -319,10 +547,82 @@ else{
                                 <div class="pb-3">
                                     <div class="card-box widget-box-one">
                                         <div class="wigdet-one-content">
-                                            <p class="m-0 text-uppercase font-600 font-secondary text-overflow text-danger" title="User This Month">Statistik</p>
+                                            <p class="m-0 text-uppercase font-600 font-secondary text-overflow text-danger" 
+                                            title="Statistik">Total Pembaca</p>
+                                            
+                                            <?php
+                                            // Ambil total views & top 5 data (pastikan $con terhubung)
+                                            $qTotal = mysqli_query($con, "SELECT SUM(views) as total_views FROM tblposts WHERE Is_Active=1");
+                                            $rTotal = mysqli_fetch_assoc($qTotal);
+                                            $totalViews = isset($rTotal['total_views']) ? (int)$rTotal['total_views'] : 0;
+
+                                            // Ambil 5 artikel dengan views terbanyak
+                                            $qTop = mysqli_query($con, "
+                                                SELECT id, PostTitle, views 
+                                                FROM tblposts 
+                                                WHERE Is_Active=1 
+                                                ORDER BY views DESC 
+                                                LIMIT 5
+                                            ");
+                                            $topData = [];
+                                            while($row = mysqli_fetch_assoc($qTop)){
+                                                $topData[] = [
+                                                    'id' => (int)$row['id'],
+                                                    'title' => $row['PostTitle'],
+                                                    'views' => (int)$row['views']
+                                                ];
+                                            }
+
+                                            // Siapkan label singkat (3 kata) dan arrays untuk Chart.js
+                                            $labelsShort = [];
+                                            $labelsFull = [];
+                                            $viewsArr = [];
+                                            foreach($topData as $r){
+                                                // ambil 3 kata pertama (aman untuk UTF-8)
+                                                $words = preg_split('/\s+/', trim($r['title']));
+                                                $short = implode(' ', array_slice($words, 0, 3));
+                                                if(count($words) > 3) $short .= '...';
+                                                $labelsShort[] = $short;
+                                                $labelsFull[] = $r['title'];
+                                                $viewsArr[] = $r['views'];
+                                            }
+                                            ?>
+                                            <h2><?php echo number_format($totalViews); ?> <small>Views</small></h2>
+
+                                            <!-- Tabel debug untuk memastikan data DB sama dengan yang dipakai -->
+                                             <hr>
+                                            <div class="mt-3">
+                                            <h4>Top 5 Artikel</h4>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover table-striped align-middle">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th>Artikel</th>
+                                                            <th class="text-center">Views</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach($topData as $i => $r): 
+                                                            $short = htmlspecialchars($labelsShort[$i], ENT_QUOTES, 'UTF-8');
+                                                        ?>
+                                                        <tr>
+                                                            <td><?php echo $short; ?></td>
+                                                            <td class="text-center">
+                                                                <span class="badge badge-danger px-3 py-2">
+                                                                    <?php echo number_format($r['views']); ?> Views
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            </div>
                                         </div>
                                     </div>
-                                </div> 
+                                </div>
+                                                    
                         </div> 
                     </div>
 
@@ -335,60 +635,6 @@ else{
             </div>
 
 
-            <!-- ============================================================== -->
-            <!-- End Right content here -->
-            <!-- ============================================================== -->
-
-
-            <!-- Right Sidebar -->
-            <div class="side-bar right-bar">
-                <a href="javascript:void(0);" class="right-bar-toggle">
-                    <i class="mdi mdi-close-circle-outline"></i>
-                </a>
-                <h4 class="">Settings</h4>
-                <div class="setting-list nicescroll">
-                    <div class="row m-t-20">
-                        <div class="col-xs-8">
-                            <h5 class="m-0">Notifications</h5>
-                            <p class="text-muted m-b-0"><small>Do you need them?</small></p>
-                        </div>
-                        <div class="col-xs-4 text-right">
-                            <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small"/>
-                        </div>
-                    </div>
-
-                    <div class="row m-t-20">
-                        <div class="col-xs-8">
-                            <h5 class="m-0">API Access</h5>
-                            <p class="m-b-0 text-muted"><small>Enable/Disable access</small></p>
-                        </div>
-                        <div class="col-xs-4 text-right">
-                            <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small"/>
-                        </div>
-                    </div>
-
-                    <div class="row m-t-20">
-                        <div class="col-xs-8">
-                            <h5 class="m-0">Auto Updates</h5>
-                            <p class="m-b-0 text-muted"><small>Keep up to date</small></p>
-                        </div>
-                        <div class="col-xs-4 text-right">
-                            <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small"/>
-                        </div>
-                    </div>
-
-                    <div class="row m-t-20">
-                        <div class="col-xs-8">
-                            <h5 class="m-0">Online Status</h5>
-                            <p class="m-b-0 text-muted"><small>Show your status to all</small></p>
-                        </div>
-                        <div class="col-xs-4 text-right">
-                            <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /Right-bar -->
 
         </div>
         <!-- END wrapper -->
@@ -424,6 +670,7 @@ else{
         <!-- App js -->
         <script src="assets/js/jquery.core.js"></script>
         <script src="assets/js/jquery.app.js"></script>
+
 
     </body>
 </html>

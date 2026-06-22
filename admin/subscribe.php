@@ -17,49 +17,73 @@ if(isset($_POST['submit'])){
     $bank_account = $_POST['bank_account'];
 
     // handle file upload
+    $new_name = null;
     if(isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] == 0){
         $ext = strtolower(pathinfo($_FILES['payment_proof']['name'], PATHINFO_EXTENSION));
         $new_name = time().'_'.$user_id.'.'.$ext;
         $target = __DIR__ . "/proof/" . $new_name;
 
-        // buat folder kalau belum ada
         if(!is_dir(__DIR__ . "/proof")){
             mkdir(__DIR__ . "/proof", 0777, true);
         }
 
-        if(move_uploaded_file($_FILES['payment_proof']['tmp_name'], $target)){
-            // simpan ke db
+        if(!move_uploaded_file($_FILES['payment_proof']['tmp_name'], $target)){
+            $error = "❌ Gagal upload bukti pembayaran!";
+        }
+    }
+
+    if(empty($error)){
+        // cek apakah user sudah punya data
+        $check = $con->prepare("SELECT id FROM tblauthors WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+        $check->bind_param("i", $user_id);
+        $check->execute();
+        $result = $check->get_result();
+        $check->close();
+
+        if($result->num_rows > 0){
+            // UPDATE record terakhir
+            $row = $result->fetch_assoc();
+            $id  = $row['id'];
+
+            if($new_name){ 
+                $stmt = $con->prepare("UPDATE tblauthors 
+                    SET full_name=?, bank_name=?, bank_account=?, payment_proof=?, status='pending', created_at=NOW() 
+                    WHERE id=? AND user_id=?");
+                $stmt->bind_param("ssssii", $full_name, $bank_name, $bank_account, $new_name, $id, $user_id);
+            } else {
+                $stmt = $con->prepare("UPDATE tblauthors 
+                    SET full_name=?, bank_name=?, bank_account=?, status='pending', created_at=NOW() 
+                    WHERE id=? AND user_id=?");
+                $stmt->bind_param("sssii", $full_name, $bank_name, $bank_account, $id, $user_id);
+            }
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            // INSERT baru
             $stmt = $con->prepare("INSERT INTO tblauthors 
                 (user_id, full_name, bank_name, bank_account, payment_proof, status, created_at) 
                 VALUES (?,?,?,?,?, 'pending', NOW())");
             $stmt->bind_param("issss", $user_id, $full_name, $bank_name, $bank_account, $new_name);
             $stmt->execute();
             $stmt->close();
-
-            $_SESSION['msg'] = "✅ Bukti pembayaran berhasil diupload, menunggu verifikasi admin.";
-            header("Location: subscribe.php");
-            exit;
-        } else {
-            $error = "❌ Gagal upload bukti pembayaran!";
         }
-    } else {
-        $error = "❌ Harap pilih file bukti pembayaran!";
+
+        $_SESSION['msg'] = "✅ Data langganan berhasil diperbarui. Menunggu verifikasi admin.";
+        header("Location: subscribe.php");
+        exit;
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-        <meta name="author" content="Coderthemes">
-
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
-        <!-- App title -->
-        <title>Cakrawala | Subscribe</title>
+        
+        <title>Cakrawala | Langganan</title>
+         
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
 
         <!--Morris Chart CSS -->
 		<link rel="stylesheet" href="../plugins/morris/morris.css">

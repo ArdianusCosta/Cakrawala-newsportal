@@ -15,13 +15,11 @@ $query = $con->query("SELECT * FROM tbladmin ORDER BY id DESC");
 <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-        <meta name="author" content="Coderthemes">
 
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
         <!-- App title -->
         <title>Cakrawala | Daftar Pengguna</title>
+          
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
 
         <!-- Summernote css -->
         <link href="../plugins/summernote/summernote.css" rel="stylesheet" />
@@ -49,10 +47,7 @@ $query = $con->query("SELECT * FROM tbladmin ORDER BY id DESC");
 <body class="fixed-left">
 
 <div class="wrapper">
-
-     <!-- Top Bar Start -->
 <?php include('includes/topheader.php');?>
-
             <!-- ========== Left Sidebar Start ========== -->
 <?php include('includes/leftsidebar.php');?>
 <div class="content-page">

@@ -34,7 +34,9 @@ if($_GET['action']=='parmdel' && $_GET['rid'])
 <html lang="en">
     <head>
 
-        <title>Cakrawala | Manage Categories</title>
+        <title>Cakrawala | Kelola Kategori</title>
+         
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
@@ -72,16 +74,16 @@ if($_GET['action']=='parmdel' && $_GET['rid'])
                         <div class="row">
 							<div class="col-xs-12">
 								<div class="page-title-box">
-                                    <h4 class="page-title">Manage Categories</h4>
+                                    <h4 class="page-title">Kelola Kategori</h4>
                                     <ol class="breadcrumb p-0 m-0">
                                         <li>
-                                            <a href="#">Admin</a>
+                                            <a href="#">Cakrawala</a>
                                         </li>
                                         <li>
-                                            <a href="#">Category </a>
+                                            <a href="#">Kategori </a>
                                         </li>
                                         <li class="active">
-                                           Manage Categories
+                                           Kelola Kategori
                                         </li>
                                     </ol>
                                     <div class="clearfix"></div>

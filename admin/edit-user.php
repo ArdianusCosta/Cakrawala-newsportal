@@ -2,199 +2,153 @@
 session_start();
 include('includes/config.php');
 
-// hanya Admin (role = 1) yang bisa akses
-if($_SESSION['role'] != 1){
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// hanya admin yang boleh akses
+if (!isset($_SESSION['role']) || $_SESSION['role'] != 1) {
     header("Location: dashboard.php");
     exit;
 }
 
-if(!isset($_GET['id']) || empty($_GET['id'])){
+// cek id
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    $_SESSION['msg'] = "ID user tidak valid.";
     header("Location: author-list.php");
     exit;
 }
 
 $id = intval($_GET['id']);
 
-// ambil data user
-$stmt = $con->prepare("SELECT * FROM tbladmin WHERE id=?");
+// ambil data user (tanpa get_result)
+$stmt = $con->prepare("SELECT id, AdminUserName, AdminEmailId, role, Is_Active, CreationDate, UpdationDate FROM tbladmin WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-$user = $stmt->get_result()->fetch_assoc();
+$stmt->store_result();
 
-if(!$user){
+if ($stmt->num_rows === 0) {
     $_SESSION['msg'] = "User tidak ditemukan.";
     header("Location: author-list.php");
     exit;
 }
 
-// jika form disubmit
-if(isset($_POST['update'])){
-    $username = trim($_POST['AdminUserName']);
-    $email    = trim($_POST['AdminEmailId']);
-    $role     = intval($_POST['role']);
-    $status   = intval($_POST['Is_Active']);
+// bind hasil
+$stmt->bind_result($uid, $username, $email, $role, $is_active, $creation, $update);
+$stmt->fetch();
 
-    // update password jika diisi
-    if(!empty($_POST['AdminPassword'])){
-        $password = password_hash($_POST['AdminPassword'], PASSWORD_BCRYPT);
-        $sql = "UPDATE tbladmin SET AdminUserName=?, AdminEmailId=?, AdminPassword=?, role=?, Is_Active=?, UpdationDate=NOW() WHERE id=?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param("sssiii", $username, $email, $password, $role, $status, $id);
-    } else {
-        $sql = "UPDATE tbladmin SET AdminUserName=?, AdminEmailId=?, role=?, Is_Active=?, UpdationDate=NOW() WHERE id=?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param("ssiii", $username, $email, $role, $status, $id);
-    }
+// update data jika disubmit
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username  = trim($_POST['AdminUserName']);
+    $email     = trim($_POST['AdminEmailId']);
+    $role      = intval($_POST['role']);
+    $is_active = isset($_POST['is_active']) ? 1 : 0;
 
-    if($stmt->execute()){
-        $_SESSION['msg'] = "User berhasil diupdate.";
+    if ($username == "" || $email == "") {
+        $error = "Username dan Email wajib diisi.";
     } else {
-        $_SESSION['msg'] = "Gagal update user.";
+        $stmt2 = $con->prepare("UPDATE tbladmin SET AdminUserName=?, AdminEmailId=?, role=?, Is_Active=?, UpdationDate=NOW() WHERE id=?");
+        $stmt2->bind_param("ssiii", $username, $email, $role, $is_active, $id);
+
+        if ($stmt2->execute()) {
+            $_SESSION['msg'] = "Data user berhasil diperbarui.";
+            header("Location: author-list.php");
+            exit;
+        } else {
+            $error = "Gagal menyimpan data: " . $stmt2->error;
+        }
     }
-    header("Location: author-list.php");
-    exit;
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
-<!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-        <meta name="author" content="Coderthemes">
-
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
-        <!-- App title -->
-        <title>Cakrawala | Daftar Pengguna</title>
-
-        <!-- Summernote css -->
-        <link href="../plugins/summernote/summernote.css" rel="stylesheet" />
-
-        <!-- Select2 -->
-        <link href="../plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-
-        <!-- Jquery filer css -->
-        <link href="../plugins/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
-        <link href="../plugins/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
-
-        <!-- App css -->
-        <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/icons.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
-        <script src="assets/js/modernizr.min.js"></script>
-
-    </head>
-
+    <meta charset="utf-8">
+    <title>Edit Pengguna | Cakrawala</title>
+    <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/core.css" rel="stylesheet">
+    <link href="assets/css/components.css" rel="stylesheet">
+    <link href="assets/css/icons.css" rel="stylesheet">
+    <link href="assets/css/pages.css" rel="stylesheet">
+    <link href="assets/css/menu.css" rel="stylesheet">
+    <link href="assets/css/responsive.css" rel="stylesheet">
+</head>
 <body class="fixed-left">
 
 <div class="wrapper">
-
-     <!-- Top Bar Start -->
 <?php include('includes/topheader.php');?>
-
-            <!-- ========== Left Sidebar Start ========== -->
 <?php include('includes/leftsidebar.php');?>
+
 <div class="content-page">
     <div class="content">
         <div class="container">
-            
-                         <div class="row">
-							<div class="col-xs-12">
-								<div class="page-title-box">
-                                    <h4 class="page-title">Edit Pengguna </h4>
-                                    <ol class="breadcrumb p-0 m-0">
-                                        <li>
-                                            <a href="#">Pengguna</a>
-                                        </li>
-                                        <li class="active">
-                                            Edit Pengguna
-                                        </li>
-                                    </ol>
-                                    <div class="clearfix"></div>
-                                </div>
-							</div>
-						</div>
-                        <!-- end row -->
 
-    <form method="post">
-        <div class="form-group m-b-20">
-            <label>Username</label>
-            <input type="text" name="AdminUserName" class="form-control" value="<?= htmlentities($user['AdminUserName']); ?>" required>
-        </div>
-
-        <div class="form-group m-b-20">
-            <label>Email</label>
-            <input type="email" name="AdminEmailId" class="form-control" value="<?= htmlentities($user['AdminEmailId']); ?>" required>
-        </div>
-
-        <div class="form-group m-b-20">
-            <label>Password (kosongkan jika tidak diubah)</label>
-            <input type="password" name="AdminPassword" class="form-control">
-        </div>
-
-        <div class="form-group m-b-20">
-            <label>Role</label>
-            <select name="role" class="form-control" required>
-                <option value="1" <?= $user['role']==1?'selected':''; ?>>Admin</option>
-                <option value="2" <?= $user['role']==2?'selected':''; ?>>Staff</option>
-                <option value="3" <?= $user['role']==3?'selected':''; ?>>Wartawan</option>
-            </select>
-        </div>
-
-        <div class="form-group m-b-20">
-            <label>Status</label>
-            <div class="checkbox checkbox-primary m-b-20">
-                <input id="checkbox1" type="checkbox" name="is_active" value="1" checked>
-                <label for="checkbox1"> Aktifkan Akun </label>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="page-title-box">
+                        <h4 class="page-title">Edit Pengguna</h4>
+                        <ol class="breadcrumb p-0 m-0">
+                            <li><a href="author-list.php">Pengguna</a></li>
+                            <li class="active">Edit</li>
+                        </ol>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <button type="submit" name="update" class="btn btn-primary">Update</button>
-        <a href="author-list.php" class="btn btn-secondary">Kembali</a>
-    </form>
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger"><?= htmlentities($error) ?></div>
+            <?php endif; ?>
+
+            <form method="POST" class="form-horizontal" action="">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Username</label>
+                    <div class="col-md-8">
+                        <input type="text" name="AdminUserName" class="form-control" required value="<?= htmlentities($username); ?>">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Email</label>
+                    <div class="col-md-8">
+                        <input type="email" name="AdminEmailId" class="form-control" required value="<?= htmlentities($email); ?>">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Role</label>
+                    <div class="col-md-8">
+                        <select name="role" class="form-control" required>
+                            <option value="1" <?= $role==1?'selected':''; ?>>Admin</option>
+                            <option value="2" <?= $role==2?'selected':''; ?>>Staff</option>
+                            <option value="3" <?= $role==3?'selected':''; ?>>Wartawan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Status</label>
+                    <div class="col-md-8">
+                        <input type="checkbox" name="is_active" value="1" <?= $is_active ? 'checked' : ''; ?>> Aktif
+                    </div>
+                </div>
+
+                <div class="form-group m-b-0">
+                    <div class="col-md-offset-2 col-md-8">
+                        <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+                        <a href="author-list.php" class="btn btn-secondary">Kembali</a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <?php include('includes/footer.php'); ?>
+</div>
 </div>
 
-
-        <!-- jQuery  -->
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/js/bootstrap.min.js"></script>
-        <script src="assets/js/detect.js"></script>
-        <script src="assets/js/fastclick.js"></script>
-        <script src="assets/js/jquery.blockUI.js"></script>
-        <script src="assets/js/waves.js"></script>
-        <script src="assets/js/jquery.slimscroll.js"></script>
-        <script src="assets/js/jquery.scrollTo.min.js"></script>
-        <script src="../plugins/switchery/switchery.min.js"></script>
-
-        <!-- CounterUp  -->
-        <script src="../plugins/waypoints/jquery.waypoints.min.js"></script>
-        <script src="../plugins/counterup/jquery.counterup.min.js"></script>
-
-        <!--Morris Chart-->
-		<script src="../plugins/morris/morris.min.js"></script>
-		<script src="../plugins/raphael/raphael-min.js"></script>
-
-        <!-- Load page level scripts-->
-        <script src="../plugins/jvectormap/jquery-jvectormap-2.0.2.min.js"></script>
-        <script src="../plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-        <script src="../plugins/jvectormap/gdp-data.js"></script>
-        <script src="../plugins/jvectormap/jquery-jvectormap-us-aea-en.js"></script>
-
-
-        <!-- Dashboard Init js -->
-		<script src="assets/pages/jquery.blog-dashboard.js"></script>
-
-        <!-- App js -->
-        <script src="assets/js/jquery.core.js"></script>
-        <script src="assets/js/jquery.app.js"></script>
-
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
 </body>
 </html>

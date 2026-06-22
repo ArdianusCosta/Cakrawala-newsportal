@@ -1,0 +1,43 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+
+# JetBrains / VS Code
+.idea/
+.vscode/
+
+# Node/npm files
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+npm-shrinkwrap.json
+
+# Build / temp files
+.sass-cache/
+.cache/
+.tmp/
+*.tmp
+*.temp
+*.log
+
+# PHP / app-generated files
+error_log
+admin/error_log
+admin/uploads/
+uploads/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# macOS archive files
+__MACOSX/
+
+# Composer
+composer.lock
+vendor/bin/

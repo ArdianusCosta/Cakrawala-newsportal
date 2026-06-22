@@ -36,14 +36,10 @@ if(isset($_GET['action']) && $_GET['action']=='perdel' && isset($_GET['presid'])
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-        <meta name="author" content="Coderthemes">
-
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
+   
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
         <!-- App title -->
-        <title>Cakrawala | Manage Posts</title>
+        <title>Cakrawala | Artikel Di Hapus</title>
 
         <!--Morris Chart CSS -->
 		<link rel="stylesheet" href="../plugins/morris/morris.css">
@@ -97,16 +93,14 @@ if(isset($_GET['action']) && $_GET['action']=='perdel' && isset($_GET['presid'])
                         <div class="row">
 							<div class="col-xs-12">
 								<div class="page-title-box">
-                                    <h4 class="page-title">Trashed Posts </h4>
+                                    <h4 class="page-title">Artikel dihapus </h4>
                                     <ol class="breadcrumb p-0 m-0">
                                         <li>
-                                            <a href="#">Admin</a>
+                                            <a href="#">Cakrawala</a>
                                         </li>
-                                        <li>
-                                            <a href="#">Posts</a>
-                                        </li>
+                                       
                                         <li class="active">
-                                          Trashed Posts 
+                                          Artikel dihapus
                                         </li>
                                     </ol>
                                     <div class="clearfix"></div>
@@ -116,84 +110,99 @@ if(isset($_GET['action']) && $_GET['action']=='perdel' && isset($_GET['presid'])
                         <!-- end row -->
 
 
-<div class="row">
-<div class="col-sm-6">  
- 
+                            <div class="row">
+                            <div class="col-sm-6">  
+                            
 
 
-<?php if($msg){ ?>
-<div class="alert alert-success" role="alert">
-<strong>Well done!</strong> <?php echo htmlentities($msg);?>
-</div>
-<?php } ?>
+                            <?php if($msg){ ?>
+                            <div class="alert alert-success" role="alert">
+                            <strong>Well done!</strong> <?php echo htmlentities($msg);?>
+                            </div>
+                            <?php } ?>
 
-<?php if($error){ ?>
-<div class="alert alert-danger" role="alert">
-<strong>Oh snap!</strong> <?php echo htmlentities($error);?>
-</div>
-<?php } ?>
-
-
-
-</div>
+                            <?php if($error){ ?>
+                            <div class="alert alert-danger" role="alert">
+                            <strong>Oh snap!</strong> <?php echo htmlentities($error);?>
+                            </div>
+                            <?php } ?>
 
 
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="card-box">
-                         
 
-                                    <div class="table-responsive">
-<table class="table table-colored table-centered table-inverse m-0">
-<thead>
-<tr>
-                                           
-<th>Title</th>
-<th>Category</th>
-<th>Subcategory</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
+                            </div>
 
-<?php
-$query = mysqli_query($con,"
-    SELECT 
-        tblposts.id AS postid,
-        tblposts.PostTitle AS title,
-        tblcategory.CategoryName AS category,
-        tblsubcategory.Subcategory AS subcategory
-    FROM tblposts
-    LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId
-    LEFT JOIN tblsubcategory ON tblsubcategory.SubCategoryId = tblposts.SubCategoryId
-    WHERE tblposts.Is_Active = 3
-    ORDER BY tblposts.id DESC
-");
-$rowcount=mysqli_num_rows($query);
-if($rowcount==0)
-{
-?>
-<tr>
 
-<td colspan="4" align="center"><h3 style="color:red">No record found</h3></td>
-<tr>
-<?php 
-} else {
-while($row=mysqli_fetch_array($query))
-{
-?>
- <tr>
-<td><b><?php echo htmlentities($row['title']);?></b></td>
-<td><?php echo htmlentities($row['category'])?></td>
-<td><?php echo htmlentities($row['subcategory'])?></td>
+                                                    <div class="row">
+                                                        <div class="col-sm-12">
+                                                            <div class="card-box">
+                                                    
 
-<td>
-<a href="trash-posts.php?pid=<?php echo htmlentities($row['postid']);?>&&action=restore" onclick="return confirm('Do you really want to restore ?')"> <i class="ion-arrow-return-right" title="Restore this Post"></i></a>
-    &nbsp;
-    <a href="trash-posts.php?presid=<?php echo htmlentities($row['postid']);?>&&action=perdel" onclick="return confirm('Do you really want to delete ?')"><i class="fa fa-trash-o" style="color: #f05050" title="Permanently delete this post"></i></a> 
- </td>
- </tr>
-<?php } }?>
+                                                                <div class="table-responsive">
+                            <table class="table table-colored table-centered table-inverse m-0">
+                            <thead>
+                            <tr>
+                                                                    
+                            <th>Judul</th>
+                            <th>Kategori</th>
+                            <th>Subkategori</th>
+                            <th>Aksi</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <?php
+                            // ambil role dan id dari session
+                            $role = $_SESSION['role'];
+                            $adminId = $_SESSION['id'];
+
+                            // base query
+                            $sql = "
+                                SELECT 
+                                    tblposts.id AS postid,
+                                    tblposts.PostTitle AS title,
+                                    tblcategory.CategoryName AS category,
+                                    tblsubcategory.Subcategory AS subcategory
+                                FROM tblposts
+                                LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId
+                                LEFT JOIN tblsubcategory ON tblsubcategory.SubCategoryId = tblposts.SubCategoryId
+                                WHERE tblposts.Is_Active = 3
+                            ";
+
+                            // filter jika role wartawan (3)
+                            if($role == 3){
+                                $sql .= " AND tblposts.PostedBy = '$adminId' ";
+                            }
+
+                            // urutkan
+                            $sql .= " ORDER BY tblposts.id DESC";
+
+                            $query = mysqli_query($con, $sql);
+
+                            $rowcount=mysqli_num_rows($query);
+                            if($rowcount==0)
+                            {
+                            ?>
+                            <tr>
+
+                            <td colspan="4" align="center"><h3 style="color:red">Tidak Ditemukan</h3></td>
+                            <tr>
+                            <?php 
+                            } else {
+                            while($row=mysqli_fetch_array($query))
+                            {
+                            ?>
+                            <tr>
+                            <td><b><?php echo htmlentities($row['title']);?></b></td>
+                            <td><?php echo htmlentities($row['category'])?></td>
+                            <td><?php echo htmlentities($row['subcategory'])?></td>
+
+                            <td>
+                            <a href="trash-posts.php?pid=<?php echo htmlentities($row['postid']);?>&&action=restore" onclick="return confirm('Do you really want to restore ?')"> <i class="ion-arrow-return-right" title="Restore this Post"></i></a>
+                                &nbsp;
+                                <a href="trash-posts.php?presid=<?php echo htmlentities($row['postid']);?>&&action=perdel" onclick="return confirm('Do you really want to delete ?')"><i class="fa fa-trash-o" style="color: #f05050" title="Permanently delete this post"></i></a> 
+                            </td>
+                            </tr>
+                            <?php } }?>
                                                
                                             </tbody>
                                         </table>

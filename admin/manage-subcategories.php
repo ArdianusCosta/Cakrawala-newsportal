@@ -34,7 +34,9 @@ if($_GET['action']=='perdel' && $_GET['scid'])
 <html lang="en">
     <head>
 
-        <title> Cakrawala | Manage SubCategories</title>
+        <title> Cakrawala | Kelola Sub Kategori</title>
+         
+        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
@@ -74,16 +76,14 @@ if($_GET['action']=='perdel' && $_GET['scid'])
                         <div class="row">
 							<div class="col-xs-12">
 								<div class="page-title-box">
-                                    <h4 class="page-title">Manage SubCategories</h4>
+                                    <h4 class="page-title">Kelola Sub Kategori</h4>
                                     <ol class="breadcrumb p-0 m-0">
                                         <li>
-                                            <a href="#">Admin</a>
+                                            <a href="#">Cakrawala</a>
                                         </li>
-                                        <li>
-                                            <a href="#">SubCategory </a>
-                                        </li>
+                                        
                                         <li class="active">
-                                           Manage SubCategories
+                                           Kelola Sub Kategori
                                         </li>
                                     </ol>
                                     <div class="clearfix"></div>
