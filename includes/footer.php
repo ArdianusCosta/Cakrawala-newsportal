@@ -6,9 +6,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
         .footer {
+            width: 100%;
             background: linear-gradient(145deg, #1a1c23, #242730);
             color: #ffffff;
+            margin-top: auto;
         }
         
         .footer-title {

@@ -22,7 +22,6 @@
     border-radius: .25rem; /* ikuti card */
   }
 
-  /* Overlay full block */
   .headline-link::after {
     content: "";
     position: absolute;
@@ -30,7 +29,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: .25rem; /* ikuti card */
+    border-radius: .25rem;
     background: rgba(0, 0, 0, 0.1);
     transition: background 0.3s ease;
   }
@@ -88,7 +87,7 @@
     }
 
     .headline-link::after {
-      background: transparent;
+      display: none;
     }
   }
 
