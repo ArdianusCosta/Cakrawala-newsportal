@@ -23,38 +23,34 @@ LEFT JOIN tblsubcategory ON tblsubcategory.SubCategoryId=tblposts.SubCategoryId
 WHERE tblposts.id='$pid'");
 ?>
 
+<?php
+$row = mysqli_fetch_array($query);
+$imageUrl = !empty($row['PostImage']) ? 'https://cakrawalaonline.com/admin/uploads/' . htmlspecialchars($row['PostImage']) : 'https://cakrawalaonline.com/admin/uploads/default.jpg';
+$metaDescription = htmlspecialchars(substr(strip_tags($row['postdetails']), 0, 160));
+$pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
+?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-        <?php
-    $pid = intval($_GET['nid']);
-    $query = mysqli_query($con, "SELECT ... WHERE tblposts.id='$pid'");
-    $row = mysqli_fetch_array($query);
-    ?>
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="<?= htmlspecialchars($row['posttitle']) ?>">
-    <meta property="og:description" content="<?= htmlspecialchars(substr(strip_tags($row['postdetails']), 0, 160)) ?>">
-    <meta property="og:url" content="https://cakrawalaonline.com/news-details.php?nid=<?= $pid ?>">
-    <meta property="og:image" content="https://cakrawalaonline.com/admin/uploads/<?= htmlspecialchars($row['PostImage']) ?>">
-    <meta name="twitter:card" content="summary_large_image">
-    </head>
-   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
+  <meta name="description" content="<?= $metaDescription ?>">
   <meta name="author" content="">
+  <title><?= htmlspecialchars($row['posttitle']) ?> | Cakrawala</title>
 
-  <title>News Portal | Home Page</title>
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="<?= htmlspecialchars($row['posttitle']) ?>">
+  <meta property="og:description" content="<?= $metaDescription ?>">
+  <meta property="og:url" content="<?= htmlspecialchars($pageUrl) ?>">
+  <meta property="og:image" content="<?= $imageUrl ?>">
+  <meta property="og:site_name" content="Cakrawala">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?= htmlspecialchars($row['posttitle']) ?>">
+  <meta name="twitter:description" content="<?= $metaDescription ?>">
+  <meta name="twitter:image" content="<?= $imageUrl ?>">
 
-  <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
   <link href="css/modern-business.css" rel="stylesheet">
 </head>
 
