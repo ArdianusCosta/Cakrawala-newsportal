@@ -61,7 +61,7 @@ include('includes/config.php');
     ?>
 
     <?php if (count($headlineItems)): ?>
-      <div id="headlineCarousel" class="carousel slide" data-ride="carousel" data-interval="4000" data-pause="hover">
+      <div id="headlineCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="4000" data-pause="hover">
         <?php if (count($headlineItems) > 1): ?>
           <ol class="carousel-indicators">
             <?php foreach ($headlineItems as $index => $item): ?>
