@@ -68,6 +68,37 @@
     margin-bottom: 8px;
   }
 
+  .headline .carousel-inner,
+  .headline .carousel-item,
+  .headline .carousel-item img {
+    width: 100%;
+  }
+
+  .headline .carousel-item img {
+    height: 420px;
+    object-fit: cover;
+  }
+
+  .headline .carousel-control-prev,
+  .headline .carousel-control-next {
+    width: 6%;
+    opacity: .8;
+    transition: opacity .2s ease;
+    z-index: 3;
+  }
+
+  .headline .carousel-control-prev:hover,
+  .headline .carousel-control-next:hover {
+    opacity: 1;
+  }
+
+  .headline .carousel-indicators {
+    bottom: 15px;
+    left: 20px;
+    right: auto;
+    margin: 0;
+  }
+
   @media (max-width: 767.98px) {
     .headline .headline-title {
       position: static;

@@ -26,34 +26,80 @@ include('includes/config.php');
     <!-- ===== HEADLINE SECTION ===== -->
     <div class="container-fluid position-relative headline">
     <?php 
+        $sevenDaysAgo = date('Y-m-d', strtotime('-7 days'));
         $headlineQuery = mysqli_query(
-        $con, 
-        "SELECT p.*, c.CategoryName, a.AdminUserName as author
-          FROM tblposts p 
-          LEFT JOIN tblcategory c ON c.id = p.CategoryId 
-          LEFT JOIN tbladmin a ON a.id = p.PostedBy
-          WHERE p.Is_Active = 1
-          ORDER BY p.PostingDate DESC 
-          LIMIT 1
-          "
-    );
+            $con,
+            "SELECT p.*, c.CategoryName, a.AdminUserName as author
+             FROM tblposts p
+             LEFT JOIN tblcategory c ON c.id = p.CategoryId
+             LEFT JOIN tbladmin a ON a.id = p.PostedBy
+             WHERE p.Is_Active = 1 AND p.PostingDate >= '$sevenDaysAgo'
+             ORDER BY p.PostingDate DESC
+             LIMIT 6"
+        );
 
-    $headline = mysqli_fetch_array($headlineQuery);
-    if($headline):
+        $headlineItems = [];
+        while ($headlineRow = mysqli_fetch_array($headlineQuery)) {
+            $headlineItems[] = $headlineRow;
+        }
+
+        if (count($headlineItems) === 0) {
+            $fallbackQuery = mysqli_query(
+                $con,
+                "SELECT p.*, c.CategoryName, a.AdminUserName as author
+                 FROM tblposts p
+                 LEFT JOIN tblcategory c ON c.id = p.CategoryId
+                 LEFT JOIN tbladmin a ON a.id = p.PostedBy
+                 WHERE p.Is_Active = 1
+                 ORDER BY p.PostingDate DESC
+                 LIMIT 1"
+            );
+            if ($fallbackRow = mysqli_fetch_array($fallbackQuery)) {
+                $headlineItems[] = $fallbackRow;
+            }
+        }
     ?>
-      <a href="news-details.php?nid=<?php echo htmlentities($headline['id']); ?>" class="headline-link d-block">
-        <img src="admin/uploads/<?php echo $headline['PostImage'] ?: 'default.jpg'; ?>" alt="Headline">
-        <div class="headline-title">
-          <div class="category-label"><?php echo htmlentities($headline['CategoryName']); ?></div>
-          <h3><?php echo htmlentities($headline['PostTitle']); ?></h3>
-          <small>
-            <?php echo date("d M Y", strtotime($headline['PostingDate'])); ?> | 
-            <?php echo htmlentities($headline['author']); ?>
-            <?php echo htmlentities($headline['views']); ?> views
-          </small>
 
+    <?php if (count($headlineItems)): ?>
+      <div id="headlineCarousel" class="carousel slide" data-ride="carousel" data-interval="4000" data-pause="hover">
+        <?php if (count($headlineItems) > 1): ?>
+          <ol class="carousel-indicators">
+            <?php foreach ($headlineItems as $index => $item): ?>
+              <li data-target="#headlineCarousel" data-slide-to="<?php echo $index; ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>"></li>
+            <?php endforeach; ?>
+          </ol>
+        <?php endif; ?>
+
+        <div class="carousel-inner">
+          <?php foreach ($headlineItems as $index => $item): ?>
+            <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
+              <a href="news-details.php?nid=<?php echo htmlentities($item['id']); ?>" class="headline-link d-block">
+                <img src="admin/uploads/<?php echo htmlentities($item['PostImage'] ?: 'default.jpg'); ?>" alt="Headline">
+                <div class="headline-title">
+                  <div class="category-label"><?php echo htmlentities($item['CategoryName']); ?></div>
+                  <h3><?php echo htmlentities($item['PostTitle']); ?></h3>
+                  <small>
+                    <?php echo date("d M Y", strtotime($item['PostingDate'])); ?> | 
+                    <?php echo htmlentities($item['author']); ?>
+                    <?php echo htmlentities($item['views']); ?> views
+                  </small>
+                </div>
+              </a>
+            </div>
+          <?php endforeach; ?>
         </div>
-      </a>
+
+        <?php if (count($headlineItems) > 1): ?>
+          <a class="carousel-control-prev" href="#headlineCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#headlineCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        <?php endif; ?>
+      </div>
     <?php endif; ?>
     </div>
 
