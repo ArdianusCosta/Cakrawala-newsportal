@@ -75,7 +75,8 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
             tblposts.PostDetails as postdetails,
             tblposts.PostingDate as postingdate,
             tblposts.PostUrl as url,
-            tblposts.PostImage as PostImage,
+          tblposts.PostImage as PostImage,
+          tblposts.PostImageDesc as PostImageDesc,
             tblposts.Views as views,
             tbladmin.AdminUserName as author
         FROM tblposts 
@@ -99,6 +100,12 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
                    src="admin/uploads/default.jpg" 
                    alt="No Image" 
                    style="max-height:400px; object-fit:cover;">
+            <?php endif; ?>
+
+            <?php if (!empty($row['PostImageDesc'])): ?>
+              <div class="px-3 pt-2 text-muted" style="font-size:0.95rem;">
+                <?php echo htmlentities($row['PostImageDesc']); ?>
+              </div>
             <?php endif; ?>
 
             <div class="card-body">

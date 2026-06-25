@@ -131,7 +131,7 @@ include('includes/config.php');
               p.id as pid,
               p.PostTitle as posttitle,
               c.CategoryName as category,
-              p.PostImage as PostImage,
+            p.PostImage as PostImage,
               p.PostingDate as postingdate,
               p.PostDetails as postdetails,
               p.Views as views,
@@ -191,7 +191,7 @@ include('includes/config.php');
             tblposts.PostDetails as postdetails,
             tblposts.PostingDate as postingdate,
             tblposts.PostUrl as url,
-            tblposts.PostImage as PostImage,
+        tblposts.PostImage as PostImage,
             tblposts.Views as views,
             a.AdminUserName as author
           FROM tblposts 

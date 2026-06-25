@@ -17,6 +17,7 @@ else{
         $catid          = mysqli_real_escape_string($con, $_POST['category']);
         $subcatid       = mysqli_real_escape_string($con, $_POST['subcategory']);
         $postdetails    = mysqli_real_escape_string($con, $_POST['postdescription']);
+        $postImageDesc  = mysqli_real_escape_string($con, isset($_POST['postImageDesc']) ? $_POST['postImageDesc'] : '');
         
         $arr            = explode(" ",$posttitle);
         $url            = implode("-",$arr);
@@ -59,8 +60,8 @@ else{
 
         // Kueri sudah aman dari tanda kutip di dalam data
         $query = mysqli_query($con,"INSERT INTO tblposts
-            (PostTitle,CategoryId,SubCategoryId,PostDetails,PostUrl,Is_Active,PostImage,PostedBy)  
-            VALUES('$posttitle','$catid','$subcatid','$postdetails','$url','$status','$imagePath','$authorId')");
+            (PostTitle,CategoryId,SubCategoryId,PostDetails,PostUrl,Is_Active,PostImage,PostImageDesc,PostedBy)  
+            VALUES('$posttitle','$catid','$subcatid','$postdetails','$url','$status','$imagePath','$postImageDesc','$authorId')");
         
 
         if($query){
@@ -208,6 +209,11 @@ while($result=mysqli_fetch_array($ret))
   <input type="file" name="postImage" id="postImage" class="form-control" accept="image/*" onchange="previewImage(event)">
   <br>
   <img id="preview" src="#" alt="Preview Gambar" style="max-width:200px; display:none; border:1px solid #ddd; padding:4px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+</div>
+
+<div class="form-group">
+    <label for="postImageDesc">Deskripsi Gambar (caption, singkat)</label>
+    <input type="text" name="postImageDesc" id="postImageDesc" class="form-control" maxlength="255" placeholder="Masukkan deskripsi singkat untuk gambar (akan ditampilkan kecil)">
 </div>
 
 
