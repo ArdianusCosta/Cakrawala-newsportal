@@ -13,7 +13,7 @@ include('includes/config.php');
         <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
 <!-- CSS -->
 <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="css/modern-business.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
 </head>
@@ -93,11 +93,9 @@ include('includes/config.php');
         </li>
         <li class="page-item"><a href="?pageno=<?php echo $total_pages; ?>" class="page-link">»</a></li>
       </ul>
-      </div>
-    </div>
-</div>
-</div>
-</div>
+      </div><!-- /col-md-8 -->
+    </div><!-- /row -->
+  </div><!-- /.container -->
 
 <?php include('includes/footer.php'); ?>
 <script src="vendor/jquery/jquery.min.js"></script>

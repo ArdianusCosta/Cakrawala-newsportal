@@ -17,11 +17,9 @@ include('includes/config.php');
 
     <title>News Portal | Search  Page</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
     <link href="css/modern-business.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 
   </head>
 
@@ -42,10 +40,11 @@ include('includes/config.php');
 
           <!-- Blog Post -->
 <?php 
-        if($_POST['searchtitle']!=''){
-$st=$_SESSION['searchtitle']=$_POST['searchtitle'];
-}
-$st;
+        if (!empty($_POST['searchtitle'])) {
+            $_SESSION['searchtitle'] = $_POST['searchtitle'];
+        }
+        $st = isset($_SESSION['searchtitle']) ? $_SESSION['searchtitle'] : '';
+        $st_escaped = mysqli_real_escape_string($con, $st);
              
 
 
@@ -66,7 +65,7 @@ $st;
         $total_pages = ceil($total_rows / $no_of_records_per_page);
 
 
-$query=mysqli_query($con,"select tblposts.id as pid,tblposts.PostTitle as posttitle,tblcategory.CategoryName as category,tblsubcategory.Subcategory as subcategory,tblposts.PostDetails as postdetails,tblposts.PostingDate as postingdate,tblposts.PostUrl as url from tblposts left join tblcategory on tblcategory.id=tblposts.CategoryId left join  tblsubcategory on  tblsubcategory.SubCategoryId=tblposts.SubCategoryId where tblposts.PostTitle like '%$st%' LIMIT $offset, $no_of_records_per_page");
+$query=mysqli_query($con,"select tblposts.id as pid,tblposts.PostTitle as posttitle,tblcategory.CategoryName as category,tblsubcategory.Subcategory as subcategory,tblposts.PostDetails as postdetails,tblposts.PostingDate as postingdate,tblposts.PostUrl as url from tblposts left join tblcategory on tblcategory.id=tblposts.CategoryId left join tblsubcategory on tblsubcategory.SubCategoryId=tblposts.SubCategoryId where tblposts.PostTitle like '%$st_escaped%' AND tblposts.Is_Active=1 LIMIT $offset, $no_of_records_per_page");
 
 $rowcount=mysqli_num_rows($query);
 if($rowcount==0)
@@ -124,8 +123,5 @@ while ($row=mysqli_fetch_array($query)) {
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
- 
-</head>
   </body>
-
 </html>

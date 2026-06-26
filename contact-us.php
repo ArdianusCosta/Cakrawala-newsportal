@@ -14,11 +14,15 @@ include('includes/config.php');
 
     <title>News Portal | Contact us</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
     <link href="css/modern-business.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <style>
+      .page-title { font-size: clamp(1.4rem, 5vw, 2rem); word-break: break-word; }
+      .breadcrumb { flex-wrap: wrap; font-size: 0.875rem; background: transparent; }
+      .about-content { font-size: 1rem; line-height: 1.75; word-break: break-word; overflow-wrap: break-word; }
+      @media (max-width: 575.98px) { .about-content { font-size: 0.9375rem; } }
+    </style>
 
   </head>
 
@@ -36,26 +40,20 @@ while($row=mysqli_fetch_array($query))
 {
 
 ?>
-      <h1 class="mt-4 mb-3"><?php echo htmlentities($row['PageTitle'])?>
-  
-      </h1>
+      <h1 class="page-title mt-4 mb-3"><?php echo htmlentities($row['PageTitle'])?></h1>
 
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <a href="index.php">Home</a>
-        </li>
-        <li class="breadcrumb-item active">Contact</li>
-      </ol>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Contact</li>
+        </ol>
+      </nav>
 
-      <!-- Intro Content -->
       <div class="row">
-
-        <div class="col-lg-12">
-
-          <p><?php echo $row['Description'];?></p>
+        <div class="col-12">
+          <div class="about-content"><?php echo $row['Description'];?></div>
         </div>
       </div>
-      <!-- /.row -->
 <?php } ?>
     
     </div>

@@ -13,7 +13,7 @@ include('includes/config.php');
 <link rel="icon" href="images/Logo.ico" type="image/x-icon">
 <!-- CSS -->
 <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="css/modern-business.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
 </head>
@@ -210,13 +210,13 @@ include('includes/config.php');
         </a>
       </div>
 
-      <div class="row">
+      <div class="terbaru-grid">
         <?php
         $terbaruQuery = mysqli_query($con, "SELECT 
               p.id as pid,
               p.PostTitle as posttitle,
               c.CategoryName as category,
-            p.PostImage as PostImage,
+              p.PostImage as PostImage,
               p.PostingDate as postingdate,
               p.PostDetails as postdetails,
               p.Views as views,
@@ -229,33 +229,33 @@ include('includes/config.php');
           LIMIT 4
         ");
 
-
         while ($row = mysqli_fetch_array($terbaruQuery)) {
         ?>
-          <div class="col-md-4 col-lg-3 mb-4">
+          <div class="terbaru-card">
             <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
                class="text-decoration-none text-dark d-block h-100">
-              <div class="thumb-landscape mb-2" style="height:200px; overflow:hidden; border-radius:8px;">
+              <div class="thumb-landscape mb-2">
                 <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
-                     alt="<?php echo htmlentities($row['posttitle']); ?>" 
-                     style="width:100%; height:100%; object-fit:cover;">
+                     alt="<?php echo htmlentities($row['posttitle']); ?>">
               </div>
-              <div class="mb-1"><span class="badge-category" style="font-size: 0.75rem;"><?php echo htmlentities($row['category']); ?></span></div>
-              <h2 class="mb-1" style="font-size: 1.5rem; font-weight:600px; line-height:1.4em;"><?php echo htmlentities($row['posttitle']); ?></h2>
+              <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
+              <h2 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h2>
               <small class="text-muted" style="font-size: 0.8rem;">
-                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
-                <?php echo htmlentities($row['author']); ?> | 
-                <?php echo htmlentities($row['category']); ?> | 
+                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> |
+                <?php echo htmlentities($row['author']); ?> |
                 <?php echo htmlentities($row['views']); ?> views
               </small>
-
-
-              </a>
+            </a>
           </div>
         <?php } ?>
       </div>
 
-      <div class="col-md-8 mt-5">
+      </div><!-- /col-md-8 -->
+    </div><!-- /row -->
+
+    <!-- ===== SEMUA ARTIKEL ===== -->
+    <div class="row mt-5">
+    <div class="col-12">
       <h4 class="mb-3">Semua Artikel</h4>
       <!-- Pagination -->
       <?php 
@@ -325,11 +325,10 @@ include('includes/config.php');
         </li>
         <li class="page-item"><a href="?pageno=<?php echo $total_pages; ?>" class="page-link">»</a></li>
       </ul>
-      </div>
-    </div>
+      </div><!-- /col-12 -->
+    </div><!-- /row semua artikel -->
 
-    
-</div>
+</div><!-- /.container -->
 
 <!-- Artikel per kategori -->
 <div class="container mt-5">
