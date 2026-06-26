@@ -21,10 +21,10 @@ include('includes/config.php');
 <?php include('includes/header.php'); ?>
 
 <div class="container">
-  <div class="row" style="margin-top: 4%">
 
     <!-- ===== HEADLINE SECTION ===== -->
-    <div class="container-fluid position-relative headline">
+    <div class="row" style="margin-top: 4%">
+    <div class="col-12 position-relative headline px-0">
     <?php 
         $sevenDaysAgo = date('Y-m-d', strtotime('-7 days'));
         $headlineQuery = mysqli_query(
@@ -61,26 +61,18 @@ include('includes/config.php');
     ?>
 
     <?php if (count($headlineItems)): ?>
-      <div id="headlineCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="4000" data-pause="hover">
-        <?php if (count($headlineItems) > 1): ?>
-          <ol class="carousel-indicators">
-            <?php foreach ($headlineItems as $index => $item): ?>
-              <li data-target="#headlineCarousel" data-slide-to="<?php echo $index; ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>"></li>
-            <?php endforeach; ?>
-          </ol>
-        <?php endif; ?>
-
-        <div class="carousel-inner">
+      <div id="hl-slider" class="hl-slider">
+        <div class="hl-track" id="hl-track">
           <?php foreach ($headlineItems as $index => $item): ?>
-            <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
-              <a href="news-details.php?nid=<?php echo htmlentities($item['id']); ?>" class="headline-link d-block">
+            <div class="hl-slide">
+              <a href="news-details.php?nid=<?php echo htmlentities($item['id']); ?>" class="headline-link">
                 <img src="admin/uploads/<?php echo htmlentities($item['PostImage'] ?: 'default.jpg'); ?>" alt="Headline">
                 <div class="headline-title">
                   <div class="category-label"><?php echo htmlentities($item['CategoryName']); ?></div>
                   <h3><?php echo htmlentities($item['PostTitle']); ?></h3>
                   <small>
-                    <?php echo date("d M Y", strtotime($item['PostingDate'])); ?> | 
-                    <?php echo htmlentities($item['author']); ?>
+                    <?php echo date("d M Y", strtotime($item['PostingDate'])); ?> |
+                    <?php echo htmlentities($item['author']); ?> |
                     <?php echo htmlentities($item['views']); ?> views
                   </small>
                 </div>
@@ -90,20 +82,67 @@ include('includes/config.php');
         </div>
 
         <?php if (count($headlineItems) > 1): ?>
-          <a class="carousel-control-prev" href="#headlineCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-          </a>
-          <a class="carousel-control-next" href="#headlineCarousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-          </a>
+          <button class="hl-btn hl-btn-prev" id="hl-prev" aria-label="Previous">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="hl-btn hl-btn-next" id="hl-next" aria-label="Next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="hl-dots" id="hl-dots">
+            <?php foreach ($headlineItems as $index => $item): ?>
+              <span class="hl-dot <?php echo $index === 0 ? 'active' : ''; ?>" data-index="<?php echo $index; ?>"></span>
+            <?php endforeach; ?>
+          </div>
         <?php endif; ?>
       </div>
+
+      <script>
+      (function() {
+        var track   = document.getElementById('hl-track');
+        var slides  = track.querySelectorAll('.hl-slide');
+        var dots    = document.querySelectorAll('.hl-dot');
+        var total   = slides.length;
+        var current = 0;
+        var timer;
+
+        function goTo(n) {
+          current = (n + total) % total;
+          track.style.transform = 'translateX(-' + (current * 100) + '%)';
+          dots.forEach(function(d, i) {
+            d.classList.toggle('active', i === current);
+          });
+        }
+
+        function next() { goTo(current + 1); }
+        function prev() { goTo(current - 1); }
+
+        function startTimer() { timer = setInterval(next, 4000); }
+        function resetTimer()  { clearInterval(timer); startTimer(); }
+
+        document.getElementById('hl-prev').addEventListener('click', function(){ prev(); resetTimer(); });
+        document.getElementById('hl-next').addEventListener('click', function(){ next(); resetTimer(); });
+
+        dots.forEach(function(d) {
+          d.addEventListener('click', function() {
+            goTo(parseInt(this.dataset.index));
+            resetTimer();
+          });
+        });
+
+        /* pause on hover */
+        var slider = document.getElementById('hl-slider');
+        slider.addEventListener('mouseenter', function() { clearInterval(timer); });
+        slider.addEventListener('mouseleave', startTimer);
+
+        startTimer();
+      })();
+      </script>
     <?php endif; ?>
-    </div>
+    </div><!-- /col-12 headline -->
+    </div><!-- /headline row -->
 
     <!-- Blog Entries Column -->
+    <div class="row">
     <div class="col-md-8">
 
       <!-- TERPOPULER -->
