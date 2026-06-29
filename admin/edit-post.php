@@ -193,7 +193,7 @@ else{
                                             </div>
                                         </div>
                                     </div>
-
+                                    <input type="hidden" name="postedby" value="<?php echo htmlentities($row['PostedBy']); ?>">
                                     <button type="submit" name="update" class="btn btn-success waves-effect waves-light">Update </button>
                                 </form>
                             </div>
