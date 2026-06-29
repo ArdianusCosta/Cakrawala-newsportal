@@ -16,6 +16,99 @@ include('includes/config.php');
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="css/modern-business.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
+
+<!--
+  NOTE: the rules below are new for this update (tab buttons + Semua Artikel grid).
+  Feel free to move this block into style.css once you're happy with it.
+-->
+<style>
+/* ===== Terpopuler / Terbaru toggle buttons ===== */
+.content-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 1.5rem 0 1rem;
+}
+.tab-btn {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    color: #555;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 8px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.tab-btn:hover {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+.tab-btn.active {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ===== Semua Artikel grid layout ===== */
+.semua-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+@media (max-width: 992px) {
+    .semua-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+    .semua-grid { grid-template-columns: 1fr; }
+}
+.semua-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    text-decoration: none;
+    color: inherit;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.semua-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    color: inherit;
+}
+.semua-card .thumb-landscape {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+}
+.semua-card .thumb-landscape img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.semua-card-body {
+    padding: 12px 0 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.semua-card-body h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 4px 0 6px;
+    line-height: 1.3;
+}
+.semua-card-body p {
+    font-size: 0.82rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+    flex: 1;
+}
+</style>
 </head>
 <body>
 <?php include('includes/header.php'); ?>
@@ -145,8 +238,14 @@ include('includes/config.php');
     <div class="row">
     <div class="col-md-8">
 
-      <!-- TERPOPULER -->
-      <h4 class="mt-4 mb-3">Terpopuler</h4>
+      <!-- TOGGLE BUTTONS: Terpopuler / Terbaru -->
+      <div class="content-tabs">
+        <button type="button" class="tab-btn active" data-tab="terpopuler">Terpopuler</button>
+        <button type="button" class="tab-btn" data-tab="terbaru">Terbaru</button>
+      </div>
+
+      <!-- TERPOPULER PANEL -->
+      <div class="tab-panel active" id="tab-terpopuler">
       <?php
       $populerQuery = mysqli_query($con, " SELECT 
           p.id as pid,
@@ -197,20 +296,16 @@ include('includes/config.php');
           </div>
         </a>
       <?php } ?>
-      </div>
-      <!-- Sidebar -->
-    <?php include('includes/sidebar.php'); ?>
-  </div>
+      </div><!-- /tab-terpopuler -->
 
-      <!-- TERBARU -->
-      <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
-        <h4 class="mb-0">Terbaru</h4>
-        <a href="all-news.php" class="text-danger mr-4" style="text-decoration: none;">Lihat Semua
-          <i class="fa fa-arrow-right" aria-hidden="true"></i>
-        </a>
-      </div>
+      <!-- TERBARU PANEL -->
+      <div class="tab-panel" id="tab-terbaru">
+        <div class="d-flex justify-content-end mb-3">
+          <a href="all-news.php" class="text-danger" style="text-decoration: none;">Lihat Semua
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
 
-      <div class="terbaru-grid">
         <?php
         $terbaruQuery = mysqli_query($con, "SELECT 
               p.id as pid,
@@ -231,27 +326,55 @@ include('includes/config.php');
 
         while ($row = mysqli_fetch_array($terbaruQuery)) {
         ?>
-          <div class="terbaru-card">
-            <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
-               class="text-decoration-none text-dark d-block h-100">
-              <div class="thumb-landscape mb-2">
-                <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
-                     alt="<?php echo htmlentities($row['posttitle']); ?>">
+          <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
+             class="card mb-3 text-decoration-none text-dark shadow-sm border-0 article-card">
+            <div class="row no-gutters">
+              <div class="col-md-4">
+                <div class="thumb-landscape">
+                  <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
+                       alt="<?php echo htmlentities($row['posttitle']); ?>">
+                </div>
               </div>
-              <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
-              <h2 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h2>
-              <small class="text-muted" style="font-size: 0.8rem;">
-                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> |
-                <?php echo htmlentities($row['author']); ?> |
-                <?php echo htmlentities($row['views']); ?> views
-              </small>
-            </a>
-          </div>
+              <div class="col-md-8 d-flex flex-column p-2">
+                <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
+                <h3 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h3>
+                <p class="text-muted mb-1" style="font-size: 0.85rem;">
+                  <?php echo substr(strip_tags($row['postdetails']),0,100); ?>...
+                </p>
+                <small class="text-secondary mt-auto" style="font-size: 0.8rem;">
+                  <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+                  <?php echo htmlentities($row['author']); ?> | 
+                  <?php echo htmlentities($row['category']); ?> | 
+                  <?php echo htmlentities($row['views']); ?> views
+                </small>
+              </div>
+            </div>
+          </a>
         <?php } ?>
-      </div>
+      </div><!-- /tab-terbaru -->
 
-      </div><!-- /col-md-8 -->
+    </div><!-- /col-md-8 -->
+
+    <!-- Sidebar (sidebar.php already provides its own col-md-4 wrapper) -->
+    <?php include('includes/sidebar.php'); ?>
+
     </div><!-- /row -->
+
+    <script>
+    (function() {
+      var buttons = document.querySelectorAll('.tab-btn');
+      var panels  = document.querySelectorAll('.tab-panel');
+
+      buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var target = this.dataset.tab;
+
+          buttons.forEach(function(b) { b.classList.toggle('active', b === btn); });
+          panels.forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + target); });
+        });
+      });
+    })();
+    </script>
 
     <!-- ===== SEMUA ARTIKEL ===== -->
     <div class="row mt-5">
@@ -287,33 +410,28 @@ include('includes/config.php');
           ORDER BY tblposts.PostingDate DESC 
           LIMIT $offset, $no_of_records_per_page
           ");
-
-      while ($row=mysqli_fetch_array($query)) {
       ?>
-        <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
-          class="card mb-3 text-decoration-none text-dark shadow-sm border-0 article-card">
-          <div class="row no-gutters">
-            <div class="col-md-4">
-              <div class="thumb-landscape">
-                <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
-                     alt="<?php echo htmlentities($row['posttitle']); ?>">
-              </div>
-            </div>
-            <div class="col-md-8 d-flex flex-column p-2">
-              <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
-              <h3 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h3>
-              <p class="text-muted mb-1" style="font-size: 0.85rem;"><?php echo substr(strip_tags($row['postdetails']),0,100); ?>...</p>
-              <small class="text-secondary mt-auto" style="font-size: 0.8rem;">
-                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
-                <?php echo htmlentities($row['category']); ?> | 
-                <?php echo htmlentities($row['author']); ?> | 
-                <?php echo htmlentities($row['views']); ?> views
-              </small>
 
-              </div>
+      <div class="semua-grid">
+      <?php while ($row=mysqli_fetch_array($query)) { ?>
+        <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" class="semua-card">
+          <div class="thumb-landscape">
+            <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
+                 alt="<?php echo htmlentities($row['posttitle']); ?>">
+          </div>
+          <div class="semua-card-body">
+            <span class="badge-category"><?php echo htmlentities($row['category']); ?></span>
+            <h3><?php echo htmlentities($row['posttitle']); ?></h3>
+            <p><?php echo substr(strip_tags($row['postdetails']),0,80); ?>...</p>
+            <small class="text-secondary" style="font-size: 0.75rem;">
+              <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+              <?php echo htmlentities($row['author']); ?> | 
+              <?php echo htmlentities($row['views']); ?> views
+            </small>
           </div>
         </a>
       <?php } ?>
+      </div><!-- /semua-grid -->
 
       <ul class="pagination justify-content-center mt-4">
         <li class="page-item"><a href="?pageno=1" class="page-link">«</a></li>

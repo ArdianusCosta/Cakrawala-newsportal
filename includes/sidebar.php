@@ -46,8 +46,8 @@
         <li class="list-group-item">
           <div class="d-flex">
             <img src="admin/uploads/<?php echo htmlentities($row['PostImage']);?>" 
-                 class="me-2 rounded" style="width:80px; height:60px; object-fit:cover;">
-            <div>
+                 class="me-2 rounded flex-shrink-0" style="width:80px; height:60px; object-fit:cover;">
+            <div style="flex:1; min-width:0;">
               <!-- Category Badge -->
               <span class="badge bg-danger mb-1">
                 <?php echo htmlentities($row['CategoryName']);?>
