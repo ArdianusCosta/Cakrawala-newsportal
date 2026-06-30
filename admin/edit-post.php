@@ -9,58 +9,67 @@ if(strlen($_SESSION['login'])==0){
 else{
     // UPDATE
     if(isset($_POST['update'])){
-        $posttitle   = $_POST['posttitle'];
-        $catid       = $_POST['category'];
-        $subcatid    = $_POST['subcategory'];
-        $postdetails = $_POST['postdescription'];
-        $arr         = explode(" ",$posttitle);
-        $url         = implode("-",$arr);
-        $status      = 1;
-        $postid      = intval($_GET['pid']);
-        $postedby    = $_POST['postedby'];
+        $postid = intval($_GET['pid']);
 
-        // jika upload gambar baru
+        // Use prepared statements to prevent SQL injection
         if(!empty($_FILES['postimage']['name'])){
-            $imgfile = $_FILES["postimage"]["name"];
-            $extension = substr($imgfile,strlen($imgfile)-4,strlen($imgfile));
-            $allowed_extensions = array(".jpg","jpeg",".png",".gif");
-            if(!in_array($extension,$allowed_extensions)){
-                $error="Invalid format. Only jpg / jpeg/ png /gif format allowed";
-            }
-            else{
-                $imgnewfile=md5($imgfile).$extension;
-                move_uploaded_file($_FILES["postimage"]["tmp_name"],"postimages/".$imgnewfile);
+            $imgfile    = $_FILES["postimage"]["name"];
+            $extension  = strtolower(substr($imgfile, strrpos($imgfile, '.')));
+            $allowed_extensions = array(".jpg", ".jpeg", ".png", ".gif");
 
-                $query=mysqli_query($con,"update tblposts set 
-                    PostTitle='$posttitle',
-                    CategoryId='$catid',
-                    SubCategoryId='$subcatid',
-                    PostDetails='$postdetails',
-                    PostUrl='$url',
-                    Is_Active='$status',
-                    PostedBy='$postedby',
-                    PostImage='$imgnewfile',
+            if(!in_array($extension, $allowed_extensions)){
+                $error = "Invalid format. Only jpg / jpeg / png / gif format allowed.";
+            } else {
+                $imgnewfile = md5($imgfile . time()) . $extension;
+                move_uploaded_file($_FILES["postimage"]["tmp_name"], "postimages/" . $imgnewfile);
+
+                $stmt = $con->prepare("UPDATE tblposts SET
+                    PostTitle=?,
+                    CategoryId=?,
+                    SubCategoryId=?,
+                    PostDetails=?,
+                    PostUrl=?,
+                    Is_Active=1,
+                    PostImage=?,
                     UpdationDate=NOW()
-                    where id='$postid'");
+                    WHERE id=?");
+
+                $posttitle   = $_POST['posttitle'];
+                $catid       = $_POST['category'];
+                $subcatid    = $_POST['subcategory'];
+                $postdetails = $_POST['postdescription'];
+                $url         = implode("-", explode(" ", $posttitle));
+
+                $stmt->bind_param("ssssssi", $posttitle, $catid, $subcatid, $postdetails, $url, $imgnewfile, $postid);
+                $query = $stmt->execute();
+                $stmt->close();
             }
         } else {
-            // tanpa ganti gambar
-            $query=mysqli_query($con,"update tblposts set 
-                PostTitle='$posttitle',
-                CategoryId='$catid',
-                SubCategoryId='$subcatid',
-                PostDetails='$postdetails',
-                PostUrl='$url',
-                Is_Active='$status',
-                PostedBy='$postedby',
+            $stmt = $con->prepare("UPDATE tblposts SET
+                PostTitle=?,
+                CategoryId=?,
+                SubCategoryId=?,
+                PostDetails=?,
+                PostUrl=?,
+                Is_Active=1,
                 UpdationDate=NOW()
-                where id='$postid'");
+                WHERE id=?");
+
+            $posttitle   = $_POST['posttitle'];
+            $catid       = $_POST['category'];
+            $subcatid    = $_POST['subcategory'];
+            $postdetails = $_POST['postdescription'];
+            $url         = implode("-", explode(" ", $posttitle));
+
+            $stmt->bind_param("sssssi", $posttitle, $catid, $subcatid, $postdetails, $url, $postid);
+            $query = $stmt->execute();
+            $stmt->close();
         }
 
-        if($query){
-            $msg="Post updated successfully";
-        } else {
-            $error="Something went wrong . Please try again.";    
+        if(isset($query) && $query){
+            $msg = "Post updated successfully";
+        } elseif(!isset($error)) {
+            $error = "Something went wrong. Please try again.";    
         } 
     }
 ?>
@@ -88,7 +97,7 @@ else{
       $.ajax({
           type: "POST",
           url: "get_subcategory.php",
-          data:'catid='+val,
+          data: 'catid=' + val,
           success: function(data){
               $("#subcategory").html(data);
           }
@@ -108,10 +117,10 @@ else{
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="page-title-box">
-                            <h4 class="page-title">Edit Post </h4>
+                            <h4 class="page-title">Edit Post</h4>
                             <ol class="breadcrumb p-0 m-0">
                                 <li><a href="#">Admin</a></li>
-                                <li><a href="#"> Posts </a></li>
+                                <li><a href="#">Posts</a></li>
                                 <li class="active">Edit Post</li>
                             </ol>
                             <div class="clearfix"></div>
@@ -119,32 +128,36 @@ else{
                     </div>
                 </div>
 
-                <!-- alert -->
+                <!-- alerts -->
                 <div class="row">
                     <div class="col-sm-6">  
-                    <?php if($msg){ ?>
+                    <?php if(!empty($msg)){ ?>
                         <div class="alert alert-success" role="alert">
-                        <strong>Well done!</strong> <?php echo htmlentities($msg);?>
+                            <strong>Well done!</strong> <?php echo htmlentities($msg);?>
                         </div>
                     <?php } ?>
-                    <?php if($error){ ?>
+                    <?php if(!empty($error)){ ?>
                         <div class="alert alert-danger" role="alert">
-                        <strong>Oh snap!</strong> <?php echo htmlentities($error);?>
+                            <strong>Oh snap!</strong> <?php echo htmlentities($error);?>
                         </div>
                     <?php } ?>
                     </div>
                 </div>
 
                 <?php
-                $postid=intval($_GET['pid']);
-                $query=mysqli_query($con,"select tblposts.*, 
-                        tblcategory.CategoryName as category,
-                        tblsubcategory.Subcategory as subcategory
-                        from tblposts 
-                        left join tblcategory on tblcategory.id=tblposts.CategoryId 
-                        left join tblsubcategory on tblsubcategory.SubCategoryId=tblposts.SubCategoryId 
-                        where tblposts.id='$postid'");
-                while($row=mysqli_fetch_array($query)){
+                $postid = intval($_GET['pid']);
+                $stmt   = $con->prepare("SELECT tblposts.*,
+                        tblcategory.CategoryName AS category,
+                        tblsubcategory.Subcategory AS subcategory
+                        FROM tblposts
+                        LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId
+                        LEFT JOIN tblsubcategory ON tblsubcategory.SubCategoryId = tblposts.SubCategoryId
+                        WHERE tblposts.id = ?");
+                $stmt->bind_param("i", $postid);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                while($row = $result->fetch_assoc()){
                 ?>
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
@@ -161,11 +174,15 @@ else{
                                         <select class="form-control" name="category" id="category" onChange="getSubCat(this.value);" required>
                                             <option value="<?php echo htmlentities($row['CategoryId']);?>"><?php echo htmlentities($row['category']);?></option>
                                             <?php
-                                            $ret=mysqli_query($con,"select id,CategoryName from tblcategory where Is_Active=1");
-                                            while($result=mysqli_fetch_array($ret)){    
+                                            $retCat = $con->prepare("SELECT id, CategoryName FROM tblcategory WHERE Is_Active=1");
+                                            $retCat->execute();
+                                            $catResult = $retCat->get_result();
+                                            while($catRow = $catResult->fetch_assoc()){
+                                                // Skip the already-selected category to avoid duplicates
+                                                if($catRow['id'] == $row['CategoryId']) continue;
                                             ?>
-                                            <option value="<?php echo htmlentities($result['id']);?>"><?php echo htmlentities($result['CategoryName']);?></option>
-                                            <?php } ?>
+                                            <option value="<?php echo htmlentities($catRow['id']);?>"><?php echo htmlentities($catRow['CategoryName']);?></option>
+                                            <?php } $retCat->close(); ?>
                                         </select> 
                                     </div>
 
@@ -178,8 +195,8 @@ else{
 
                                     <div class="form-group m-b-20">
                                         <label>Current Image</label><br>
-                                        <?php if($row['PostImage']!=''){ ?>
-                                            <img src="uploads/<?php echo htmlentities($row['PostImage']);?>" width="200" />
+                                        <?php if(!empty($row['PostImage'])){ ?>
+                                            <img src="postimages/<?php echo htmlentities($row['PostImage']);?>" width="200" />
                                         <?php } ?>
                                         <br><br>
                                         <input type="file" name="postimage" class="form-control">
@@ -193,14 +210,14 @@ else{
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="hidden" name="postedby" value="<?php echo htmlentities($row['PostedBy']); ?>">
-                                    <button type="submit" name="update" class="btn btn-success waves-effect waves-light">Update </button>
+
+                                    <button type="submit" name="update" class="btn btn-success waves-effect waves-light">Update</button>
                                 </form>
                             </div>
                         </div> 
                     </div> 
                 </div>
-                <?php } ?>
+                <?php } $stmt->close(); ?>
 
             </div> <!-- container -->
         </div> <!-- content -->

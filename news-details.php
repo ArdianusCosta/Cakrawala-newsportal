@@ -53,6 +53,24 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/modern-business.css" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
+  <style>
+    /* ===== Article content images ===== */
+    .card-text img {
+      display: block;
+      max-width: 100%;       /* never overflow the column */
+      height: auto;          /* preserve aspect ratio */
+      max-height: 500px;     /* cap tall images on desktop */
+      object-fit: contain;
+      margin: 12px 0;        /* left-aligned with breathing room */
+      border-radius: 4px;
+    }
+
+    @media (max-width: 767.98px) {
+      .card-text img {
+        max-height: 260px;   /* tighter cap on mobile */
+      }
+    }
+  </style>
 </head>
 
 <body>
