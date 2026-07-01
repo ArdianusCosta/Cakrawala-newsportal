@@ -5,9 +5,37 @@ include('includes/config.php');
 
 // ambil catid dari URL untuk cek menu aktif
 $currentCat = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
+
+// Prepare meta variables with sensible fallbacks. Individual pages can set
+// `$metaDescription`, `$pageUrl`, `$imageUrl`, and `$pageTitle` before
+// including this file to provide page-specific metadata.
+$siteDefaultDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercaya. Sajikan info terkini Seputar Indramayu, Hukum & Kriminal, Olahraga, dan Ragam peristiwa';
+$meta_description = isset($metaDescription) ? $metaDescription : (isset($pageDescription) ? $pageDescription : $siteDefaultDescription);
+$meta_description = htmlspecialchars($meta_description);
+$meta_url = isset($pageUrl) ? $pageUrl : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on' ? "https://" : "http://") . 
+  $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+$meta_image = isset($imageUrl) ? $imageUrl : 'https://cakrawalaonline.com/admin/uploads/default.jpg';
+$meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
 ?>
 
 <head>
+  <meta name="description" content="<?php echo $meta_description; ?>">
+  <meta property="og:description" content="<?php echo $meta_description; ?>">
+  <meta name="twitter:description" content="<?php echo $meta_description; ?>">
+  <meta property="og:url" content="<?php echo htmlspecialchars($meta_url); ?>">
+  <meta property="og:image" content="<?php echo htmlspecialchars($meta_image); ?>">
+  <meta property="og:site_name" content="Cakrawala">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Cakrawala",
+    "url": "<?php echo htmlspecialchars((isset($meta_url) ? $meta_url : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on' ? "https://" : "http://") . $_SERVER['HTTP_HOST']))); ?>",
+    "description": "<?php echo $meta_description; ?>"
+  }
+  </script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
 </head>

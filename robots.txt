@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://cakrawalaonline.com/sitemap.xml
