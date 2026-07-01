@@ -46,6 +46,7 @@ if(isset($_GET['action']) && $_GET['action']=='del'){
         <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
+        <link rel="stylesheet" href="../plugins/datatables/jquery.dataTables.min.css">
 
         <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -102,7 +103,7 @@ if(isset($_GET['action']) && $_GET['action']=='del'){
                             
                                 <div class="card-box">
                                     <div class="table-responsive">
-                                        <table class="table table-colored table-centered table-inverse m-0">
+                                        <table id="managePostsTable" class="table table-colored table-centered table-inverse m-0">
                                         <thead>
                                         <tr>
                                             <th>Judul</th>
@@ -262,6 +263,29 @@ if(isset($_GET['action']) && $_GET['action']=='del'){
         <!-- App js -->
         <script src="assets/js/jquery.core.js"></script>
         <script src="assets/js/jquery.app.js"></script>
+        <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="../plugins/datatables/dataTables.bootstrap.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $('#managePostsTable').DataTable({
+                    responsive: true,
+                    order: [],
+                    columnDefs: [{ targets: [5], orderable: false }],
+                    language: {
+                        search: "Cari:",
+                        lengthMenu: "Tampilkan _MENU_ data",
+                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                        infoEmpty: "Tidak ada data",
+                        emptyTable: "Tidak ada data yang tersedia",
+                        paginate: {
+                            previous: "Sebelumnya",
+                            next: "Berikutnya"
+                        }
+                    }
+                });
+            });
+        </script>
 
     </body>
 </html>
