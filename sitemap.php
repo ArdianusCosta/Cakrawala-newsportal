@@ -7,7 +7,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 echo "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
 
 // static pages
-$base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
+// Base URL is hardcoded (non-www) so sitemap stays consistent
+// regardless of which host (www or non-www) the script is accessed from.
+$base = 'https://cakrawalaonline.com';
 $static = [
     '/',
     '/index.php',

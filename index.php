@@ -1,6 +1,10 @@
 <?php 
 session_start();
 include('includes/config.php');
+
+// Page-specific SEO variables, read by includes/seo-meta.php below.
+$pageTitle = 'Cakrawala Online - Berita Terkini Indramayu, Nusantara & Nasional';
+$pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercaya. Sajikan info terkini Seputar Indramayu, Hukum & Kriminal, Olahraga, dan Ragam peristiwa';
 ?>
 
 <!DOCTYPE html>
@@ -8,7 +12,7 @@ include('includes/config.php');
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Cakrawala | Home Page</title>
+<?php include('includes/seo-meta.php'); ?>
 
 <link rel="icon" href="images/Logo.ico" type="image/x-icon">
 <!-- CSS -->

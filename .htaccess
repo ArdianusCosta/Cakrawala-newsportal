@@ -4,3 +4,10 @@
 </FilesMatch>
 # END MultiPHP Version
 
+# Force non-www as the canonical domain (redirect www -> non-www)
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.cakrawalaonline\.com$ [NC]
+RewriteRule ^(.*)$ https://cakrawalaonline.com/$1 [L,R=301]
+
+# Rewrite sitemap.xml requests to the dynamic PHP sitemap (keeps sitemap up-to-date)
+RewriteRule ^sitemap\.xml$ /sitemap.php [L]
