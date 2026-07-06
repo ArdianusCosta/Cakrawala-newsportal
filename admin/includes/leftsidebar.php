@@ -1,7 +1,5 @@
-<head>
-    <style>
-    /* * CSS untuk menu aktif
-     */
+<style>
+    /* CSS untuk menu aktif */
 
     /* Gaya untuk menu utama yang aktif */
     #sidebar-menu > ul > li > a.active {
@@ -30,7 +28,6 @@
         background-color: #FFEBEE; /* Pertahankan background saat di-hover */
     }
     </style>
-</head>
 
 <?php
 // --- Bagian Atas Tetap Sama ---

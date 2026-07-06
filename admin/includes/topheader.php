@@ -7,12 +7,16 @@ if (!isset($con)) {
 }
 
 // Ambil data user login
-$adminId = $_SESSION['id'] ?? 0;
+$adminId = (int)($_SESSION['id'] ?? 0);
 $adminUser = null;
 $avatarPath = "avatar/default.png";
 
 if ($adminId) {
-    $res = mysqli_query($con, "SELECT avatar, AdminUserName FROM tbladmin WHERE id='$adminId'");
+    $stmt = mysqli_prepare($con, "SELECT avatar, AdminUserName FROM tbladmin WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $adminId);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
     if ($res && mysqli_num_rows($res) > 0) {
         $adminUser = mysqli_fetch_assoc($res);
 
@@ -20,6 +24,7 @@ if ($adminId) {
             $avatarPath = "avatar/" . $adminUser['avatar'];
         }
     }
+    mysqli_stmt_close($stmt);
 }
 ?>
 
@@ -52,7 +57,7 @@ if ($adminId) {
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown user-box">
                     <a href="#" class="dropdown-toggle waves-effect user-link" data-toggle="dropdown" aria-expanded="true">
-                        <img src="<?php echo $avatarPath; ?>" alt="user-img" class="img-circle user-img" width="40" height="40">
+                        <img src="<?php echo htmlspecialchars($avatarPath); ?>" alt="user-img" class="img-circle user-img" width="40" height="40">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right arrow-dropdown-menu arrow-menu-right user-list notify-list">
                         <li>

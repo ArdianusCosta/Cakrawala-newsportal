@@ -1,10 +1,10 @@
 <?php 
 session_start();
 include('includes/config.php');
-error_reporting(0);
-if(strlen($_SESSION['login'])==0)
+if(empty($_SESSION['login']))
   { 
 header('location:index.php');
+exit;
 }
 else{
 if(isset($_POST['update']))
@@ -13,15 +13,17 @@ $pagetype='contactus';
 $pagetitle=$_POST['pagetitle'];
 $pagedetails=$_POST['pagedescription'];
 
-$query=mysqli_query($con,"update tblpages set PageTitle='$pagetitle',Description='$pagedetails' where PageName='$pagetype' ");
+$stmt=mysqli_prepare($con,"update tblpages set PageTitle=?,Description=? where PageName=?");
+mysqli_stmt_bind_param($stmt,"sss",$pagetitle,$pagedetails,$pagetype);
+$query=mysqli_stmt_execute($stmt);
 if($query)
 {
-$msg="About us  page successfully updated ";
+$msg="Contact us page successfully updated ";
 }
 else{
 $error="Something went wrong . Please try again.";    
 } 
-
+mysqli_stmt_close($stmt);
 }
 ?>
 <!DOCTYPE html>
