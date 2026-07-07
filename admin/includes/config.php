@@ -16,8 +16,15 @@ $database = getenv('DB_DATABASE');
 $con = mysqli_connect($host, $username, $password, $database);
 
 if (!$con) {
-    // Don't leak DB internals to visitors in production.
     error_log("DB connection failed: " . mysqli_connect_error());
+
+    // Set APP_DEBUG=true in .env temporarily while troubleshooting to see
+    // the real error in-browser. Set it back to false (or remove it) once
+    // things are working again — never leave debug mode on in production.
+    if (getenv('APP_DEBUG') === 'true') {
+        die("DB connection failed: " . mysqli_connect_error());
+    }
+
     die("A server error occurred. Please try again later.");
 }
 

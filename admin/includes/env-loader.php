@@ -17,21 +17,29 @@ function loadEnv(string $path): void
 
     $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-    foreach ($lines as $line) {
+    foreach ($lines as $i => $line) {
+        // Strip a UTF-8 BOM if present on the very first line.
+        if ($i === 0) {
+            $line = preg_replace('/^\xEF\xBB\xBF/', '', $line);
+        }
+
+        // Strip any stray \r left over from Windows-style CRLF line endings
+        // (FILE_IGNORE_NEW_LINES only strips \n, not \r).
+        $line = rtrim($line, "\r\n \t");
         $line = trim($line);
 
         // Skip comments
-        if ($line === '' || str_starts_with($line, '#')) {
+        if ($line === '' || substr($line, 0, 1) === '#') {
             continue;
         }
 
-        if (!str_contains($line, '=')) {
+        if (strpos($line, '=') === false) {
             continue;
         }
 
-        [$name, $value] = explode('=', $line, 2);
-        $name  = trim($name);
-        $value = trim($value);
+        $parts = explode('=', $line, 2);
+        $name  = trim($parts[0]);
+        $value = trim($parts[1]);
 
         // Strip surrounding quotes if present
         if (strlen($value) >= 2) {
