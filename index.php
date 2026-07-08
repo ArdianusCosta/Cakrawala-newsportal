@@ -112,6 +112,20 @@ $pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercay
     margin-bottom: 8px;
     flex: 1;
 }
+
+/* ===== Semua Artikel pagination ===== */
+#semua-artikel-wrap {
+    transition: opacity .15s ease;
+}
+.semua-pagination-wrap {
+    margin-top: 1.5rem;
+}
+.semua-page-info {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
 </style>
 </head>
 <body>
@@ -384,71 +398,61 @@ $pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercay
     <div class="row mt-5">
     <div class="col-12">
       <h4 class="mb-3">Semua Artikel</h4>
-      <!-- Pagination -->
-      <?php 
-      $pageno = isset($_GET['pageno']) ? $_GET['pageno'] : 1;
-      $no_of_records_per_page = 8;
-      $offset = ($pageno-1) * $no_of_records_per_page;
-      $total_pages_sql = "SELECT COUNT(*) FROM tblposts WHERE Is_Active = 1";
-      $result = mysqli_query($con,$total_pages_sql);
-      $total_rows = mysqli_fetch_array($result)[0];
-      $total_pages = ceil($total_rows / $no_of_records_per_page);
 
-      $query = mysqli_query($con, "SELECT 
-            tblposts.id as pid,
-            tblposts.PostTitle as posttitle,
-            tblcategory.CategoryName as category,
-            tblcategory.id as cid,
-            tblsubcategory.Subcategory as subcategory,
-            tblposts.PostDetails as postdetails,
-            tblposts.PostingDate as postingdate,
-            tblposts.PostUrl as url,
-        tblposts.PostImage as PostImage,
-            tblposts.Views as views,
-            a.AdminUserName as author
-          FROM tblposts 
-          LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId 
-          LEFT JOIN tblsubcategory ON tblsubcategory.SubCategoryId = tblposts.SubCategoryId 
-          LEFT JOIN tbladmin a ON a.id = tblposts.PostedBy
-          WHERE tblposts.Is_Active = 1
-          ORDER BY tblposts.PostingDate DESC 
-          LIMIT $offset, $no_of_records_per_page
-          ");
+      <div id="semua-artikel-wrap">
+      <?php
+      $pageno = isset($_GET['pageno']) ? intval($_GET['pageno']) : 1;
+      if ($pageno < 1) { $pageno = 1; }
+      include('includes/all-list.php');
       ?>
+      </div><!-- /semua-artikel-wrap -->
 
-      <div class="semua-grid">
-      <?php while ($row=mysqli_fetch_array($query)) { ?>
-        <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" class="semua-card">
-          <div class="thumb-landscape">
-            <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
-                 alt="<?php echo htmlentities($row['posttitle']); ?>">
-          </div>
-          <div class="semua-card-body">
-            <span class="badge-category"><?php echo htmlentities($row['category']); ?></span>
-            <h3><?php echo htmlentities($row['posttitle']); ?></h3>
-            <p><?php echo substr(strip_tags($row['postdetails']),0,80); ?>...</p>
-            <small class="text-secondary" style="font-size: 0.75rem;">
-              <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
-              <?php echo htmlentities($row['author']); ?> | 
-              <?php echo htmlentities($row['views']); ?> views
-            </small>
-          </div>
-        </a>
-      <?php } ?>
-      </div><!-- /semua-grid -->
-
-      <ul class="pagination justify-content-center mt-4">
-        <li class="page-item"><a href="?pageno=1" class="page-link">«</a></li>
-        <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
-          <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>" class="page-link">‹</a>
-        </li>
-        <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-          <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?pageno=".($pageno + 1); } ?>" class="page-link">›</a>
-        </li>
-        <li class="page-item"><a href="?pageno=<?php echo $total_pages; ?>" class="page-link">»</a></li>
-      </ul>
       </div><!-- /col-12 -->
     </div><!-- /row semua artikel -->
+
+    <script>
+    (function() {
+      var wrap = document.getElementById('semua-artikel-wrap');
+
+      function loadPage(pageno, scroll) {
+        if (!pageno) return;
+        wrap.style.opacity = '0.5';
+
+        fetch('ajax-all-article.php?pageno=' + encodeURIComponent(pageno))
+          .then(function(res) { return res.text(); })
+          .then(function(html) {
+            wrap.innerHTML = html;
+            wrap.style.opacity = '1';
+
+            var url = new URL(window.location);
+            url.searchParams.set('pageno', pageno);
+            history.pushState({ pageno: pageno }, '', url);
+
+            if (scroll) {
+              wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          })
+          .catch(function() {
+            wrap.style.opacity = '1';
+          });
+      }
+
+      // Event delegation: works for the initial links AND every link injected after an AJAX swap.
+      wrap.addEventListener('click', function(e) {
+        var link = e.target.closest('.ajax-page-link');
+        if (!link) return;
+        if (link.closest('.page-item.disabled')) { e.preventDefault(); return; }
+
+        e.preventDefault();
+        loadPage(link.dataset.page, true);
+      });
+
+      window.addEventListener('popstate', function(e) {
+        var pageno = (e.state && e.state.pageno) ? e.state.pageno : 1;
+        loadPage(pageno, false);
+      });
+    })();
+    </script>
 
 </div><!-- /.container -->
 
