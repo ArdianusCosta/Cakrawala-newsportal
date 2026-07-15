@@ -1,5 +1,6 @@
 <?php
 include('includes/config.php');
+header("Cache-Control: no-store, no-cache, must-revalidate");
 if(!empty($_POST["catid"])) 
 {
  $id=intval($_POST['catid']);

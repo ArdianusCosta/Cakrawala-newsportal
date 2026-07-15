@@ -60,8 +60,8 @@ else{
 
         // Kueri sudah aman dari tanda kutip di dalam data
         $query = mysqli_query($con,"INSERT INTO tblposts
-            (PostTitle,CategoryId,SubCategoryId,PostDetails,PostUrl,Is_Active,PostImage,PostImageDesc,PostedBy)  
-            VALUES('$posttitle','$catid','$subcatid','$postdetails','$url','$status','$imagePath','$postImageDesc','$authorId')");
+            (PostTitle,CategoryId,SubCategoryId,PostDetails,PostUrl,Is_Active,PostImage,PostImageDesc,PostedBy,PostingDate,UpdationDate)  
+            VALUES('$posttitle','$catid','$subcatid','$postdetails','$url','$status','$imagePath','$postImageDesc','$authorId', NOW(), NOW())");
         
 
         if($query){

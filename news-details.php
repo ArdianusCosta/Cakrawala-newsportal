@@ -53,6 +53,8 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/modern-business.css" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
+  <!-- Font Awesome (for share icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     /* ===== Article content images ===== */
     .card-text img {
@@ -69,6 +71,67 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
       .card-text img {
         max-height: 260px;   /* tighter cap on mobile */
       }
+    }
+
+    /* ===== Share buttons ===== */
+    .share-box {
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      row-gap: 8px;
+    }
+    .share-box .share-label {
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    .share-icons {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: #fff !important;
+      font-size: 16px;
+      margin-right: 8px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    .share-btn:hover { transform: translateY(-2px); opacity: .9; color: #fff; }
+    .share-whatsapp { background: #25D366; }
+    .share-facebook { background: #1877F2; }
+    .share-twitter  { background: #000000; }
+    .share-telegram { background: #0088cc; }
+    .share-email    { background: #6c757d; }
+    .share-copy     { background: #dc3545; }
+    .share-native   { background: #343a40; }
+    .copy-toast {
+      display: none;
+      margin-left: 6px;
+      padding: 4px 10px;
+      background: #28a745;
+      color: #fff;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    .copy-toast.show {
+      display: inline-block;
+      animation: shareToastFade 2s forwards;
+    }
+    @keyframes shareToastFade {
+      0%   { opacity: 1; }
+      70%  { opacity: 1; }
+      100% { opacity: 0; }
     }
   </style>
 </head>
@@ -141,6 +204,58 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
                 <?php echo $row['postdetails']; ?>
               </div>
 
+              <!-- Share Buttons -->
+              <div class="share-box mt-4 pt-3 border-top">
+                <span class="share-label">Bagikan:</span>
+                <div class="share-icons">
+                  <a class="share-btn share-whatsapp"
+                     title="Bagikan ke WhatsApp"
+                     target="_blank" rel="noopener"
+                     href="https://api.whatsapp.com/send?text=<?php echo urlencode($row['posttitle'] . ' - ' . $metaDescription . ' ' . $pageUrl); ?>">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a class="share-btn share-facebook"
+                     title="Bagikan ke Facebook"
+                     target="_blank" rel="noopener"
+                     href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($pageUrl); ?>">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a class="share-btn share-twitter"
+                     title="Bagikan ke X / Twitter"
+                     target="_blank" rel="noopener"
+                     href="https://twitter.com/intent/tweet?text=<?php echo urlencode($row['posttitle']); ?>&url=<?php echo urlencode($pageUrl); ?>">
+                    <i class="fab fa-x-twitter"></i>
+                  </a>
+                  <a class="share-btn share-telegram"
+                     title="Bagikan ke Telegram"
+                     target="_blank" rel="noopener"
+                     href="https://t.me/share/url?url=<?php echo urlencode($pageUrl); ?>&text=<?php echo urlencode($row['posttitle']); ?>">
+                    <i class="fab fa-telegram-plane"></i>
+                  </a>
+                  <a class="share-btn share-email"
+                     title="Bagikan lewat Email"
+                     href="mailto:?subject=<?php echo urlencode($row['posttitle']); ?>&body=<?php echo urlencode($metaDescription . "\n\n" . $pageUrl); ?>">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                  <button type="button" class="share-btn share-copy"
+                          title="Salin tautan"
+                          data-text="<?php echo htmlspecialchars($metaDescription); ?>"
+                          data-url="<?php echo htmlspecialchars($pageUrl); ?>"
+                          onclick="copyShareLink(this)">
+                    <i class="fas fa-link"></i>
+                  </button>
+                  <button type="button" class="share-btn share-native d-inline-flex d-md-none"
+                          title="Bagikan"
+                          data-title="<?php echo htmlspecialchars($row['posttitle']); ?>"
+                          data-text="<?php echo htmlspecialchars($metaDescription); ?>"
+                          data-url="<?php echo htmlspecialchars($pageUrl); ?>"
+                          onclick="nativeShare(this)">
+                    <i class="fas fa-share-alt"></i>
+                  </button>
+                </div>
+                <span id="copyToast" class="copy-toast">Disalin!</span>
+              </div>
+
             </div>
             <div class="card-footer text-muted">
               Posted on <?php echo htmlentities($row['postingdate']);?> 
@@ -155,6 +270,8 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
 
       <!-- Sidebar Widgets Column -->
       <?php include('includes/sidebar.php');?>
+
+      </div><!-- /row -->
 
        <!-- TERBARU -->
       <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
@@ -264,5 +381,58 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
   <!-- Bootstrap core JavaScript -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Share buttons logic -->
+  <script>
+    function copyShareLink(btn) {
+      var desc = btn.getAttribute('data-text') || '';
+      var url  = btn.getAttribute('data-url') || '';
+
+      // Build "Description\nURL"
+      var shareText = desc ? (desc + '\n' + url) : url;
+
+      function showToast() {
+        var toast = document.getElementById('copyToast');
+        toast.classList.remove('show');
+        void toast.offsetWidth; // restart animation
+        toast.classList.add('show');
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareText).then(showToast).catch(function () {
+          fallbackCopy(shareText, showToast);
+        });
+      } else {
+        fallbackCopy(shareText, showToast);
+      }
+    }
+
+    function fallbackCopy(url, cb) {
+      var temp = document.createElement('textarea');
+      temp.value = url;
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      document.body.appendChild(temp);
+      temp.focus();
+      temp.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(temp);
+      if (cb) cb();
+    }
+
+    function nativeShare(btn) {
+      if (navigator.share) {
+        navigator.share({
+          title: btn.getAttribute('data-title'),
+          text: btn.getAttribute('data-text'),
+          url: btn.getAttribute('data-url')
+        }).catch(function (err) {
+          console.log('Share dibatalkan:', err);
+        });
+      } else {
+        copyShareLink(btn);
+      }
+    }
+  </script>
 </body>
 </html>

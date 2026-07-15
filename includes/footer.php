@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
         html, body {
             min-height: 100%;
         }
@@ -117,8 +112,7 @@
             color: #ffffff;
         }
     </style>
-</head>
-<body>
+
     <footer class="footer pt-5">
         <div class="container">
             <div class="row g-4">
@@ -189,12 +183,9 @@
                         <p class="mb-0">2026 &copy; PT Cakrawala Pers Media</p>
                     </div>
                     <div class="col-md-6 text-center text-md-end">
-                        <p class="mb-0">  </a></p>
+                        <p class="mb-0"></p>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
