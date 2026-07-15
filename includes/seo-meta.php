@@ -44,4 +44,4 @@ $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
   </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
+  <link rel="icon" href="/images/Logo.ico" type="image/x-icon">

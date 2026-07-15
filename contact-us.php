@@ -45,7 +45,7 @@ mysqli_stmt_close($stmt);
     <head>
         <meta charset="utf-8">
  
-        <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
+        <link rel="icon" href="/images/Logo.ico" type="image/x-icon">
         <!-- App title -->
         <title>Cakrawala | Contact us Page</title>
 
