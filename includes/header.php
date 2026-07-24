@@ -18,28 +18,6 @@ $meta_image = isset($imageUrl) ? $imageUrl : 'https://cakrawalaonline.com/admin/
 $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
 ?>
 
-<head>
-  <meta name="description" content="<?php echo $meta_description; ?>">
-  <meta property="og:description" content="<?php echo $meta_description; ?>">
-  <meta name="twitter:description" content="<?php echo $meta_description; ?>">
-  <meta property="og:url" content="<?php echo htmlspecialchars($meta_url); ?>">
-  <meta property="og:image" content="<?php echo htmlspecialchars($meta_image); ?>">
-  <meta property="og:site_name" content="Cakrawala">
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Cakrawala",
-    "url": "<?php echo htmlspecialchars((isset($meta_url) ? $meta_url : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on' ? "https://" : "http://") . $_SERVER['HTTP_HOST']))); ?>",
-    "description": "<?php echo $meta_description; ?>"
-  }
-  </script>
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="icon" href="/images/Logo.ico" type="image/x-icon">
-</head>
-
 <!-- Navbar Atas (Logo + Search) -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow border-bottom">
   <div class="container d-flex justify-content-between align-items-center">
