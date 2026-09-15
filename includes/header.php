@@ -1,5 +1,7 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 error_reporting(0);
 include('includes/config.php');
 
@@ -18,157 +20,184 @@ $meta_image = isset($imageUrl) ? $imageUrl : 'https://cakrawalaonline.com/admin/
 $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
 ?>
 
-<!-- Navbar Atas (Logo + Search) -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow border-bottom">
-  <div class="container d-flex justify-content-between align-items-center">
-    <!-- Logo -->
-    <a class="navbar-brand" href="index.php">
-      <img src="images/Logo-Black.png" height="50" alt="Logo">
-    </a>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+</head>
 
-  <!-- Search Widget -->
-<div class="card-body d-flex justify-content-center">
-  <form name="search" action="search.php" method="post" class="w-50">
-    <div class="input-group">
-      <input type="text" name="searchtitle" class="form-control rounded-3 pr-5" 
-             placeholder="Cari berita..." required style="max-height: 40px; font-size: 16px;">
-      
-      <!-- Tombol ikon kaca pembesar -->
-      <button class="btn position-absolute" type="submit" 
-              style="right: 10px; z-index: 5; background: transparent; border: none;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="gray" class="bi bi-search" viewBox="0 0 16 16">
-          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 
-          1.415-1.414l-3.85-3.85zm-5.242.656a5 
-          5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
-        </svg>
-      </button>
+<!-- Animated Page Preloader (Hai Motion Style with Cakrawala Logo) -->
+<div id="cakrawala-preloader">
+  <div class="preloader-bg-glow"></div>
+  <div class="preloader-content">
+    <div class="preloader-logo-wrapper">
+      <img src="images/logo_footer.png" alt="Cakrawala Logo" class="preloader-logo">
+      <div class="preloader-spinner-ring"></div>
     </div>
-  </form>
+    <div class="preloader-bar">
+      <div class="preloader-progress"></div>
+    </div>
+    <span class="preloader-tagline">RUANG INFORMASI TERPERCAYA</span>
+  </div>
 </div>
 
- <!-- Button Tulis Berita -->
-  <a href="admin/" target="blank" class="btn btn-danger rounded-3 px-3 mr-2" style="font-size: 14px; max-height: 40px; max-width: 200px; min-width: 150px; display: flex; align-items: center; text-align: center; justify-content: center;">
-    Tulis Berita
-  </a>
+<script>
+  // Hide preloader smoothly after page loads
+  window.addEventListener('load', function() {
+    var preloader = document.getElementById('cakrawala-preloader');
+    if (preloader) {
+      setTimeout(function() {
+        preloader.classList.add('fade-out');
+      }, 350);
+    }
+  });
 
-  <!-- Sosial Media -->
-  <a href="https://facebook.com" target="_blank" class="btn btn-light border rounded-circle p-2 mr-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
-    <i class="bi bi-facebook text-primary"></i>
-  </a>
-  <a href="https://instagram.com" target="_blank" class="btn btn-light border rounded-circle p-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
-    <i class="bi bi-instagram text-danger"></i>
-  </a>
+  // Safety fallback (max 3 seconds)
+  setTimeout(function() {
+    var preloader = document.getElementById('cakrawala-preloader');
+    if (preloader && !preloader.classList.contains('fade-out')) {
+      preloader.classList.add('fade-out');
+    }
+  }, 3000);
+</script>
 
-    <!-- Toggler -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu" 
-            aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  </div>
-</nav>
+<!-- Fixed Top Main Header Wrapper -->
+<div class="fixed-top bg-white border-bottom shadow-sm header-main-wrapper" style="z-index: 1030;">
 
-<!-- Navbar Bawah (Menu Dinamis dari Category) -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm border-bottom" style="top:75px; z-index:1020;">
-  <div class="container">
-    <div class="collapse navbar-collapse justify-content-center" id="navbarMenu">
-      <ul class="navbar-nav">
+  <!-- Main Navbar (Logo + Search + Hamburger Toggle) -->
+  <nav class="navbar navbar-light bg-white header-nav-main py-1">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between header-container">
+      
+      <!-- Mobile Top Logo (Centered) -->
+      <div class="mobile-logo-wrapper d-block d-md-none text-center w-100 py-2">
+        <a class="navbar-brand m-0 p-0 d-inline-block" href="index.php">
+          <img src="images/Logo.png" class="mobile-logo-img" alt="Logo Cakrawala">
+        </a>
+      </div>
 
-        <!-- Menu Dinamis dari Category -->
+      <!-- Desktop Logo -->
+      <a class="navbar-brand d-none d-md-flex align-items-center py-1 mr-md-4 flex-shrink-0" href="index.php" style="text-decoration: none;">
+        <img src="images/Logo.png" class="desktop-logo-img" alt="Logo Cakrawala">
+      </a>
+
+      <!-- Mobile Row (Search + Tulis Berita) / Desktop Flex Items -->
+      <div class="header-controls-wrapper d-flex align-items-center flex-grow-1 justify-content-between">
+        
+        <!-- Search Form -->
+        <div class="header-search-form flex-grow-1">
+          <form name="search" action="search.php" method="post" class="m-0">
+            <div class="position-relative search-input-group">
+              <span class="search-icon-inside">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#888" class="bi bi-search" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+                </svg>
+              </span>
+              <input type="text" name="searchtitle" class="form-control search-input-field" 
+                     placeholder="Cari berita..." required>
+            </div>
+          </form>
+        </div>
+
+        <!-- Button Tulis Berita -->
+        <a href="admin/" target="_blank" class="btn btn-danger btn-tulis-berita ml-2">
+          Tulis Berita
+        </a>
+
+        <!-- Button Hamburger Header (Kategori Toggle) -->
+        <button class="btn btn-light border rounded-circle p-2 ml-2 d-flex align-items-center justify-content-center category-toggle-btn" 
+                type="button" data-toggle="collapse" data-target="#categoryCollapseMenu" 
+                aria-expanded="false" aria-controls="categoryCollapseMenu" 
+                style="width:40px; height:40px;" title="Kategori Berita">
+          <i class="bi bi-list font-weight-bold" style="font-size: 1.3rem;"></i>
+        </button>
+
+        <!-- Sosial Media (Desktop Only) -->
+        <div class="social-header-icons d-none d-md-flex align-items-center ml-2">
+          <a href="https://facebook.com" target="_blank" class="btn btn-light border rounded-circle p-2 mr-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+            <i class="bi bi-facebook text-primary"></i>
+          </a>
+          <a href="https://instagram.com" target="_blank" class="btn btn-light border rounded-circle p-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+            <i class="bi bi-instagram text-danger"></i>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Collapsible Horizontal Category Navbar (Memanjang / Landscape Full-Width di Bawah Navbar & di Atas Berita Viral) -->
+  <div class="collapse w-100 bg-white border-top shadow-sm py-2 px-2" id="categoryCollapseMenu">
+    <div class="container-fluid px-md-4">
+      <ul class="nav category-horizontal-nav flex-row flex-wrap justify-content-center m-0 p-0">
         <?php 
-        $query=mysqli_query($con,"SELECT id,CategoryName FROM tblcategory WHERE Is_Active=1");
-        while($row=mysqli_fetch_array($query)) {
-          $isActive = ($currentCat == $row['id']) ? 'active' : '';
+        $allCatQuery = mysqli_query($con, "SELECT id, CategoryName FROM tblcategory WHERE Is_Active=1 ORDER BY id ASC");
+        while($catRow = mysqli_fetch_array($allCatQuery)) {
+          $isCurrent = ($currentCat == $catRow['id']) ? 'active' : '';
         ?>
           <li class="nav-item">
-            <a class="nav-link px-3 <?php echo $isActive; ?>" 
-               href="category.php?catid=<?php echo htmlentities($row['id']); ?>">
-              <?php echo htmlentities($row['CategoryName']); ?>
+            <a href="category.php?catid=<?php echo htmlentities($catRow['id']); ?>" 
+               class="nav-link category-horizontal-link px-3 py-2 <?php echo $isCurrent; ?>">
+              <?php echo htmlentities($catRow['CategoryName']); ?>
             </a>
           </li>
         <?php } ?>
-
       </ul>
     </div>
   </div>
-</nav>
 
-<!-- Tambahkan padding di body agar konten tidak ketutup navbar -->
+</div>
+
 <style>
-/* ====== Atur jarak body supaya tidak ketutup ====== */
+/* ====== Atur jarak body supaya tidak ketutup header fixed ====== */
 body {
-  padding-top: 120px; /* tinggi gabungan navbar */
+  padding-top: 85px;
 }
 
-/* ====== Navbar atas selalu lebih tinggi ====== */
-nav.navbar.fixed-top:first-of-type {
-  z-index: 1030;
-}
-
-/* ====== Navbar bawah nempel di bawah navbar atas ====== */
-nav.navbar.fixed-top:nth-of-type(2) {
-  top: 75px;
-  z-index: 1025;
-}
-
-/* ====== Responsive fix untuk mobile ====== */
-@media (max-width: 991.98px) {
-  /* Collapse menu kategori muncul fixed di bawah kedua navbar */
-  .navbar.navbar-light:nth-of-type(2) .collapse {
-    position: fixed;
-    top: 120px;   /* total tinggi navbar atas + bawah */
-    left: 0;
-    right: 0;
-    background: #fff;
-    z-index: 1040;
-    border-top: 1px solid #ddd;
-    padding: 10px 0;
-    max-height: 60vh;       /* batasi tinggi */
-    overflow-y: auto;       /* bisa scroll kalau panjang */
-  }
-
-  /* Menu kategori ditumpuk vertikal */
-  .navbar-nav {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  /* Form search biar full width */
-  .card-body form.w-50 {
-    width: 100% !important;
-  }
-
-  /* Tombol Tulis Berita lebih kecil */
-  .btn-danger {
-    min-width: auto;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  /* Sosial media icon lebih kecil */
-  .btn-light {
-    width: 35px !important;
-    height: 35px !important;
-    padding: 6px !important;
+@media (max-width: 767.98px) {
+  body {
+    padding-top: 155px !important;
   }
 }
-
-/* ====== Tambahan UX untuk kategori panjang di desktop ====== */
-@media (min-width: 992px) {
-  .navbar-nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .navbar-nav .nav-item {
-    flex: 0 0 auto;
-  }
-}
-
-/* ====== Style menu aktif ====== */
-.nav-link.active {
-  color: red !important;
-  border-bottom: 2px solid red;
-}
-
-
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggleBtns = document.querySelectorAll('.category-toggle-btn');
+  var categoryMenu = document.getElementById('categoryCollapseMenu');
+  var closeTimer = null;
+
+  if (!categoryMenu) return;
+
+  function showCategoryMenu() {
+    clearTimeout(closeTimer);
+    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.collapse) {
+      window.jQuery(categoryMenu).collapse('show');
+    } else {
+      categoryMenu.classList.add('show');
+    }
+  }
+
+  function hideCategoryMenu() {
+    closeTimer = setTimeout(function() {
+      if (window.jQuery && window.jQuery.fn && window.jQuery.fn.collapse) {
+        window.jQuery(categoryMenu).collapse('hide');
+      } else {
+        categoryMenu.classList.remove('show');
+      }
+    }, 200);
+  }
+
+  // Hover events on hamburger buttons
+  toggleBtns.forEach(function(btn) {
+    btn.addEventListener('mouseenter', showCategoryMenu);
+    btn.addEventListener('mouseleave', hideCategoryMenu);
+  });
+
+  // Keep menu open while hovering over the category menu itself
+  categoryMenu.addEventListener('mouseenter', function() {
+    clearTimeout(closeTimer);
+  });
+
+  categoryMenu.addEventListener('mouseleave', hideCategoryMenu);
+});
+</script>

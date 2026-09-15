@@ -1,138 +1,34 @@
-<?php 
-session_start();
+<?php
 include('includes/config.php');
 
-/**
- * Strip <style> and <script> tags (and their contents) out of admin-authored
- * rich text before it's saved. This prevents a stray <style> block pasted
- * into the CMS editor from later overriding the whole site's CSS when
- * Summernote decodes the escaped HTML back into a live editable DOM.
- */
-function sanitizePageContent(string $html): string
-{
-    $html = preg_replace('#<style\b[^>]*>.*?</style>#is', '', $html);
-    $html = preg_replace('#<script\b[^>]*>.*?</script>#is', '', $html);
-    return $html;
-}
-
-if(empty($_SESSION['login']))
-  { 
-header('location:index.php');
-exit;
-}
-else{
-if(isset($_POST['update']))
-{
-$pagetype='aboutus';
-$pagetitle=$_POST['pagetitle'];
-$pagedetails=sanitizePageContent($_POST['pagedescription']);
-
-$stmt=mysqli_prepare($con,"update tblpages set PageTitle=?,Description=? where PageName=?");
-mysqli_stmt_bind_param($stmt,"sss",$pagetitle,$pagedetails,$pagetype);
-$query=mysqli_stmt_execute($stmt);
-if($query)
-{
-$msg="About us page successfully updated ";
-}
-else{
-$error="Something went wrong . Please try again.";    
-} 
-mysqli_stmt_close($stmt);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
 
-        
-        <link rel="icon" href="/images/Logo.ico" type="image/x-icon">
-        <!-- App title -->
-        <title>Cakrawala | About us Page</title>
+  <head>
 
-        <!-- Summernote css -->
-        <link href="../plugins/summernote/summernote.css" rel="stylesheet" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        <!-- Select2 -->
-        <link href="../plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <title>News Portal | About us</title>
 
-        <!-- Jquery filer css -->
-        <link href="../plugins/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
-        <link href="../plugins/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- App css -->
-        <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/icons.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
-        <script src="assets/js/modernizr.min.js"></script>
+    <!-- Custom styles for this template -->
+    <link href="css/modern-business.css" rel="stylesheet">
 
-    </head>
+  </head>
 
+  <body>
 
-    <body class="fixed-left">
+    <!-- Navigation -->
+    <?php include('includes/header.php');?>
+    <!-- Page Content -->
+    <div class="container">
 
-        <!-- Begin page -->
-        <div id="wrapper">
-
-            <!-- Top Bar Start -->
-           <?php include('includes/topheader.php');?>
-            <!-- ========== Left Sidebar Start ========== -->
-             <?php include('includes/leftsidebar.php');?>
-            <!-- Left Sidebar End -->
-
-
-
-            <!-- ============================================================== -->
-            <!-- Start right Content here -->
-            <!-- ============================================================== -->
-            <div class="content-page">
-                <!-- Start content -->
-                <div class="content">
-                    <div class="container">
-
-
-                        <div class="row">
-							<div class="col-xs-12">
-								<div class="page-title-box">
-                                    <h4 class="page-title">About Page  </h4>
-                                    <ol class="breadcrumb p-0 m-0">
-                                        <li>
-                                            <a href="#">Pages</a>
-                                        </li>
-                                     
-                                        <li class="active">
-                                         About us
-                                        </li>
-                                    </ol>
-                                    <div class="clearfix"></div>
-                                </div>
-							</div>
-						</div>
-                        <!-- end row -->
-
-<div class="row">
-<div class="col-sm-6">  
-<!---Success Message--->  
-<?php if($msg){ ?>
-<div class="alert alert-success" role="alert">
-<strong>Well done!</strong> <?php echo htmlentities($msg);?>
-</div>
-<?php } ?>
-
-<!---Error Message--->
-<?php if($error){ ?>
-<div class="alert alert-danger" role="alert">
-<strong>Oh snap!</strong> <?php echo htmlentities($error);?></div>
-<?php } ?>
-
-
-</div>
-</div>
 <?php 
 $pagetype='aboutus';
 $query=mysqli_query($con,"select PageTitle,Description from tblpages where PageName='$pagetype'");
@@ -140,118 +36,38 @@ while($row=mysqli_fetch_array($query))
 {
 
 ?>
+      <h1 class="mt-4 mb-3"><?php echo htmlentities($row['PageTitle'])?>
+  
+      </h1>
 
-                        <div class="row">
-                            <div class="col-md-10 col-md-offset-1">
-                                <div class="p-6">
-                                    <div class="">
-                                        <form name="aboutus" method="post">
- <div class="form-group m-b-20">
-<label for="exampleInputEmail1">Page Title</label>
-<input type="text" class="form-control" id="pagetitle" name="pagetitle" value="<?php echo htmlentities($row['PageTitle'])?>"  required>
-</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="index.php">Home</a>
+        </li>
+        <li class="breadcrumb-item active">About</li>
+      </ol>
 
+      <!-- Intro Content -->
+      <div class="row">
 
+        <div class="col-lg-12">
 
-
-
-         
-
-     <div class="row">
-<div class="col-sm-12">
- <div class="card-box">
-<h4 class="m-b-30 m-t-0 header-title"><b>Page Details</b></h4>
-<textarea class="summernote" name="pagedescription"  required><?php echo htmlentities($row['Description'])?></textarea>
-</div>
-</div>
-</div>
-<?php } ?>
-
-<button type="submit" name="update" class="btn btn-success waves-effect waves-light">Update and Post</button>
-
-                                        </form>
-                                    </div>
-                                </div> <!-- end p-20 -->
-                            </div> <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-
-
-                    </div> <!-- container -->
-
-                </div> <!-- content -->
-
-           <?php include('includes/footer.php');?>
-
-            </div>
-
-
-            <!-- ============================================================== -->
-            <!-- End Right content here -->
-            <!-- ============================================================== -->
-
-
+          <p><?php echo $row['Description'];?></p>
         </div>
-        <!-- END wrapper -->
-
-
-
-        <script>
-            var resizefunc = [];
-        </script>
-
-        <!-- jQuery  -->
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/js/bootstrap.min.js"></script>
-        <script src="assets/js/detect.js"></script>
-        <script src="assets/js/fastclick.js"></script>
-        <script src="assets/js/jquery.blockUI.js"></script>
-        <script src="assets/js/waves.js"></script>
-        <script src="assets/js/jquery.slimscroll.js"></script>
-        <script src="assets/js/jquery.scrollTo.min.js"></script>
-        <script src="../plugins/switchery/switchery.min.js"></script>
-
-        <!--Summernote js-->
-        <script src="../plugins/summernote/summernote.min.js"></script>
-        <!-- Select 2 -->
-        <script src="../plugins/select2/js/select2.min.js"></script>
-        <!-- Jquery filer js -->
-        <script src="../plugins/jquery.filer/js/jquery.filer.min.js"></script>
-
-        <!-- page specific js -->
-        <script src="assets/pages/jquery.blog-add.init.js"></script>
-
-        <!-- App js -->
-        <script src="assets/js/jquery.core.js"></script>
-        <script src="assets/js/jquery.app.js"></script>
-
-        <script>
-
-            jQuery(document).ready(function(){
-
-                $('.summernote').summernote({
-                    height: 240,                 // set editor height
-                    minHeight: null,             // set minimum height of editor
-                    maxHeight: null,             // set maximum height of editor
-                    focus: false                 // set focus to editable area after initializing summernote
-                });
-                // Select2
-                $(".select2").select2();
-
-                $(".select2-limiting").select2({
-                    maximumSelectionLength: 2
-                });
-            });
-        </script>
-  <script src="../plugins/switchery/switchery.min.js"></script>
-
-        <!--Summernote js-->
-        <script src="../plugins/summernote/summernote.min.js"></script>
-
-    
-
-
-    </body>
-</html>
+      </div>
+      <!-- /.row -->
 <?php } ?>
+    
+    </div>
+    <!-- /.container -->
+
+    <!-- Footer -->
+ <?php include('includes/footer.php');?>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+
+</html>

@@ -19,496 +19,335 @@ $pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercay
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="css/modern-business.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
-
-<!--
-  NOTE: the rules below are new for this update (tab buttons + Semua Artikel grid).
-  Feel free to move this block into style.css once you're happy with it.
--->
-<style>
-/* ===== Terpopuler / Terbaru toggle buttons ===== */
-.content-tabs {
-    display: flex;
-    gap: 10px;
-    margin: 1.5rem 0 1rem;
-}
-.tab-btn {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    color: #555;
-    font-weight: 600;
-    font-size: 1.05rem;
-    padding: 8px 22px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all .2s ease;
-}
-.tab-btn:hover {
-    border-color: #dc3545;
-    color: #dc3545;
-}
-.tab-btn.active {
-    background: #dc3545;
-    border-color: #dc3545;
-    color: #fff;
-}
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-/* ===== Semua Artikel grid layout ===== */
-.semua-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-@media (max-width: 992px) {
-    .semua-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 576px) {
-    .semua-grid { grid-template-columns: 1fr; }
-}
-.semua-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    text-decoration: none;
-    color: inherit;
-    transition: transform .15s ease, box-shadow .15s ease;
-}
-.semua-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-    color: inherit;
-}
-.semua-card .thumb-landscape {
-    width: 100%;
-    height: 160px;
-    overflow: hidden;
-}
-.semua-card .thumb-landscape img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.semua-card-body {
-    padding: 12px 0 14px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-.semua-card-body h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 4px 0 6px;
-    line-height: 1.3;
-}
-.semua-card-body p {
-    font-size: 0.82rem;
-    color: #6c757d;
-    margin-bottom: 8px;
-    flex: 1;
-}
-
-/* ===== Semua Artikel pagination ===== */
-#semua-artikel-wrap {
-    transition: opacity .15s ease;
-}
-.semua-pagination-wrap {
-    margin-top: 1.5rem;
-}
-.semua-page-info {
-    text-align: center;
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-bottom: 6px;
-}
-</style>
 </head>
 <body>
 <?php include('includes/header.php'); ?>
 
 <div class="container">
+  <div class="row mt-2 mt-md-3">
+    <div class="col-12 px-2 px-md-3">
 
-    <!-- ===== HEADLINE SECTION ===== -->
-    <div class="row" style="margin-top: 4%">
-    <div class="col-12 position-relative headline px-0">
-    <?php 
-        $sevenDaysAgo = date('Y-m-d', strtotime('-7 days'));
+      <!-- ===== HIGHLIGHT NEWS TICKER BAR (Mobile & Desktop) ===== -->
+      <?php
+        // Fetch recent news for ticker / highlight
+        $tickerQuery = mysqli_query($con, "SELECT p.id, p.PostTitle, p.PostImage, c.CategoryName FROM tblposts p LEFT JOIN tblcategory c ON c.id = p.CategoryId WHERE p.Is_Active = 1 ORDER BY p.PostingDate DESC LIMIT 10");
+        $tickerItems = [];
+        while($t = mysqli_fetch_array($tickerQuery)) {
+          $tickerItems[] = $t;
+        }
+      ?>
+      <div class="highlight-ticker-container mb-3">
+        <div class="highlight-ticker-header border rounded-top overflow-hidden d-flex">
+          <div class="ticker-label bg-danger text-white font-weight-bold px-3 py-2 d-flex align-items-center flex-grow-1 text-uppercase">
+            BERITA VIRAL
+          </div>
+        </div>
+        
+        <!-- Scrolling Ticker Container (Active on BOTH Mobile & Desktop) -->
+        <div class="ticker-wrapper d-flex align-items-center bg-white border border-top-0 rounded-bottom p-2 overflow-hidden shadow-sm" style="white-space: nowrap; height: 58px;">
+          <div class="ticker-content">
+            <?php 
+            // Duplicate loop for seamless infinite marquee scroll
+            for ($loop = 0; $loop < 2; $loop++):
+              foreach($tickerItems as $ticker): 
+            ?>
+              <a href="news-details.php?nid=<?php echo $ticker['id']; ?>" class="ticker-item text-dark text-decoration-none mx-3 font-weight-bold d-inline-flex align-items-center">
+                <img src="admin/uploads/<?php echo $ticker['PostImage'] ?: 'default.jpg'; ?>" 
+                     alt="Thumbnail" class="ticker-img mr-2 rounded" style="width: 48px; height: 36px; object-fit: cover;">
+                <span class="ticker-text text-dark" style="font-size: 0.9rem; font-weight: 600; line-height: 1.2;">
+                  <?php echo htmlentities($ticker['PostTitle']); ?>
+                </span>
+              </a>
+            <?php 
+              endforeach; 
+            endfor;
+            ?>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== HEADLINE SECTION (CAROUSEL) ===== -->
+      <?php 
         $headlineQuery = mysqli_query(
-            $con,
-            "SELECT p.*, c.CategoryName, a.AdminUserName as author
-             FROM tblposts p
-             LEFT JOIN tblcategory c ON c.id = p.CategoryId
-             LEFT JOIN tbladmin a ON a.id = p.PostedBy
-             WHERE p.Is_Active = 1 AND p.PostingDate >= '$sevenDaysAgo'
-             ORDER BY p.PostingDate DESC
-             LIMIT 6"
+          $con, 
+          "SELECT p.*, c.CategoryName, a.AdminUserName as author
+            FROM tblposts p 
+            LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+            LEFT JOIN tbladmin a ON a.id = p.PostedBy
+            WHERE p.Is_Active = 1
+            ORDER BY p.PostingDate DESC 
+            LIMIT 5"
         );
 
-        $headlineItems = [];
-        while ($headlineRow = mysqli_fetch_array($headlineQuery)) {
-            $headlineItems[] = $headlineRow;
+        $headlines = [];
+        while($h = mysqli_fetch_array($headlineQuery)) {
+          $headlines[] = $h;
         }
-
-        if (count($headlineItems) === 0) {
-            $fallbackQuery = mysqli_query(
-                $con,
-                "SELECT p.*, c.CategoryName, a.AdminUserName as author
-                 FROM tblposts p
-                 LEFT JOIN tblcategory c ON c.id = p.CategoryId
-                 LEFT JOIN tbladmin a ON a.id = p.PostedBy
-                 WHERE p.Is_Active = 1
-                 ORDER BY p.PostingDate DESC
-                 LIMIT 1"
-            );
-            if ($fallbackRow = mysqli_fetch_array($fallbackQuery)) {
-                $headlineItems[] = $fallbackRow;
-            }
-        }
-    ?>
-
-    <?php if (count($headlineItems)): ?>
-      <div id="hl-slider" class="hl-slider">
-        <div class="hl-track" id="hl-track">
-          <?php foreach ($headlineItems as $index => $item): ?>
-            <div class="hl-slide">
-              <a href="news-details.php?nid=<?php echo htmlentities($item['id']); ?>" class="headline-link">
-                <img src="admin/uploads/<?php echo htmlentities($item['PostImage'] ?: 'default.jpg'); ?>" alt="Headline">
-                <div class="headline-title">
-                  <div class="category-label"><?php echo htmlentities($item['CategoryName']); ?></div>
-                  <h3><?php echo htmlentities($item['PostTitle']); ?></h3>
-                  <small>
-                    <?php echo date("d M Y", strtotime($item['PostingDate'])); ?> |
-                    <?php echo htmlentities($item['author']); ?> |
-                    <?php echo htmlentities($item['views']); ?> views
-                  </small>
-                </div>
-              </a>
-            </div>
+      ?>
+      <div id="headlineCarousel" class="carousel slide headline mb-4 mb-md-5 shadow-sm" data-ride="carousel">
+        <!-- Carousel Indicators (Dots on Bottom Right) -->
+        <ol class="carousel-indicators custom-carousel-dots">
+          <?php foreach($headlines as $idx => $hl): ?>
+            <li data-target="#headlineCarousel" data-slide-to="<?php echo $idx; ?>" class="<?php echo $idx === 0 ? 'active' : ''; ?>"></li>
           <?php endforeach; ?>
-        </div>
+        </ol>
 
-        <?php if (count($headlineItems) > 1): ?>
-          <button class="hl-btn hl-btn-prev" id="hl-prev" aria-label="Previous">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <button class="hl-btn hl-btn-next" id="hl-next" aria-label="Next">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-          <div class="hl-dots" id="hl-dots">
-            <?php foreach ($headlineItems as $index => $item): ?>
-              <span class="hl-dot <?php echo $index === 0 ? 'active' : ''; ?>" data-index="<?php echo $index; ?>"></span>
-            <?php endforeach; ?>
+        <div class="carousel-inner">
+        <?php foreach($headlines as $idx => $headline): ?>
+          <div class="carousel-item <?php echo $idx === 0 ? 'active' : ''; ?>">
+            <a href="news-details.php?nid=<?php echo htmlentities($headline['id']); ?>" class="headline-link d-block">
+              <img src="admin/uploads/<?php echo $headline['PostImage'] ?: 'default.jpg'; ?>" class="d-block w-100 headline-img" alt="Headline">
+              <div class="headline-title">
+                <h3><?php echo htmlentities($headline['PostTitle']); ?></h3>
+                <small>
+                  <?php echo date("d M Y", strtotime($headline['PostingDate'])); ?> | 
+                  <?php echo htmlentities($headline['author'] ?: 'Redaksi Cakrawala'); ?> | 
+                  <?php echo htmlentities($headline['CategoryName'] ?: 'Daerah'); ?> | 
+                  <?php echo htmlentities($headline['views'] ?: '0'); ?> views
+                </small>
+              </div>
+            </a>
           </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
+        </div>
+        <!-- Controls -->
+        <a class="carousel-control-prev custom-carousel-btn" href="#headlineCarousel" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon carousel-arrow-bg" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next custom-carousel-btn" href="#headlineCarousel" role="button" data-slide="next">
+          <span class="carousel-control-next-icon carousel-arrow-bg" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
       </div>
 
-      <script>
-      (function() {
-        var track   = document.getElementById('hl-track');
-        var slides  = track.querySelectorAll('.hl-slide');
-        var dots    = document.querySelectorAll('.hl-dot');
-        var total   = slides.length;
-        var current = 0;
-        var timer;
-
-        function goTo(n) {
-          current = (n + total) % total;
-          track.style.transform = 'translateX(-' + (current * 100) + '%)';
-          dots.forEach(function(d, i) {
-            d.classList.toggle('active', i === current);
-          });
-        }
-
-        function next() { goTo(current + 1); }
-        function prev() { goTo(current - 1); }
-
-        function startTimer() { timer = setInterval(next, 4000); }
-        function resetTimer()  { clearInterval(timer); startTimer(); }
-
-        document.getElementById('hl-prev').addEventListener('click', function(){ prev(); resetTimer(); });
-        document.getElementById('hl-next').addEventListener('click', function(){ next(); resetTimer(); });
-
-        dots.forEach(function(d) {
-          d.addEventListener('click', function() {
-            goTo(parseInt(this.dataset.index));
-            resetTimer();
-          });
-        });
-
-        /* pause on hover */
-        var slider = document.getElementById('hl-slider');
-        slider.addEventListener('mouseenter', function() { clearInterval(timer); });
-        slider.addEventListener('mouseleave', startTimer);
-
-        startTimer();
-      })();
-      </script>
-    <?php endif; ?>
-    </div><!-- /col-12 headline -->
-    </div><!-- /headline row -->
+    </div>
 
     <!-- Blog Entries Column -->
-    <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-8 px-2 px-md-3">
 
-      <!-- TOGGLE BUTTONS: Terpopuler / Terbaru -->
-      <div class="content-tabs">
-        <button type="button" class="tab-btn active" data-tab="terpopuler">Terpopuler</button>
-        <button type="button" class="tab-btn" data-tab="terbaru">Terbaru</button>
+      <!-- Tabs Nav (Close gap with carousel) -->
+      <ul class="nav custom-tabs mb-2" id="mainTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="terbaru-tab" data-toggle="tab" href="#terbaru" role="tab" aria-controls="terbaru" aria-selected="true">Terbaru</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="terpopuler-tab" data-toggle="tab" href="#terpopuler" role="tab" aria-controls="terpopuler" aria-selected="false">Terpopuler</a>
+        </li>
+      </ul>
+
+      <!-- Tabs Content -->
+      <div class="tab-content mt-2" id="mainTabContent">
+        
+        <!-- ================= TERBARU TAB ================= -->
+        <div class="tab-pane fade show active" id="terbaru" role="tabpanel" aria-labelledby="terbaru-tab">
+          <?php
+          $terbaruQuery = mysqli_query($con, "SELECT 
+                p.id as pid, p.PostTitle as posttitle, c.CategoryName as category,
+                p.PostImage as PostImage, p.PostingDate as postingdate,
+                p.PostDetails as postdetails, p.Views as views, a.AdminUserName as author
+            FROM tblposts p
+            LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+            LEFT JOIN tbladmin a ON a.id = p.PostedBy
+            WHERE p.Is_Active = 1
+            ORDER BY p.PostingDate DESC 
+            LIMIT 10
+          ");
+          while ($row = mysqli_fetch_array($terbaruQuery)) {
+          ?>
+            <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
+               class="card mb-3 text-decoration-none text-dark article-card border-0 shadow-sm">
+              <div class="article-thumb-wrapper">
+                <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
+                     alt="<?php echo htmlentities($row['posttitle']); ?>" class="article-thumb-img">
+              </div>
+              <div class="card-body p-3">
+                <div class="mb-2"><span class="badge badge-category"><?php echo htmlentities($row['category']); ?></span></div>
+                <h3 class="article-title mb-2"><?php echo htmlentities($row['posttitle']); ?></h3>
+                <p class="article-excerpt mb-2">
+                  <?php echo substr(strip_tags($row['postdetails']),0,110); ?>...
+                </p>
+                <small class="article-meta text-muted d-block">
+                  <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+                  Redaksi Cakrawala | <?php echo htmlentities($row['category']); ?> | <?php echo htmlentities($row['views']); ?> Views
+                </small>
+              </div>
+            </a>
+          <?php } ?>
+        </div>
+
+        <!-- ================= TERPOPULER TAB ================= -->
+        <div class="tab-pane fade" id="terpopuler" role="tabpanel" aria-labelledby="terpopuler-tab">
+          <?php
+          $populerQuery = mysqli_query($con, "SELECT 
+                p.id as pid, p.PostTitle as posttitle, c.CategoryName as category,
+                p.PostImage as PostImage, p.PostingDate as postingdate,
+                p.PostDetails as postdetails, p.Views as views, a.AdminUserName as author
+            FROM tblposts p
+            LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+            LEFT JOIN tbladmin a ON a.id = p.PostedBy
+            WHERE p.Is_Active = 1
+            ORDER BY p.Views DESC 
+            LIMIT 10
+          ");
+          while ($row = mysqli_fetch_array($populerQuery)) {
+          ?>
+            <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
+               class="card mb-3 text-decoration-none text-dark article-card border-0 shadow-sm">
+              <div class="article-thumb-wrapper">
+                <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
+                     alt="<?php echo htmlentities($row['posttitle']); ?>" class="article-thumb-img">
+              </div>
+              <div class="card-body p-3">
+                <div class="mb-2"><span class="badge badge-category"><?php echo htmlentities($row['category']); ?></span></div>
+                <h3 class="article-title mb-2"><?php echo htmlentities($row['posttitle']); ?></h3>
+                <p class="article-excerpt mb-2">
+                  <?php echo substr(strip_tags($row['postdetails']),0,110); ?>...
+                </p>
+                <small class="article-meta text-muted d-block">
+                  <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+                  Redaksi Cakrawala | <?php echo htmlentities($row['category']); ?> | <?php echo htmlentities($row['views']); ?> Views
+                </small>
+              </div>
+            </a>
+          <?php } ?>
+        </div>
+
       </div>
 
-      <!-- TERPOPULER PANEL -->
-      <div class="tab-panel active" id="tab-terpopuler">
-      <?php
-      $populerQuery = mysqli_query($con, " SELECT 
-          p.id as pid,
-          p.PostTitle as posttitle,
-          c.CategoryName as category,
-          s.Subcategory as subcategory,
-          p.PostDetails as postdetails,
-          p.PostingDate as postingdate,
-          p.PostUrl as url,
-          p.PostImage as PostImage,
-          p.Views as views,
-          a.AdminUserName as author
-        FROM tblposts p
-        LEFT JOIN tblcategory c ON c.id = p.CategoryId 
-        LEFT JOIN tblsubcategory s ON s.SubCategoryId = p.SubCategoryId
-        LEFT JOIN tbladmin a ON a.id = p.PostedBy
-        WHERE p.Is_Active = 1
-        ORDER BY p.Views DESC 
-        LIMIT 5
-      ");
+    </div>
+    <!-- Sidebar -->
+    <?php include('includes/sidebar.php'); ?>
+  </div>
+</div>
 
+<!-- Semua Artikel Grid -->
+<div class="container mt-5 mb-5">
+  <h4 class="mb-4" style="font-weight:bold; font-size: 1.5rem;">Semua Artikel</h4>
+  <div class="row">
+    <?php
+    $pageno = isset($_GET['pageno']) ? $_GET['pageno'] : 1;
+    $no_of_records_per_page = 8;
+    $offset = ($pageno-1) * $no_of_records_per_page;
+    $total_pages_sql = "SELECT COUNT(*) FROM tblposts WHERE Is_Active = 1";
+    $result = mysqli_query($con,$total_pages_sql);
+    $total_rows = mysqli_fetch_array($result)[0];
+    $total_pages = ceil($total_rows / $no_of_records_per_page);
 
-      while ($row = mysqli_fetch_array($populerQuery)) {
-      ?>
-        <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
-           class="card mb-3 text-decoration-none text-dark shadow-sm border-0 article-card">
-          <div class="row no-gutters">
-            <div class="col-md-4">
-              <div class="thumb-landscape">
-                <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
-                     alt="<?php echo htmlentities($row['posttitle']); ?>">
-              </div>
-            </div>
-            <div class="col-md-8 d-flex flex-column p-2">
-              <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
-              <h3 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h3>
-              <p class="text-muted mb-1" style="font-size: 0.85rem;">
-                <?php echo substr(strip_tags($row['postdetails']),0,100); ?>...
-              </p>
-              <small class="text-secondary mt-auto" style="font-size: 0.8rem;">
-                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
-                <?php echo htmlentities($row['author']); ?> | 
-                <?php echo htmlentities($row['category']); ?> | 
-                <?php echo htmlentities($row['views']); ?> views
+    $gridQuery = mysqli_query($con, "SELECT 
+          p.id as pid, p.PostTitle as posttitle, c.CategoryName as category,
+          p.PostImage as PostImage, p.PostingDate as postingdate,
+          p.PostDetails as postdetails, p.Views as views, a.AdminUserName as author
+      FROM tblposts p
+      LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+      LEFT JOIN tbladmin a ON a.id = p.PostedBy
+      WHERE p.Is_Active = 1
+      ORDER BY p.PostingDate DESC 
+      LIMIT $offset, $no_of_records_per_page
+    ");
+
+    while ($row = mysqli_fetch_array($gridQuery)) {
+    ?>
+      <div class="col-md-3 mb-4">
+        <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" class="card h-100 text-decoration-none border-0 shadow-sm article-card">
+          <div class="article-thumb-wrapper">
+            <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" class="article-thumb-img" alt="<?php echo htmlentities($row['posttitle']); ?>">
+          </div>
+          <div class="card-body">
+            <div class="mb-1"><span class="badge badge-category"><?php echo htmlentities($row['category']); ?></span></div>
+            <h5 class="article-title mb-1">
+              <?php echo htmlentities($row['posttitle']); ?>
+            </h5>
+            <p class="article-excerpt mb-2">
+              <?php echo substr(strip_tags($row['postdetails']),0,80); ?>...
+            </p>
+            <div class="mt-auto">
+              <small class="article-meta text-muted d-block">
+                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | Redaksi Cakrawala | <?php echo htmlentities($row['category']); ?> | <?php echo htmlentities($row['views']); ?> Views
               </small>
-
             </div>
           </div>
         </a>
-      <?php } ?>
-      </div><!-- /tab-terpopuler -->
-
-      <!-- TERBARU PANEL -->
-      <div class="tab-panel" id="tab-terbaru">
-        <div class="d-flex justify-content-end mb-3">
-          <a href="all-news.php" class="text-danger" style="text-decoration: none;">Lihat Semua
-            <i class="fa fa-arrow-right" aria-hidden="true"></i>
-          </a>
-        </div>
-
-        <?php
-        $terbaruQuery = mysqli_query($con, "SELECT 
-              p.id as pid,
-              p.PostTitle as posttitle,
-              c.CategoryName as category,
-              p.PostImage as PostImage,
-              p.PostingDate as postingdate,
-              p.PostDetails as postdetails,
-              p.Views as views,
-              a.AdminUserName as author
-          FROM tblposts p
-          LEFT JOIN tblcategory c ON c.id = p.CategoryId 
-          LEFT JOIN tbladmin a ON a.id = p.PostedBy
-          WHERE p.Is_Active = 1
-          ORDER BY p.PostingDate DESC 
-          LIMIT 4
-        ");
-
-        while ($row = mysqli_fetch_array($terbaruQuery)) {
-        ?>
-          <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
-             class="card mb-3 text-decoration-none text-dark shadow-sm border-0 article-card">
-            <div class="row no-gutters">
-              <div class="col-md-4">
-                <div class="thumb-landscape">
-                  <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
-                       alt="<?php echo htmlentities($row['posttitle']); ?>">
-                </div>
-              </div>
-              <div class="col-md-8 d-flex flex-column p-2">
-                <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
-                <h3 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h3>
-                <p class="text-muted mb-1" style="font-size: 0.85rem;">
-                  <?php echo substr(strip_tags($row['postdetails']),0,100); ?>...
-                </p>
-                <small class="text-secondary mt-auto" style="font-size: 0.8rem;">
-                  <?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
-                  <?php echo htmlentities($row['author']); ?> | 
-                  <?php echo htmlentities($row['category']); ?> | 
-                  <?php echo htmlentities($row['views']); ?> views
-                </small>
-              </div>
-            </div>
-          </a>
-        <?php } ?>
-      </div><!-- /tab-terbaru -->
-
-    </div><!-- /col-md-8 -->
-
-    <!-- Sidebar (sidebar.php already provides its own col-md-4 wrapper) -->
-    <?php include('includes/sidebar.php'); ?>
-
-    </div><!-- /row -->
-
-    <script>
-    (function() {
-      var buttons = document.querySelectorAll('.tab-btn');
-      var panels  = document.querySelectorAll('.tab-panel');
-
-      buttons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var target = this.dataset.tab;
-
-          buttons.forEach(function(b) { b.classList.toggle('active', b === btn); });
-          panels.forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + target); });
-        });
-      });
-    })();
-    </script>
-
-    <!-- ===== SEMUA ARTIKEL ===== -->
-    <div class="row mt-5">
-    <div class="col-12">
-      <h4 class="mb-3">Semua Artikel</h4>
-
-      <div id="semua-artikel-wrap">
-      <?php
-      $pageno = isset($_GET['pageno']) ? intval($_GET['pageno']) : 1;
-      if ($pageno < 1) { $pageno = 1; }
-      include('includes/all-list.php');
-      ?>
-      </div><!-- /semua-artikel-wrap -->
-
-      </div><!-- /col-12 -->
-    </div><!-- /row semua artikel -->
-
-    <script>
-    (function() {
-      var wrap = document.getElementById('semua-artikel-wrap');
-
-      function loadPage(pageno, scroll) {
-        if (!pageno) return;
-        wrap.style.opacity = '0.5';
-
-        fetch('ajax-all-article.php?pageno=' + encodeURIComponent(pageno))
-          .then(function(res) { return res.text(); })
-          .then(function(html) {
-            wrap.innerHTML = html;
-            wrap.style.opacity = '1';
-
-            var url = new URL(window.location);
-            url.searchParams.set('pageno', pageno);
-            history.pushState({ pageno: pageno }, '', url);
-
-            if (scroll) {
-              wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          })
-          .catch(function() {
-            wrap.style.opacity = '1';
-          });
-      }
-
-      // Event delegation: works for the initial links AND every link injected after an AJAX swap.
-      wrap.addEventListener('click', function(e) {
-        var link = e.target.closest('.ajax-page-link');
-        if (!link) return;
-        if (link.closest('.page-item.disabled')) { e.preventDefault(); return; }
-
-        e.preventDefault();
-        loadPage(link.dataset.page, true);
-      });
-
-      window.addEventListener('popstate', function(e) {
-        var pageno = (e.state && e.state.pageno) ? e.state.pageno : 1;
-        loadPage(pageno, false);
-      });
-    })();
-    </script>
-
-</div><!-- /.container -->
-
-<!-- Artikel per kategori -->
-<div class="container mt-5">
-  <div class="row">
-    <?php
-    $catQuery = mysqli_query($con, "SELECT id, CategoryName FROM tblcategory ORDER BY id ASC LIMIT 4");
-    while ($cat = mysqli_fetch_array($catQuery)) {
-      $catId = $cat['id'];
-      $catName = $cat['CategoryName'];
-      $postQuery = mysqli_query($con, "
-        SELECT p.id, p.PostTitle, p.PostImage, p.PostingDate, p.PostDetails, 
-        p.Views as views, a.AdminUserName as author
-        FROM tblposts p
-        LEFT JOIN tbladmin a ON a.id = p.PostedBy
-        WHERE p.CategoryId = '$catId' AND p.Is_Active = 1
-        ORDER BY p.PostingDate DESC 
-        LIMIT 2
-      ");
-      ?>
-      <div class="col-md-6 mb-4">
-        <h5 class="mb-3"><span class="badge badge-danger"><?php echo htmlentities($catName); ?></span></h5>
-        <div class="row">
-          <?php while ($post = mysqli_fetch_array($postQuery)) { ?>
-            <div class="col-md-6 mb-3">
-              <div class="card h-100 shadow-sm border-0">
-                <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>">
-                  <div style="width:100%; height:180px; overflow:hidden; border-radius:6px 6px 0 0;">
-                    <img src="admin/uploads/<?php echo htmlentities($post['PostImage'] ?: 'default.jpg'); ?>" style="width:100%; height:100%; object-fit:cover;">
-                  </div>
-                </a>
-                <div class="card-body p-2">
-                  <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>" class="text-dark text-decoration-none">
-                    <h6 class="mb-1" style="font-size:1rem; font-weight:600;"><?php echo htmlentities($post['PostTitle']); ?></h6>
-                  </a>
-                  <small class="text-muted d-block mb-1">
-                    <?php echo date("d M Y", strtotime($post['PostingDate'])); ?> | 
-                    <?php echo htmlentities($post['author']); ?> | 
-                    <?php echo htmlentities($post['views']); ?> views
-                  </small>
-
-
-                  <p class="text-muted mb-0" style="font-size:0.85rem;"><?php echo substr(strip_tags($post['PostDetails']),0,80); ?>...</p>
-                </div>
-              </div>
-            </div>
-          <?php } ?>
-        </div>
-        <a href="category.php?catid=<?php echo $catId; ?>" class="text-danger small">Lihat semua »</a>
       </div>
     <?php } ?>
   </div>
+
+  <!-- Pagination -->
+  <ul class="pagination justify-content-center mt-4">
+    <li class="page-item"><a href="?pageno=1" class="page-link text-secondary bg-transparent border-0">«</a></li>
+    <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
+      <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>" class="page-link text-secondary bg-transparent border-0">‹</a>
+    </li>
+    
+    <?php 
+    // Show a limited number of pages to prevent long lists
+    $start_page = max(1, $pageno - 2);
+    $end_page = min($total_pages, $pageno + 2);
+    for($i = $start_page; $i <= $end_page; $i++): 
+    ?>
+      <?php if ($i == $pageno): ?>
+        <li class="page-item active"><a class="page-link bg-danger border-danger text-white rounded"><?php echo $i; ?></a></li>
+      <?php else: ?>
+        <li class="page-item"><a href="?pageno=<?php echo $i; ?>" class="page-link text-secondary bg-transparent border-0"><?php echo $i; ?></a></li>
+      <?php endif; ?>
+    <?php endfor; ?>
+
+    <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+      <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?pageno=".($pageno + 1); } ?>" class="page-link text-secondary bg-transparent border-0">›</a>
+    </li>
+    <li class="page-item"><a href="?pageno=<?php echo $total_pages; ?>" class="page-link text-secondary bg-transparent border-0">»</a></li>
+  </ul>
 </div>
 
 <?php include('includes/footer.php'); ?>
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script to pause BERITA VIRAL running text animation on hover/touch on all devices (Mouse, Touch & Pointer support) -->
+<script>
+(function() {
+  var tickerWraps = document.querySelectorAll('.ticker-wrapper, .highlight-ticker-container, .ticker-item, .ticker-content');
+  var tickerContents = document.querySelectorAll('.ticker-content');
+  
+  function pauseTicker() {
+    tickerContents.forEach(function(tc) {
+      tc.classList.add('paused');
+      tc.style.animationPlayState = 'paused';
+      tc.style.webkitAnimationPlayState = 'paused';
+    });
+  }
+
+  function resumeTicker() {
+    tickerContents.forEach(function(tc) {
+      tc.classList.remove('paused');
+      tc.style.animationPlayState = 'running';
+      tc.style.webkitAnimationPlayState = 'running';
+    });
+  }
+
+  tickerWraps.forEach(function(wrap) {
+    // Mouse events (Desktop)
+    wrap.addEventListener('mouseenter', pauseTicker, false);
+    wrap.addEventListener('mouseleave', resumeTicker, false);
+    wrap.addEventListener('mouseover', pauseTicker, false);
+    wrap.addEventListener('mouseout', resumeTicker, false);
+
+    // Touch events (Mobile devices)
+    wrap.addEventListener('touchstart', pauseTicker, {passive: true});
+    wrap.addEventListener('touchend', function() {
+      setTimeout(resumeTicker, 1200);
+    }, {passive: true});
+    wrap.addEventListener('touchcancel', resumeTicker, {passive: true});
+
+    // Pointer events (Mobile DevTools emulator & modern touch screens)
+    wrap.addEventListener('pointerenter', pauseTicker, false);
+    wrap.addEventListener('pointerleave', resumeTicker, false);
+    wrap.addEventListener('pointerdown', pauseTicker, false);
+    wrap.addEventListener('pointerup', function() {
+      setTimeout(resumeTicker, 1200);
+    }, false);
+  });
+})();
+</script>
 </body>
 </html>
