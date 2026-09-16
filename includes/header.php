@@ -148,6 +148,12 @@ $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
 </div>
 
 <style>
+/* ====== Prevent horizontal page shift & overflow ====== */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 /* ====== Atur ukuran logo header ====== */
 .desktop-logo-img {
   max-height: 55px;
@@ -156,19 +162,57 @@ $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
 }
 
 .mobile-logo-img {
-  max-height: 48px;
+  max-height: 44px;
+  max-width: 90%;
   width: auto;
+  height: auto;
   object-fit: contain;
 }
 
-/* ====== Atur jarak body supaya tidak ketutup header fixed ====== */
+/* ====== Atur jarak body & kontrol header di HP ====== */
 body {
   padding-top: 85px;
 }
 
 @media (max-width: 767.98px) {
   body {
-    padding-top: 155px !important;
+    padding-top: 145px !important;
+  }
+
+  .header-container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .header-controls-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .btn-tulis-berita {
+    font-size: 0.78rem !important;
+    padding: 0.35rem 0.55rem !important;
+    white-space: nowrap;
+    margin-left: 4px !important;
+  }
+
+  .search-input-field {
+    font-size: 0.82rem !important;
+    padding-left: 32px !important;
+    height: 36px !important;
+  }
+
+  .category-toggle-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    margin-left: 4px !important;
+  }
+
+  .mobile-logo-wrapper {
+    padding-top: 6px !important;
+    padding-bottom: 4px !important;
   }
 }
 </style>
