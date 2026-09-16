@@ -148,6 +148,19 @@ $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
 </div>
 
 <style>
+/* ====== Atur ukuran logo header ====== */
+.desktop-logo-img {
+  max-height: 55px;
+  width: auto;
+  object-fit: contain;
+}
+
+.mobile-logo-img {
+  max-height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
 /* ====== Atur jarak body supaya tidak ketutup header fixed ====== */
 body {
   padding-top: 85px;
