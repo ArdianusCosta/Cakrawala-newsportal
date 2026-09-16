@@ -1,9 +1,18 @@
 <?php
-// Konfigurasi koneksi ke database
-$host = "localhost"; // Host MySQL
-$username = "u828472685_cakrawala"; // Username MySQL
-$password = "Cakrawala123!"; // Password MySQL
-$database = "u828472685_cakrawala"; // Nama Database
+// Konfigurasi koneksi ke database (Otomatis Deteksi Localhost vs Hostinger Production)
+if (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1' || strpos($_SERVER['HTTP_HOST'], 'localhost:') === 0)) {
+    // Environment Localhost
+    $host = "localhost";
+    $username = "root";
+    $password = "";
+    $database = "newsportal";
+} else {
+    // Environment Production (Hostinger)
+    $host = "localhost";
+    $username = "u828472685_cakrawala";
+    $password = "Cakrawala123!";
+    $database = "u828472685_cakrawala";
+}
 
 // Set timezone aplikasi ke Asia/Jakarta agar waktu artikel sesuai dengan lokasi user
 date_default_timezone_set('Asia/Jakarta');
