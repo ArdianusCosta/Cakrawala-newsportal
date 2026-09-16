@@ -71,13 +71,13 @@ $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
       <!-- Mobile Top Logo (Centered) -->
       <div class="mobile-logo-wrapper d-block d-md-none text-center w-100 py-2">
         <a class="navbar-brand m-0 p-0 d-inline-block" href="index.php">
-          <img src="images/Logo.png" class="mobile-logo-img" alt="Logo Cakrawala">
+          <img src="images/Logo-Black.png" class="mobile-logo-img" alt="Logo Cakrawala">
         </a>
       </div>
 
       <!-- Desktop Logo -->
       <a class="navbar-brand d-none d-md-flex align-items-center py-1 mr-md-4 flex-shrink-0" href="index.php" style="text-decoration: none;">
-        <img src="images/Logo.png" class="desktop-logo-img" alt="Logo Cakrawala">
+        <img src="images/Logo-Black.png" class="desktop-logo-img" alt="Logo Cakrawala">
       </a>
 
       <!-- Mobile Row (Search + Tulis Berita) / Desktop Flex Items -->
