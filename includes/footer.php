@@ -126,10 +126,13 @@
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.1);
             color: #ffffff;
+            font-size: 0.82rem !important;
+            padding: 0.4rem 0.75rem !important;
         }
         
         .newsletter-input::placeholder {
             color: rgba(255, 255, 255, 0.6);
+            font-size: 0.82rem !important;
         }
         
         .newsletter-input:focus {
@@ -142,7 +145,10 @@
         .btn-subscribe {
             background: #fb0000ff;
             border: none;
-            padding: 0.5rem 1.5rem;
+            padding: 0.4rem 0.85rem !important;
+            font-size: 0.82rem !important;
+            font-weight: 600 !important;
+            white-space: nowrap !important;
             transition: all 0.3s ease;
         }
         
@@ -237,7 +243,7 @@
             <div class="container">
                 <div class="row py-4">
                     <div class="col-12 text-center">
-                        <p class="mb-0 text-white" style="font-size: 0.85rem; letter-spacing: 0.5px;">&copy; 2025 Hai Motion - Created for PT Cakrawala Pers Media. All rights reserved.</p>
+                        <p class="mb-0 text-white" style="font-size: 0.85rem; letter-spacing: 0.5px;">&copy; © 2026 Cakrawala Online. Seluruh Hak Cipta Dilindungi Undang-Undang</p>
                     </div>
                 </div>
             </div>

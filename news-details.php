@@ -198,12 +198,18 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
 
             <div class="card-body">
               <h2 class="card-title"><?php echo htmlentities($row['posttitle']);?></h2>
-              <p>
+              <?php 
+                $eventDateStr = getEventDateFromText($row['postdetails'], $row['postingdate']);
+              ?>
+              <p class="mb-3 text-muted" style="font-size: 0.92rem;">
                 <b>Category : </b> 
-                <a href="category.php?catid=<?php echo htmlentities($row['cid'])?>">
+                <a href="category.php?catid=<?php echo htmlentities($row['cid'])?>" class="text-danger text-decoration-none font-weight-bold">
                   <?php echo htmlentities($row['category']);?>
-                </a> | 
-                <b>Sub Category : </b><?php echo htmlentities($row['subcategory']);?>
+                </a>
+                <?php if (!empty($row['subcategory'])): ?>
+                  | <b>Sub Category : </b><span class="text-dark"><?php echo htmlentities($row['subcategory']);?></span>
+                <?php endif; ?>
+                | <b>Tanggal Peristiwa : </b><span class="text-dark font-weight-bold"><?php echo htmlentities($eventDateStr); ?></span>
               </p>
               <hr />
               <div class="card-text">

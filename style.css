@@ -65,8 +65,9 @@
   .headline img,
   .headline-img {
     width: 100%;
-    height: 380px;
-    object-fit: cover;
+    height: 420px;
+    object-fit: cover !important;
+    object-position: top center !important;
     display: block;
     border-radius: 16px !important;
   }
@@ -844,9 +845,9 @@
   #headlineCarousel .carousel-inner,
   #headlineCarousel .carousel-item,
   #headlineCarousel .headline-link {
-    height: 260px !important;
-    min-height: 260px !important;
-    max-height: 260px !important;
+    height: 280px !important;
+    min-height: 280px !important;
+    max-height: 280px !important;
     background: transparent !important;
     overflow: hidden !important;
     border-radius: 16px !important;
@@ -867,9 +868,10 @@
   #headlineCarousel img,
   .headline img,
   .headline-img {
-    height: 260px !important;
-    max-height: 260px !important;
+    height: 280px !important;
+    max-height: 280px !important;
     object-fit: cover !important;
+    object-position: top center !important;
     display: block !important;
     width: 100% !important;
     border-radius: 16px !important;
@@ -1222,6 +1224,22 @@
   font-weight: 600;
   display: inline-block;
 }
+
+/* ===== Wide Desktop Layout (Matching okegasnews.id Margin & Container Width) ===== */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1280px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px !important;
+  }
+}
+
 
 
 
