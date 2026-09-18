@@ -103,47 +103,16 @@ $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
           Tulis Berita
         </a>
 
-        <!-- Button Hamburger Header (Kategori Toggle) -->
-        <button class="btn btn-light border rounded-circle p-2 ml-2 d-flex align-items-center justify-content-center category-toggle-btn" 
-                type="button" data-toggle="collapse" data-target="#categoryCollapseMenu" 
-                aria-expanded="false" aria-controls="categoryCollapseMenu" 
-                style="width:40px; height:40px;" title="Kategori Berita">
-          <i class="bi bi-list font-weight-bold" style="font-size: 1.3rem;"></i>
-        </button>
-
-        <!-- Sosial Media (Desktop Only) -->
-        <div class="social-header-icons d-none d-md-flex align-items-center ml-2">
-          <a href="https://facebook.com" target="_blank" class="btn btn-light border rounded-circle p-2 mr-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
-            <i class="bi bi-facebook text-primary"></i>
-          </a>
-          <a href="https://instagram.com" target="_blank" class="btn btn-light border rounded-circle p-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
-            <i class="bi bi-instagram text-danger"></i>
+        <!-- WhatsApp Channel Button -->
+        <div class="social-header-icons d-flex align-items-center ml-2">
+          <a href="https://whatsapp.com/channel/0029Vb8nPNS77qVMF3Xdxq31" target="_blank" rel="noopener" class="btn btn-light border rounded-circle p-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;" title="Saluran WhatsApp Cakrawala">
+            <i class="bi bi-whatsapp text-success font-weight-bold" style="font-size: 1.25rem;"></i>
           </a>
         </div>
 
       </div>
     </div>
   </nav>
-
-  <!-- Collapsible Horizontal Category Navbar (Memanjang / Landscape Full-Width di Bawah Navbar & di Atas Berita Viral) -->
-  <div class="collapse w-100 bg-white border-top shadow-sm py-2 px-2" id="categoryCollapseMenu">
-    <div class="container-fluid px-md-4">
-      <ul class="nav category-horizontal-nav flex-row flex-wrap justify-content-center m-0 p-0">
-        <?php 
-        $allCatQuery = mysqli_query($con, "SELECT id, CategoryName FROM tblcategory WHERE Is_Active=1 ORDER BY id ASC");
-        while($catRow = mysqli_fetch_array($allCatQuery)) {
-          $isCurrent = ($currentCat == $catRow['id']) ? 'active' : '';
-        ?>
-          <li class="nav-item">
-            <a href="category.php?catid=<?php echo htmlentities($catRow['id']); ?>" 
-               class="nav-link category-horizontal-link px-3 py-2 <?php echo $isCurrent; ?>">
-              <?php echo htmlentities($catRow['CategoryName']); ?>
-            </a>
-          </li>
-        <?php } ?>
-      </ul>
-    </div>
-  </div>
 
 </div>
 

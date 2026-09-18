@@ -21,7 +21,12 @@ include('includes/config.php');
 <?php include('includes/header.php'); ?>
  <!-- Page Content -->
   <div class="container">
-    <div class="row" style="margin-top: 4%">
+    <div class="row mt-2">
+      <div class="col-12 px-2 px-md-3">
+        <?php include('includes/category-bar.php'); ?>
+      </div>
+    </div>
+    <div class="row">
       <!-- Blog Entries Column -->
       <div class="col-md-8">
       <h4 class="mb-3">Semua Artikel</h4>

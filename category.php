@@ -19,7 +19,12 @@ include('includes/config.php');
 <?php include('includes/header.php');?>
 
 <div class="container">
-  <div class="row" style="margin-top: 4%">
+  <div class="row mt-2">
+    <div class="col-12 px-2 px-md-3">
+      <?php include('includes/category-bar.php'); ?>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-md-8">
 
 <?php 

@@ -27,6 +27,9 @@ $pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercay
   <div class="row mt-2 mt-md-3">
     <div class="col-12 px-2 px-md-3">
 
+      <!-- ===== HORIZONTAL CATEGORY SCROLL BAR (Gambar 3 Style) ===== -->
+      <?php include('includes/category-bar.php'); ?>
+
       <!-- ===== HIGHLIGHT NEWS TICKER BAR (Mobile & Desktop) ===== -->
       <?php
         // Fetch recent news for ticker / highlight
@@ -84,7 +87,7 @@ $pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercay
           $headlines[] = $h;
         }
       ?>
-      <div id="headlineCarousel" class="carousel slide headline mb-4 mb-md-5 shadow-sm" data-ride="carousel">
+      <div id="headlineCarousel" class="carousel slide carousel-fade headline mb-3 shadow-sm" data-ride="carousel" data-interval="5000">
         <!-- Carousel Indicators (Dots on Bottom Right) -->
         <ol class="carousel-indicators custom-carousel-dots">
           <?php foreach($headlines as $idx => $hl): ?>
@@ -96,7 +99,10 @@ $pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercay
         <?php foreach($headlines as $idx => $headline): ?>
           <div class="carousel-item <?php echo $idx === 0 ? 'active' : ''; ?>">
             <a href="news-details.php?nid=<?php echo htmlentities($headline['id']); ?>" class="headline-link d-block">
-              <img src="admin/uploads/<?php echo $headline['PostImage'] ?: 'default.jpg'; ?>" class="d-block w-100 headline-img" alt="Headline">
+              <img src="admin/uploads/<?php echo $headline['PostImage'] ?: 'Dafault.png'; ?>" 
+                   onerror="this.onerror=null;this.src='admin/uploads/Dafault.png';" 
+                   class="d-block w-100 headline-img" 
+                   alt="<?php echo htmlentities($headline['PostTitle']); ?>">
               <div class="headline-title">
                 <h3><?php echo htmlentities($headline['PostTitle']); ?></h3>
                 <small>
