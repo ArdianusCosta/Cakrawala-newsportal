@@ -103,10 +103,13 @@ $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
           Tulis Berita
         </a>
 
-        <!-- WhatsApp Channel Button -->
+        <!-- Header Action Buttons (WhatsApp Channel & Home) -->
         <div class="social-header-icons d-flex align-items-center ml-2">
-          <a href="https://whatsapp.com/channel/0029Vb8nPNS77qVMF3Xdxq31" target="_blank" rel="noopener" class="btn btn-light border rounded-circle p-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;" title="Saluran WhatsApp Cakrawala">
+          <a href="https://whatsapp.com/channel/0029Vb8nPNS77qVMF3Xdxq31" target="_blank" rel="noopener" class="btn btn-light border rounded-circle p-2 mr-1 me-1" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;" title="Saluran WhatsApp Cakrawala">
             <i class="bi bi-whatsapp text-success font-weight-bold" style="font-size: 1.25rem;"></i>
+          </a>
+          <a href="index.php" class="btn btn-light border rounded-circle p-2" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center;" title="Beranda Utama (Home)">
+            <i class="bi bi-house-door-fill text-danger font-weight-bold" style="font-size: 1.2rem;"></i>
           </a>
         </div>
 
