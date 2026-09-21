@@ -177,12 +177,19 @@ $peristiwaList = $trendingData['peristiwa'];
           <ul class="trending-list mt-3">
             <?php if (!empty($tokohList)) {
               foreach ($tokohList as $item) { ?>
-                <li>
-                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" title="Cari berita seputar <?php echo htmlentities($item['name']); ?>">
-                    <div class="trending-name"><?php echo htmlentities($item['name']); ?></div>
-                    <div class="trending-bar-container">
-                      <div class="trending-bar" style="width: <?php echo $item['bar_width']; ?>%;"></div>
-                      <span class="trending-value"><?php echo htmlentities($item['percentage']); ?></span>
+                <li class="d-flex align-items-center mb-2" style="display: flex !important; align-items: center !important; margin-bottom: 10px !important;">
+                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" 
+                     title="Cari berita seputar <?php echo htmlentities($item['name']); ?>"
+                     class="d-flex align-items-center w-100 text-decoration-none"
+                     style="display: flex !important; align-items: center !important; width: 100% !important; text-decoration: none !important; color: inherit !important; padding: 4px 6px; border-radius: 6px;">
+                    <div class="trending-name" style="width: 130px !important; min-width: 130px !important; font-size: 0.85rem !important; color: #444 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-right: 8px !important; text-decoration: none !important;">
+                      <?php echo htmlentities($item['name']); ?>
+                    </div>
+                    <div class="trending-bar-container d-flex align-items-center flex-grow-1" style="display: flex !important; align-items: center !important; flex-grow: 1 !important;">
+                      <div class="trending-bar" style="height: 12px !important; background-color: #dc3545 !important; border-radius: 2px !important; margin-right: 10px !important; width: <?php echo $item['bar_width']; ?>% !important;"></div>
+                      <span class="trending-value" style="font-size: 0.75rem !important; color: #888 !important; white-space: nowrap !important; text-decoration: none !important;">
+                        <?php echo htmlentities($item['percentage']); ?>
+                      </span>
                     </div>
                   </a>
                 </li>
@@ -196,12 +203,19 @@ $peristiwaList = $trendingData['peristiwa'];
           <ul class="trending-list mt-3">
             <?php if (!empty($peristiwaList)) {
               foreach ($peristiwaList as $item) { ?>
-                <li>
-                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" title="Cari berita seputar <?php echo htmlentities($item['full_name']); ?>">
-                    <div class="trending-name"><?php echo htmlentities($item['name']); ?></div>
-                    <div class="trending-bar-container">
-                      <div class="trending-bar" style="width: <?php echo $item['bar_width']; ?>%;"></div>
-                      <span class="trending-value"><?php echo htmlentities($item['percentage']); ?></span>
+                <li class="d-flex align-items-center mb-2" style="display: flex !important; align-items: center !important; margin-bottom: 10px !important;">
+                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" 
+                     title="Cari berita seputar <?php echo htmlentities($item['full_name']); ?>"
+                     class="d-flex align-items-center w-100 text-decoration-none"
+                     style="display: flex !important; align-items: center !important; width: 100% !important; text-decoration: none !important; color: inherit !important; padding: 4px 6px; border-radius: 6px;">
+                    <div class="trending-name" style="width: 130px !important; min-width: 130px !important; font-size: 0.85rem !important; color: #444 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-right: 8px !important; text-decoration: none !important;">
+                      <?php echo htmlentities($item['name']); ?>
+                    </div>
+                    <div class="trending-bar-container d-flex align-items-center flex-grow-1" style="display: flex !important; align-items: center !important; flex-grow: 1 !important;">
+                      <div class="trending-bar" style="height: 12px !important; background-color: #dc3545 !important; border-radius: 2px !important; margin-right: 10px !important; width: <?php echo $item['bar_width']; ?>% !important;"></div>
+                      <span class="trending-value" style="font-size: 0.75rem !important; color: #888 !important; white-space: nowrap !important; text-decoration: none !important;">
+                        <?php echo htmlentities($item['percentage']); ?>
+                      </span>
                     </div>
                   </a>
                 </li>

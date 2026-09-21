@@ -420,52 +420,62 @@
     margin: 0;
   }
   .trending-list li {
-    margin-bottom: 10px;
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
   }
   .trending-list li a {
-    display: flex;
-    align-items: center;
-    width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
     text-decoration: none !important;
-    padding: 4px 6px;
-    margin: -4px -6px;
-    border-radius: 6px;
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    color: inherit !important;
+    padding: 4px 6px !important;
+    margin: -4px -6px !important;
+    border-radius: 6px !important;
+    transition: background-color 0.2s ease, transform 0.15s ease !important;
   }
   .trending-list li a:hover {
-    background-color: #f8f9fa;
+    background-color: #f8f9fa !important;
+    text-decoration: none !important;
   }
   .trending-list .trending-name {
-    width: 130px;
-    font-size: 0.85rem;
-    color: #444;
-    transition: color 0.2s ease, font-weight 0.2s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: 130px !important;
+    min-width: 130px !important;
+    font-size: 0.85rem !important;
+    color: #444 !important;
+    transition: color 0.2s ease, font-weight 0.2s ease !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-decoration: none !important;
+    margin-right: 8px !important;
   }
   .trending-list li a:hover .trending-name {
-    color: #dc3545;
-    font-weight: 600;
+    color: #dc3545 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
   }
   .trending-list .trending-bar-container {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
+    flex-grow: 1 !important;
+    display: flex !important;
+    align-items: center !important;
   }
   .trending-list .trending-bar {
-    height: 12px;
-    background-color: #dc3545;
-    border-radius: 2px;
-    margin-right: 10px;
-    transition: filter 0.2s ease, transform 0.2s ease;
+    height: 12px !important;
+    background-color: #dc3545 !important;
+    border-radius: 2px !important;
+    margin-right: 10px !important;
+    transition: filter 0.2s ease, transform 0.2s ease !important;
   }
   .trending-list li a:hover .trending-bar {
-    filter: brightness(1.15);
+    filter: brightness(1.15) !important;
   }
   .trending-list .trending-value {
-    font-size: 0.75rem;
-    color: #888;
+    font-size: 0.75rem !important;
+    color: #888 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
   }
 
   /* Sidebar Title Styling */
