@@ -31,13 +31,26 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Cakrawala">
+  <meta name="format-detection" content="telephone=no">
+
   <meta name="description" content="<?= $metaDescription ?>">
-  <meta name="author" content="">
-  <title><?= htmlspecialchars($row['posttitle']) ?> | Cakrawala</title>
+  <title><?= htmlspecialchars($row['posttitle']) ?> | Cakrawala Online</title>
+
+  <!-- Apple Touch Icons & Favicons for iOS Safari & Web -->
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+  <link rel="shortcut icon" href="images/Logo.ico" type="image/x-icon">
+  <link rel="manifest" href="site.webmanifest">
 
   <meta property="og:type" content="article">
   <meta property="og:title" content="<?= htmlspecialchars($row['posttitle']) ?>">
@@ -52,7 +65,7 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
 
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/modern-business.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
+  <link href="style.css?v=<?php echo time(); ?>" rel="stylesheet">
   <!-- Font Awesome (for share icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>

@@ -1,5 +1,5 @@
 <?php
-// Function helper for dynamic Trending Topik calculation
+// Function helper for dynamic & real-time Trending Topik calculation
 if (!function_exists('getDynamicTrendingData')) {
     function getDynamicTrendingData($con) {
         $totalRes = mysqli_query($con, "SELECT COUNT(*) as total FROM tblposts WHERE Is_Active=1");
@@ -16,103 +16,128 @@ if (!function_exists('getDynamicTrendingData')) {
             $posts[] = $r['PostTitle'] . " " . strip_tags($r['PostDetails']);
         }
 
-        // Tokoh dictionary & canonical names
-        $tokohDict = [
-            "Wali Kota Jaksel" => ["Wali Kota", "Walikota Syafrin", "Jaksel"],
-            "Bupati Sukabumi" => ["Bupati Sukabumi", "Marwan Hamami"],
-            "Paoji Nurjaman" => ["Paoji Nurjaman"],
-            "Prabowo Subianto" => ["Prabowo Subianto", "Prabowo"],
-            "Dedi Mulyadi" => ["Dedi Mulyadi"],
-            "Hasto Kristiyanto" => ["Hasto Kristiyanto", "Hasto"],
-            "Megawati Soekarnoputri" => ["Megawati Soekarnoputri", "Megawati"],
-            "Joko Widodo" => ["Joko Widodo", "Jokowi"],
-            "Gibran Rakabuming" => ["Gibran Rakabuming", "Gibran"],
-            "Anies Baswedan" => ["Anies Baswedan", "Anies"],
-            "Teddy Setiadi" => ["Teddy Setiadi", "Tedyy Setiadi"],
-            "Basuki Tjahaja Purnama" => ["Basuki Tjahaja Purnama", "Ahok"],
-            "Nadiem Makarim" => ["Nadiem Makarim"],
-            "Ganjar Pranowo" => ["Ganjar Pranowo"],
-            "Mahfud MD" => ["Mahfud MD"],
-            "Sherly Tjoanda" => ["Sherly Tjoanda"],
-            "Ufairha Nur Afifah" => ["Ufairha Nur Afifah"],
-            "Nicolas" => ["Nicolas"]
+        // Tokoh candidates matched against actual published articles
+        $tokohCandidates = [
+            ["name" => "Wali Kota Jaksel", "search" => "Wali Kota Jaksel", "keywords" => ["Syafrin", "Walikota Syafrin", "Wali Kota Jaksel", "Walikota Jaksel", "Wali Kota Jakarta Selatan", "Walikota Jakarta Selatan"]],
+            ["name" => "Bupati Sukabumi", "search" => "Bupati Sukabumi", "keywords" => ["Bupati Sukabumi", "Marwan Hamami"]],
+            ["name" => "Bupati Irwan Hamid", "search" => "Irwan Hamid", "keywords" => ["Irwan Hamid", "Bupati Pinrang"]],
+            ["name" => "Kapolres Lebak", "search" => "Kapolres Lebak", "keywords" => ["Kapolres Lebak", "Polres Lebak"]],
+            ["name" => "Paoji Nurjaman", "search" => "Paoji Nurjaman", "keywords" => ["Paoji Nurjaman"]],
+            ["name" => "Prabowo Subianto", "search" => "Prabowo Subianto", "keywords" => ["Prabowo Subianto", "Prabowo"]],
+            ["name" => "Sekda A. Calo Kerrang", "search" => "Calo Kerrang", "keywords" => ["Calo Kerrang", "A. Calo Kerrang", "Sekda Pinrang"]],
+            ["name" => "Letkol I Nyoman Artawan", "search" => "Nyoman Artawan", "keywords" => ["Nyoman Artawan", "Letkol Kav I Nyoman", "Dandim 0504"]],
+            ["name" => "Kombes Putu Yuni", "search" => "Putu Yuni", "keywords" => ["Putu Yuni", "Kombes Pol I Putu Yuni", "Kapolres Jaksel"]],
+            ["name" => "Hasto Kristiyanto", "search" => "Hasto Kristiyanto", "keywords" => ["Hasto Kristiyanto", "Sekjen PDI-P Hasto"]],
+            ["name" => "Megawati Soekarnoputri", "search" => "Megawati", "keywords" => ["Megawati Soekarnoputri", "Megawati"]],
+            ["name" => "Shin Tae-yong", "search" => "Shin Tae-yong", "keywords" => ["Shin Tae-yong"]],
+            ["name" => "Ufairha Nur Afifah", "search" => "Ufairha Nur Afifah", "keywords" => ["Ufairha Nur Afifah"]],
+            ["name" => "Ence Benno", "search" => "Ence Benno", "keywords" => ["Ence Benno", "Kades Babakanjaya"]],
+            ["name" => "Deliar Marzoeki", "search" => "Deliar Marzoeki", "keywords" => ["Deliar Marzoeki", "Kadisnakertrans Sumsel"]],
+            ["name" => "Mustari S.Pd", "search" => "Mustari", "keywords" => ["Mustari S.Pd", "UPT SDN 1 Pinrang"]],
+            ["name" => "Totok Supriyadi", "search" => "Totok Supriyadi", "keywords" => ["Totok Supriyadi", "Camat Tanjungsari"]],
+            ["name" => "Wabup Iing", "search" => "Wabup Iing", "keywords" => ["Wabup Iing"]],
+            ["name" => "Joko Widodo", "search" => "Jokowi", "keywords" => ["Joko Widodo", "Jokowi"]],
+            ["name" => "Gibran Rakabuming", "search" => "Gibran", "keywords" => ["Gibran Rakabuming", "Gibran"]],
+            ["name" => "Anies Baswedan", "search" => "Anies", "keywords" => ["Anies Baswedan", "Anies"]]
         ];
 
         $tokohCounts = [];
-        foreach ($posts as $text) {
-            foreach ($tokohDict as $canonical => $keywords) {
-                foreach ($keywords as $kw) {
+        foreach ($tokohCandidates as $cand) {
+            $count = 0;
+            foreach ($posts as $text) {
+                foreach ($cand['keywords'] as $kw) {
                     if (stripos($text, $kw) !== false) {
-                        $tokohCounts[$canonical] = ($tokohCounts[$canonical] ?? 0) + 1;
+                        $count++;
                         break;
                     }
                 }
             }
+            if ($count > 0) {
+                $tokohCounts[] = [
+                    'name' => $cand['name'],
+                    'search' => $cand['search'],
+                    'count' => $count
+                ];
+            }
         }
 
-        arsort($tokohCounts);
-        $tokohTop = array_slice($tokohCounts, 0, 8, true);
-        $maxTokohCount = !empty($tokohTop) ? max($tokohTop) : 1;
+        usort($tokohCounts, function($a, $b) { return $b['count'] <=> $a['count']; });
+        $tokohTop = array_slice($tokohCounts, 0, 8);
+        $maxTokohCount = !empty($tokohTop) ? $tokohTop[0]['count'] : 1;
 
         $tokohData = [];
-        foreach ($tokohTop as $name => $count) {
-            $pct = round(($count / $totalPosts) * 100, 2);
-            $barWidth = round(($count / $maxTokohCount) * 100);
+        foreach ($tokohTop as $item) {
+            $pct = round(($item['count'] / $totalPosts) * 100, 2);
+            $barWidth = round(($item['count'] / $maxTokohCount) * 100);
             if ($barWidth < 12) $barWidth = 12;
             $tokohData[] = [
-                'name' => $name,
-                'count' => $count,
+                'name' => $item['name'],
+                'search' => $item['search'],
+                'count' => $item['count'],
                 'percentage' => number_format($pct, 2) . '%',
                 'bar_width' => $barWidth
             ];
         }
 
-        // Peristiwa dictionary & canonical names
-        $peristiwaDict = [
-            "Bidang Pertanian" => ["Pertanian", "Transplanter", "Pisang Cavendish"],
-            "Bencana & Longsor" => ["Pergerakan Tanah", "Bencana", "Longsor"],
-            "Rapat Paripurna DPRD" => ["Rapat Paripurna", "Paripurna"],
-            "Pemeriksaan KPK" => ["KPK", "Pemeriksaan"],
-            "Pemberdayaan Yatim" => ["Anak Yatim", "Baznas"],
-            "Infrastruktur Jalan" => ["Hotmix", "Infrastruktur Jalan", "IJD"],
-            "Reses DPRD" => ["Reses"],
-            "Kegiatan Pramuka" => ["Pramuka", "Kwarcab"],
-            "Makan Bergizi Gratis" => ["Makan Bergizi Gratis", "MBG"],
-            "Hari Lahir Pancasila" => ["Hari Lahir Pancasila", "Pancasila"],
-            "Hari Bhayangkara" => ["Hari Bhayangkara", "Bhayangkara"],
-            "Idul Adha & Qurban" => ["Idul Adha", "Qurban"],
-            "Pesta Wirausaha" => ["Pesta Wirausaha", "TDA"],
-            "Laporan LKPJ Bupati" => ["LKPJ"],
-            "Silatnas Anak Rantau" => ["Silatnas"],
-            "Ekspansi Digital" => ["Hai Motion", "Creative Agency"]
+        // Peristiwa candidates matched against actual published articles
+        $peristiwaCandidates = [
+            ["name" => "Reses & Paripurna DPRD", "search" => "DPRD", "keywords" => ["Rapat Paripurna", "Paripurna DPRD", "Reses DPRD", "Reses Kedua"]],
+            ["name" => "Jaga Jakarta On The Spot", "search" => "Jaga Jakarta", "keywords" => ["Jaga Jakarta", "Jakarta On The Spot", "Kondusif Jakarta"]],
+            ["name" => "Operasi Knalpot Brong", "search" => "Knalpot Brong", "keywords" => ["Knalpot Brong", "Amankan 207 Knalpot"]],
+            ["name" => "Santunan Anak Yatim", "search" => "Anak Yatim", "keywords" => ["Anak Yatim", "Baznas Bazis", "Pemberdayaan Yatim"]],
+            ["name" => "Perbaikan Jalan PUPR", "search" => "PJJ Lebak", "keywords" => ["PUPR", "UPTD PJJ", "Perbaikan Jalan"]],
+            ["name" => "Bantuan Sembako Lansia", "search" => "Sembako Lansia", "keywords" => ["Sembako", "Bantuan Paket Sembako", "Lansia"]],
+            ["name" => "Penangkaran Badak Jawa", "search" => "Badak Jawa", "keywords" => ["Badak Jawa", "Penangkaran Badak"]],
+            ["name" => "Pelepasan Murid SD", "search" => "Pelepasan Murid", "keywords" => ["Pelepasan Murid", "SDN 1 Penganjang"]],
+            ["name" => "Pelatihan AI Drone", "search" => "AI Drone", "keywords" => ["AI Drone", "Korea Drone Nusantara"]],
+            ["name" => "Surplus APBD Pinrang", "search" => "Surplus", "keywords" => ["Surplus Keuangan", "Surplus APBD"]],
+            ["name" => "Coffee Morning Forkopimko", "search" => "Coffee Morning", "keywords" => ["Coffee Morning", "FORKOPIMKO"]],
+            ["name" => "Penanganan Rutilahu", "search" => "Rutilahu", "keywords" => ["Rutilahu", "Rumah Tidak Layak Huni"]],
+            ["name" => "Program IJD Jalan", "search" => "IJD", "keywords" => ["Instruksi Presiden Jalan Daerah", "IJD"]],
+            ["name" => "Pemeriksaan KPK", "search" => "KPK", "keywords" => ["Pemeriksaan KPK", "Gedung KPK"]],
+            ["name" => "Ekspansi Hai Motion", "search" => "Hai Motion", "keywords" => ["Hai Motion", "Layanan Kreatif"]],
+            ["name" => "Pelantikan TP PKK", "search" => "TP PKK", "keywords" => ["TP PKK", "Pelantikan Enam Ketua"]],
+            ["name" => "Keberatan SK Kades", "search" => "Babakanjaya", "keywords" => ["Babakanjaya", "Keberatan SK Bupati"]],
+            ["name" => "Pemecatan Shin Tae-yong", "search" => "Shin Tae-yong", "keywords" => ["Shin Tae-yong", "Dipecat dari Kursi"]],
+            ["name" => "Bazaar Ramadhan", "search" => "Bazaar Ramadhan", "keywords" => ["Bazaar Ramadhan"]],
+            ["name" => "HUT PDIP & Pidato", "search" => "HUT PDIP", "keywords" => ["HUT ke-52 PDIP", "Pidato Politik"]]
         ];
 
         $peristiwaCounts = [];
-        foreach ($posts as $text) {
-            foreach ($peristiwaDict as $canonical => $keywords) {
-                foreach ($keywords as $kw) {
+        foreach ($peristiwaCandidates as $cand) {
+            $count = 0;
+            foreach ($posts as $text) {
+                foreach ($cand['keywords'] as $kw) {
                     if (stripos($text, $kw) !== false) {
-                        $peristiwaCounts[$canonical] = ($peristiwaCounts[$canonical] ?? 0) + 1;
+                        $count++;
                         break;
                     }
                 }
             }
+            if ($count > 0) {
+                $peristiwaCounts[] = [
+                    'name' => $cand['name'],
+                    'search' => $cand['search'],
+                    'count' => $count
+                ];
+            }
         }
 
-        arsort($peristiwaCounts);
-        $peristiwaTop = array_slice($peristiwaCounts, 0, 8, true);
-        $maxPeristiwaCount = !empty($peristiwaTop) ? max($peristiwaTop) : 1;
+        usort($peristiwaCounts, function($a, $b) { return $b['count'] <=> $a['count']; });
+        $peristiwaTop = array_slice($peristiwaCounts, 0, 8);
+        $maxPeristiwaCount = !empty($peristiwaTop) ? $peristiwaTop[0]['count'] : 1;
 
         $peristiwaData = [];
-        foreach ($peristiwaTop as $name => $count) {
-            $pct = round(($count / $totalPosts) * 100, 2);
-            $barWidth = round(($count / $maxPeristiwaCount) * 100);
+        foreach ($peristiwaTop as $item) {
+            $pct = round(($item['count'] / $totalPosts) * 100, 2);
+            $barWidth = round(($item['count'] / $maxPeristiwaCount) * 100);
             if ($barWidth < 12) $barWidth = 12;
-            $displayName = strlen($name) > 20 ? substr($name, 0, 18) . '...' : $name;
+            $displayName = strlen($item['name']) > 22 ? substr($item['name'], 0, 20) . '...' : $item['name'];
             $peristiwaData[] = [
                 'name' => $displayName,
-                'full_name' => $name,
-                'count' => $count,
+                'full_name' => $item['name'],
+                'search' => $item['search'],
+                'count' => $item['count'],
                 'percentage' => number_format($pct, 2) . '%',
                 'bar_width' => $barWidth
             ];
@@ -153,11 +178,13 @@ $peristiwaList = $trendingData['peristiwa'];
             <?php if (!empty($tokohList)) {
               foreach ($tokohList as $item) { ?>
                 <li>
-                  <div class="trending-name"><?php echo htmlentities($item['name']); ?></div>
-                  <div class="trending-bar-container">
-                    <div class="trending-bar" style="width: <?php echo $item['bar_width']; ?>%;"></div>
-                    <span class="trending-value"><?php echo htmlentities($item['percentage']); ?></span>
-                  </div>
+                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" title="Cari berita seputar <?php echo htmlentities($item['name']); ?>">
+                    <div class="trending-name"><?php echo htmlentities($item['name']); ?></div>
+                    <div class="trending-bar-container">
+                      <div class="trending-bar" style="width: <?php echo $item['bar_width']; ?>%;"></div>
+                      <span class="trending-value"><?php echo htmlentities($item['percentage']); ?></span>
+                    </div>
+                  </a>
                 </li>
               <?php }
             } else { ?>
@@ -170,11 +197,13 @@ $peristiwaList = $trendingData['peristiwa'];
             <?php if (!empty($peristiwaList)) {
               foreach ($peristiwaList as $item) { ?>
                 <li>
-                  <div class="trending-name" title="<?php echo htmlentities($item['full_name']); ?>"><?php echo htmlentities($item['name']); ?></div>
-                  <div class="trending-bar-container">
-                    <div class="trending-bar" style="width: <?php echo $item['bar_width']; ?>%;"></div>
-                    <span class="trending-value"><?php echo htmlentities($item['percentage']); ?></span>
-                  </div>
+                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" title="Cari berita seputar <?php echo htmlentities($item['full_name']); ?>">
+                    <div class="trending-name"><?php echo htmlentities($item['name']); ?></div>
+                    <div class="trending-bar-container">
+                      <div class="trending-bar" style="width: <?php echo $item['bar_width']; ?>%;"></div>
+                      <span class="trending-value"><?php echo htmlentities($item['percentage']); ?></span>
+                    </div>
+                  </a>
                 </li>
               <?php }
             } else { ?>

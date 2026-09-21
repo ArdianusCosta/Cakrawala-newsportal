@@ -1,21 +1,21 @@
 <?php 
 session_start();
 include('includes/config.php');
+
+$pageTitle = 'Semua Artikel & Berita Terbaru - Cakrawala Online';
+$pageDescription = 'Kumpulan seluruh artikel dan berita terbaru Indramayu, Jawa Barat dan Nasional di Cakrawala Online';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Cakrawala | Artikel Terbaru</title>
- 
-        <link rel="icon" href="/images/Logo.ico" type="image/x-icon">
+<?php include('includes/seo-meta.php'); ?>
 <!-- CSS -->
 <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="css/modern-business.css" rel="stylesheet">
-<link href="style.css" rel="stylesheet">
+<link href="style.css?v=<?php echo time(); ?>" rel="stylesheet">
 </head>
 <body>
 <?php include('includes/header.php'); ?>

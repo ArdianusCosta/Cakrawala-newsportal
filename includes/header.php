@@ -20,11 +20,7 @@ $meta_image = isset($imageUrl) ? $imageUrl : 'https://cakrawalaonline.com/admin/
 $meta_title = isset($pageTitle) ? $pageTitle : 'Cakrawala';
 ?>
 
-<head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
-</head>
+
 
 <!-- Animated Page Preloader (Hai Motion Style with Cakrawala Logo) -->
 <div id="cakrawala-preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #1b202c 0%, #090a0d 100%); z-index: 999999; display: flex; justify-content: center; align-items: center; flex-direction: column;">

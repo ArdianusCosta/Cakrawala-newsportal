@@ -3,23 +3,36 @@ session_start();
 error_reporting(0);
 include('includes/config.php');
 
-    ?>
+if (!empty($_GET['s'])) {
+    $st = trim($_GET['s']);
+    $_SESSION['searchtitle'] = $st;
+} elseif (!empty($_GET['searchtitle'])) {
+    $st = trim($_GET['searchtitle']);
+    $_SESSION['searchtitle'] = $st;
+} elseif (!empty($_POST['searchtitle'])) {
+    $st = trim($_POST['searchtitle']);
+    $_SESSION['searchtitle'] = $st;
+} else {
+    $st = isset($_SESSION['searchtitle']) ? trim($_SESSION['searchtitle']) : '';
+}
+
+$pageTitle = !empty($st) ? 'Hasil Pencarian: "' . htmlspecialchars($st) . '" - Cakrawala Online' : 'Pencarian Berita - Cakrawala Online';
+?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
   <head>
 
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>News Portal | Search  Page</title>
+    <?php 
+    $pageDescription = "Hasil pencarian berita " . $st . " di Cakrawala Online";
+    include('includes/seo-meta.php'); 
+    ?>
 
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/modern-business.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link href="style.css?v=<?php echo time(); ?>" rel="stylesheet">
 
   </head>
 
@@ -29,7 +42,7 @@ include('includes/config.php');
    <?php include('includes/header.php');?>
 
     <!-- Page Content -->
-    <div class="container">
+    <div class="container" style="margin-top: 20px;">
       <div class="row mt-2">
         <div class="col-12 px-2 px-md-3">
           <?php include('includes/category-bar.php'); ?>
@@ -40,77 +53,159 @@ include('includes/config.php');
         <!-- Blog Entries Column -->
         <div class="col-md-8">
 
-          <!-- Blog Post -->
+          <div class="search-header mb-4 p-3 bg-light rounded border-left border-danger" style="border-left-width: 5px !important;">
+            <h4 class="mb-1 font-weight-bold" style="font-size: 1.25rem;">
+              <i class="bi bi-search text-danger mr-2"></i>Hasil Pencarian
+            </h4>
+            <?php if (!empty($st)) { ?>
+              <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                Menampilkan berita untuk kata kunci: <strong class="text-dark">"<?php echo htmlentities($st); ?>"</strong>
+              </p>
+            <?php } else { ?>
+              <p class="text-muted mb-0" style="font-size: 0.9rem;">Silakan masukkan kata kunci pencarian pada kolom pencarian di atas.</p>
+            <?php } ?>
+          </div>
+
 <?php 
-        if (!empty($_POST['searchtitle'])) {
-            $_SESSION['searchtitle'] = $_POST['searchtitle'];
-        }
-        $st = isset($_SESSION['searchtitle']) ? $_SESSION['searchtitle'] : '';
-        $st_escaped = mysqli_real_escape_string($con, $st);
-             
-
-
-
-
-     if (isset($_GET['pageno'])) {
-            $pageno = $_GET['pageno'];
+        if (isset($_GET['pageno'])) {
+            $pageno = (int)$_GET['pageno'];
         } else {
             $pageno = 1;
         }
         $no_of_records_per_page = 8;
-        $offset = ($pageno-1) * $no_of_records_per_page;
+        $offset = ($pageno - 1) * $no_of_records_per_page;
 
+        if (!empty($st)) {
+            $st_escaped = mysqli_real_escape_string($con, $st);
+            $whereConditions = [];
+            $whereConditions[] = "tblposts.PostTitle LIKE '%$st_escaped%'";
+            $whereConditions[] = "tblposts.PostDetails LIKE '%$st_escaped%'";
 
-        $total_pages_sql = "SELECT COUNT(*) FROM tblposts";
-        $result = mysqli_query($con,$total_pages_sql);
+            $words = explode(' ', $st);
+            if (count($words) > 1) {
+                $wordConditionsTitle = [];
+                $wordConditionsDetails = [];
+                foreach ($words as $word) {
+                    $w = trim($word);
+                    if (strlen($w) < 2) continue;
+                    if (strtolower($w) === 'wali' || strtolower($w) === 'kota' || strtolower($w) === 'walikota') {
+                        $wordConditionsTitle[] = "(tblposts.PostTitle LIKE '%Walikota%' OR tblposts.PostTitle LIKE '%Wali Kota%' OR tblposts.PostTitle LIKE '%Wali-Kota%')";
+                        $wordConditionsDetails[] = "(tblposts.PostDetails LIKE '%Walikota%' OR tblposts.PostDetails LIKE '%Wali Kota%' OR tblposts.PostDetails LIKE '%Wali-Kota%')";
+                    } else {
+                        $w_esc = mysqli_real_escape_string($con, $w);
+                        $wordConditionsTitle[] = "tblposts.PostTitle LIKE '%$w_esc%'";
+                        $wordConditionsDetails[] = "tblposts.PostDetails LIKE '%$w_esc%'";
+                    }
+                }
+                if (!empty($wordConditionsTitle)) {
+                    $whereConditions[] = "(" . implode(" AND ", $wordConditionsTitle) . ")";
+                    $whereConditions[] = "(" . implode(" AND ", $wordConditionsDetails) . ")";
+                }
+            }
+            $sqlWhere = "(" . implode(" OR ", $whereConditions) . ") AND tblposts.Is_Active=1";
+        } else {
+            $sqlWhere = "tblposts.Is_Active=1";
+        }
+
+        $total_pages_sql = "SELECT COUNT(*) FROM tblposts WHERE $sqlWhere";
+        $result = mysqli_query($con, $total_pages_sql);
         $total_rows = mysqli_fetch_array($result)[0];
-        $total_pages = ceil($total_rows / $no_of_records_per_page);
+        $total_pages = max(1, ceil($total_rows / $no_of_records_per_page));
 
+        $query = mysqli_query($con, "
+          SELECT tblposts.id as pid,
+                 tblposts.PostTitle as posttitle,
+                 tblcategory.CategoryName as category,
+                 tblposts.PostDetails as postdetails,
+                 tblposts.PostingDate as postingdate,
+                 tblposts.PostImage as postimage,
+                 tblposts.views as views
+          FROM tblposts 
+          LEFT JOIN tblcategory ON tblcategory.id = tblposts.CategoryId 
+          WHERE $sqlWhere 
+          ORDER BY tblposts.PostingDate DESC 
+          LIMIT $offset, $no_of_records_per_page
+        ");
 
-$query=mysqli_query($con,"select tblposts.id as pid,tblposts.PostTitle as posttitle,tblcategory.CategoryName as category,tblsubcategory.Subcategory as subcategory,tblposts.PostDetails as postdetails,tblposts.PostingDate as postingdate,tblposts.PostUrl as url from tblposts left join tblcategory on tblcategory.id=tblposts.CategoryId left join tblsubcategory on tblsubcategory.SubCategoryId=tblposts.SubCategoryId where tblposts.PostTitle like '%$st_escaped%' AND tblposts.Is_Active=1 LIMIT $offset, $no_of_records_per_page");
-
-$rowcount=mysqli_num_rows($query);
-if($rowcount==0)
-{
-echo "No record found";
-}
-else {
-while ($row=mysqli_fetch_array($query)) {
-
-
+        $rowcount = mysqli_num_rows($query);
+        if ($rowcount == 0) {
 ?>
-
-          <div class="card mb-4">
-      
-            <div class="card-body">
-              <h2 class="card-title"><?php echo htmlentities($row['posttitle']);?></h2>
-         
-              <a href="news-details.php?nid=<?php echo htmlentities($row['pid'])?>" class="btn btn-primary">Read More &rarr;</a>
-            </div>
-            <div class="card-footer text-muted">
-              Posted on <?php echo htmlentities($row['postingdate']);?>
-           
+          <div class="alert alert-warning py-4 text-center my-4" role="alert">
+            <h5 class="alert-heading font-weight-bold mb-2">Berita Tidak Ditemukan</h5>
+            <p class="mb-0 text-muted">Maaf, tidak ada berita yang sesuai dengan kata kunci "<strong><?php echo htmlentities($st); ?></strong>". Coba kata kunci lain atau cari topik trending di sidebar.</p>
+          </div>
+<?php 
+        } else {
+            while ($row = mysqli_fetch_array($query)) {
+                $img = !empty($row['postimage']) ? $row['postimage'] : 'default.jpg';
+                $snippet = strip_tags($row['postdetails']);
+                if (mb_strlen($snippet) > 160) {
+                    $snippet = mb_substr($snippet, 0, 160) . '...';
+                }
+?>
+          <div class="card mb-4 border-0 shadow-sm rounded-lg overflow-hidden grid-card">
+            <div class="card-body p-3">
+              <div class="row align-items-center">
+                <div class="col-md-4 mb-3 mb-md-0">
+                  <img src="admin/uploads/<?php echo htmlentities($img); ?>" 
+                       class="img-fluid rounded w-100" 
+                       alt="<?php echo htmlentities($row['posttitle']); ?>"
+                       style="height: 140px; object-fit: cover;">
+                </div>
+                <div class="col-md-8 d-flex flex-column justify-content-between">
+                  <div>
+                    <div class="mb-1">
+                      <span class="badge badge-danger font-weight-normal px-2 py-1" style="font-size: 0.7rem;">
+                        <?php echo htmlentities($row['category']); ?>
+                      </span>
+                      <small class="text-muted ml-2" style="font-size: 0.75rem;">
+                        <i class="bi bi-calendar3 mr-1"></i><?php echo date("d M Y", strtotime($row['postingdate'])); ?>
+                      </small>
+                    </div>
+                    <h5 class="card-title font-weight-bold mb-2" style="font-size: 1.05rem; line-height: 1.35;">
+                      <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" class="text-dark text-decoration-none hover-danger">
+                        <?php echo htmlentities($row['posttitle']); ?>
+                      </a>
+                    </h5>
+                    <p class="card-text text-muted mb-2" style="font-size: 0.85rem; line-height: 1.4;">
+                      <?php echo htmlentities($snippet); ?>
+                    </p>
+                  </div>
+                  <div>
+                    <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" class="btn btn-sm btn-outline-danger font-weight-bold" style="font-size: 0.78rem;">
+                      Baca Selengkapnya &rarr;
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 <?php } ?>
 
-    <ul class="pagination justify-content-center mb-4">
-        <li class="page-item"><a href="?pageno=1"  class="page-link">First</a></li>
-        <li class="<?php if($pageno <= 1){ echo 'disabled'; } ?> page-item">
-            <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>" class="page-link">Prev</a>
-        </li>
-        <li class="<?php if($pageno >= $total_pages){ echo 'disabled'; } ?> page-item">
-            <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?pageno=".($pageno + 1); } ?> " class="page-link">Next</a>
-        </li>
-        <li class="page-item"><a href="?pageno=<?php echo $total_pages; ?>" class="page-link">Last</a></li>
-    </ul>
-<?php } ?>
-       
           <!-- Pagination -->
+          <ul class="pagination justify-content-center mb-4">
+            <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
+              <a href="?s=<?php echo urlencode($st); ?>&pageno=1" class="page-link">Awal</a>
+            </li>
+            <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
+              <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?s=" . urlencode($st) . "&pageno=" . ($pageno - 1); } ?>" class="page-link">&laquo; Prev</a>
+            </li>
+            <li class="page-item active">
+              <span class="page-link bg-danger border-danger"><?php echo $pageno; ?> / <?php echo $total_pages; ?></span>
+            </li>
+            <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+              <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?s=" . urlencode($st) . "&pageno=" . ($pageno + 1); } ?>" class="page-link">Next &raquo;</a>
+            </li>
+            <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+              <a href="?s=<?php echo urlencode($st); ?>&pageno=<?php echo $total_pages; ?>" class="page-link">Akhir</a>
+            </li>
+          </ul>
+<?php } ?>
+
         </div>
 
         <!-- Sidebar Widgets Column -->
-      <?php include('includes/sidebar.php');?>
+        <?php include('includes/sidebar.php');?>
       </div>
       <!-- /.row -->
 
@@ -118,12 +213,11 @@ while ($row=mysqli_fetch_array($query)) {
     <!-- /.container -->
 
     <!-- Footer -->
-      <?php include('includes/footer.php');?>
-
+    <?php include('includes/footer.php');?>
 
     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   </body>
-</html>
+</html>

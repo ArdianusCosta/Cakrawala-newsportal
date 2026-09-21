@@ -2,17 +2,27 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+
+$catid = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
+$catName = 'Kategori';
+if ($catid > 0) {
+    $cQuery = mysqli_query($con, "SELECT CategoryName FROM tblcategory WHERE id=$catid");
+    if ($cRow = mysqli_fetch_assoc($cQuery)) {
+        $catName = $cRow['CategoryName'];
+    }
+}
+$pageTitle = 'Berita ' . $catName . ' - Cakrawala Online';
+$pageDescription = 'Kumpulan berita terkini kategori ' . $catName . ' seputar Indramayu dan Nasional di Cakrawala Online';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>News Portal | Category Page</title>
+  <?php include('includes/seo-meta.php'); ?>
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/modern-business.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
+  <link href="style.css?v=<?php echo time(); ?>" rel="stylesheet">
 </head>
 
 <body>
