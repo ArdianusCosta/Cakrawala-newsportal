@@ -1,6 +1,5 @@
 <?php 
 session_start();
-error_reporting(0);
 include('includes/config.php');
 
 if (!empty($_GET['s'])) {
@@ -81,25 +80,32 @@ $pageTitle = !empty($st) ? 'Hasil Pencarian: "' . htmlspecialchars($st) . '" - C
             $whereConditions[] = "tblposts.PostTitle LIKE '%$st_escaped%'";
             $whereConditions[] = "tblposts.PostDetails LIKE '%$st_escaped%'";
 
-            $words = explode(' ', $st);
-            if (count($words) > 1) {
-                $wordConditionsTitle = [];
-                $wordConditionsDetails = [];
-                foreach ($words as $word) {
-                    $w = trim($word);
-                    if (strlen($w) < 2) continue;
-                    if (strtolower($w) === 'wali' || strtolower($w) === 'kota' || strtolower($w) === 'walikota') {
-                        $wordConditionsTitle[] = "(tblposts.PostTitle LIKE '%Walikota%' OR tblposts.PostTitle LIKE '%Wali Kota%' OR tblposts.PostTitle LIKE '%Wali-Kota%')";
-                        $wordConditionsDetails[] = "(tblposts.PostDetails LIKE '%Walikota%' OR tblposts.PostDetails LIKE '%Wali Kota%' OR tblposts.PostDetails LIKE '%Wali-Kota%')";
+            // Extract clean individual words ignoring common stop words
+            $words = preg_split('/[\s&,\-]+/', $st);
+            $stopWords = ['dan', 'di', 'ke', 'yang', 'seputar', 'pada', 'atau', 'untuk', 'dengan', 'dari'];
+            $cleanWords = [];
+            foreach ($words as $word) {
+                $w = trim($word);
+                if (mb_strlen($w) >= 3 && !in_array(mb_strtolower($w), $stopWords)) {
+                    $cleanWords[] = mysqli_real_escape_string($con, $w);
+                }
+            }
+
+            if (!empty($cleanWords)) {
+                $wordTitleConds = [];
+                $wordDetailsConds = [];
+                foreach ($cleanWords as $cw) {
+                    if (mb_strtolower($cw) === 'wali' || mb_strtolower($cw) === 'kota' || mb_strtolower($cw) === 'walikota') {
+                        $wordTitleConds[] = "(tblposts.PostTitle LIKE '%Walikota%' OR tblposts.PostTitle LIKE '%Wali Kota%' OR tblposts.PostTitle LIKE '%Wali-Kota%')";
+                        $wordDetailsConds[] = "(tblposts.PostDetails LIKE '%Walikota%' OR tblposts.PostDetails LIKE '%Wali Kota%' OR tblposts.PostDetails LIKE '%Wali-Kota%')";
                     } else {
-                        $w_esc = mysqli_real_escape_string($con, $w);
-                        $wordConditionsTitle[] = "tblposts.PostTitle LIKE '%$w_esc%'";
-                        $wordConditionsDetails[] = "tblposts.PostDetails LIKE '%$w_esc%'";
+                        $wordTitleConds[] = "tblposts.PostTitle LIKE '%$cw%'";
+                        $wordDetailsConds[] = "tblposts.PostDetails LIKE '%$cw%'";
                     }
                 }
-                if (!empty($wordConditionsTitle)) {
-                    $whereConditions[] = "(" . implode(" AND ", $wordConditionsTitle) . ")";
-                    $whereConditions[] = "(" . implode(" AND ", $wordConditionsDetails) . ")";
+                if (!empty($wordTitleConds)) {
+                    $whereConditions[] = "(" . implode(" OR ", $wordTitleConds) . ")";
+                    $whereConditions[] = "(" . implode(" OR ", $wordDetailsConds) . ")";
                 }
             }
             $sqlWhere = "(" . implode(" OR ", $whereConditions) . ") AND tblposts.Is_Active=1";
@@ -147,32 +153,32 @@ $pageTitle = !empty($st) ? 'Hasil Pencarian: "' . htmlspecialchars($st) . '" - C
             <div class="card-body p-3">
               <div class="row align-items-center">
                 <div class="col-md-4 mb-3 mb-md-0">
-                  <img src="admin/uploads/<?php echo htmlentities($img); ?>" 
+                  <img src="admin/uploads/<?php echo htmlentities((string)$img); ?>" 
                        class="img-fluid rounded w-100" 
-                       alt="<?php echo htmlentities($row['posttitle']); ?>"
+                       alt="<?php echo htmlentities((string)($row['posttitle'] ?? '')); ?>"
                        style="height: 140px; object-fit: cover;">
                 </div>
                 <div class="col-md-8 d-flex flex-column justify-content-between">
                   <div>
                     <div class="mb-1">
                       <span class="badge badge-danger font-weight-normal px-2 py-1" style="font-size: 0.7rem;">
-                        <?php echo htmlentities($row['category']); ?>
+                        <?php echo htmlentities((string)($row['category'] ?? 'Berita')); ?>
                       </span>
                       <small class="text-muted ml-2" style="font-size: 0.75rem;">
-                        <i class="bi bi-calendar3 mr-1"></i><?php echo date("d M Y", strtotime($row['postingdate'])); ?>
+                        <i class="bi bi-calendar3 mr-1"></i><?php echo !empty($row['postingdate']) ? date("d M Y", strtotime($row['postingdate'])) : '-'; ?>
                       </small>
                     </div>
                     <h5 class="card-title font-weight-bold mb-2" style="font-size: 1.05rem; line-height: 1.35;">
-                      <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" class="text-dark text-decoration-none hover-danger">
-                        <?php echo htmlentities($row['posttitle']); ?>
+                      <a href="news-details.php?nid=<?php echo htmlentities((string)$row['pid']); ?>" class="text-dark text-decoration-none hover-danger">
+                        <?php echo htmlentities((string)($row['posttitle'] ?? '')); ?>
                       </a>
                     </h5>
                     <p class="card-text text-muted mb-2" style="font-size: 0.85rem; line-height: 1.4;">
-                      <?php echo htmlentities($snippet); ?>
+                      <?php echo htmlentities((string)$snippet); ?>
                     </p>
                   </div>
                   <div>
-                    <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" class="btn btn-sm btn-outline-danger font-weight-bold" style="font-size: 0.78rem;">
+                    <a href="news-details.php?nid=<?php echo htmlentities((string)$row['pid']); ?>" class="btn btn-sm btn-outline-danger font-weight-bold" style="font-size: 0.78rem;">
                       Baca Selengkapnya &rarr;
                     </a>
                   </div>

@@ -2,7 +2,6 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-error_reporting(0);
 include('includes/config.php');
 
 // ambil catid dari URL untuk cek menu aktif

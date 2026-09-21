@@ -55,8 +55,14 @@ $total_pages = ceil($total_rows / $no_of_records_per_page);
 // ambil nama kategori
 $categoryNameQuery = mysqli_query($con,"SELECT CategoryName FROM tblcategory WHERE id='".$_SESSION['catid']."'");
 $categoryName = mysqli_fetch_array($categoryNameQuery)['CategoryName'];
-echo "<h1>".htmlentities($categoryName)." News</h1>";
 ?>
+
+<div class="category-header mb-4 p-3 bg-light rounded border-left border-danger" style="border-left-width: 5px !important;">
+  <h4 class="mb-1 font-weight-bold" style="font-size: 1.25rem;">
+    <i class="bi bi-folder-fill text-danger mr-2"></i>Kategori: <strong class="text-danger"><?php echo htmlentities($categoryName); ?></strong>
+  </h4>
+  <p class="text-muted mb-0" style="font-size: 0.88rem;">Menampilkan kumpulan berita terkini dalam kategori <?php echo htmlentities($categoryName); ?>.</p>
+</div>
 
 <!-- ====== 5 artikel pertama ====== -->
 <?php
@@ -160,53 +166,67 @@ while ($row = mysqli_fetch_array($secondPart)) {
 <?php include('includes/sidebar.php');?>
 
 </div>
- <!-- TERBARU -->
-      <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
-        <h4 class="mb-0">Terbaru</h4>
-        <a href="all-news.php" class="text-danger mr-4" style="text-decoration: none;">Lihat Semua
-          <i class="fa fa-arrow-right" aria-hidden="true"></i>
-        </a>
-      </div>
+<!-- BERITA LAINNYA -->
+<div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+  <h4 class="mb-0 font-weight-bold" style="font-size: 1.25rem;">
+    <i class="bi bi-newspaper text-danger mr-2"></i>Berita Lainnya
+  </h4>
+</div>
 
-      <div class="terbaru-grid">
-        <?php
-        $terbaruQuery = mysqli_query($con, "SELECT 
-              p.id as pid,
-              p.PostTitle as posttitle,
-              c.CategoryName as category,
-              p.PostImage as PostImage,
-              p.PostingDate as postingdate,
-              p.PostDetails as postdetails,
-              p.Views as views,
-              a.AdminUserName as author
-          FROM tblposts p
-          LEFT JOIN tblcategory c ON c.id = p.CategoryId 
-          LEFT JOIN tbladmin a ON a.id = p.PostedBy
-          WHERE p.Is_Active = 1
-          ORDER BY p.PostingDate DESC 
-          LIMIT 4
-        ");
+<div class="terbaru-grid mb-4">
+  <?php
+  $terbaruQuery = mysqli_query($con, "SELECT 
+        p.id as pid,
+        p.PostTitle as posttitle,
+        c.CategoryName as category,
+        p.PostImage as PostImage,
+        p.PostingDate as postingdate,
+        p.PostDetails as postdetails,
+        p.Views as views,
+        a.AdminUserName as author
+    FROM tblposts p
+    LEFT JOIN tblcategory c ON c.id = p.CategoryId 
+    LEFT JOIN tbladmin a ON a.id = p.PostedBy
+    WHERE p.Is_Active = 1 AND p.CategoryId != '".$_SESSION['catid']."'
+    ORDER BY p.PostingDate DESC 
+    LIMIT 4
+  ");
 
-        while ($row = mysqli_fetch_array($terbaruQuery)) {
-        ?>
-          <div class="terbaru-card">
-            <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
-               class="text-decoration-none text-dark d-block h-100">
-              <div class="thumb-landscape mb-2">
-                <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
-                     alt="<?php echo htmlentities($row['posttitle']); ?>">
-              </div>
-              <div class="mb-1"><span class="badge-category"><?php echo htmlentities($row['category']); ?></span></div>
-              <h2 class="mb-1"><?php echo htmlentities($row['posttitle']); ?></h2>
-              <small class="text-muted" style="font-size: 0.8rem;">
-                <?php echo date("d M Y", strtotime($row['postingdate'])); ?> |
-                <?php echo htmlentities($row['author']); ?> |
-                <?php echo htmlentities($row['views']); ?> views
-              </small>
-            </a>
+  while ($row = mysqli_fetch_array($terbaruQuery)) {
+      $snippet = strip_tags($row['postdetails'] ?? '');
+      if (mb_strlen($snippet) > 90) {
+          $snippet = mb_substr($snippet, 0, 90) . '...';
+      }
+  ?>
+    <div class="terbaru-card shadow-sm border-0 rounded overflow-hidden">
+      <a href="news-details.php?nid=<?php echo htmlentities($row['pid']); ?>" 
+         class="text-decoration-none text-dark d-flex flex-column h-100">
+        <div class="thumb-landscape" style="height: 160px; overflow: hidden;">
+          <img src="admin/uploads/<?php echo htmlentities($row['PostImage'] ?: 'default.jpg'); ?>" 
+               alt="<?php echo htmlentities($row['posttitle']); ?>"
+               style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="p-3 d-flex flex-column flex-grow-1">
+          <div class="mb-2">
+            <span class="badge badge-danger font-weight-normal px-2 py-1" style="font-size: 0.7rem;">
+              <?php echo htmlentities($row['category']); ?>
+            </span>
           </div>
-        <?php } ?>
-      </div>
+          <h5 class="card-title font-weight-bold mb-2" style="font-size: 0.95rem; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #1e293b;">
+            <?php echo htmlentities($row['posttitle']); ?>
+          </h5>
+          <p class="text-muted mb-2" style="font-size: 0.82rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            <?php echo htmlentities($snippet); ?>
+          </p>
+          <small class="text-muted mt-auto d-block" style="font-size: 0.75rem;">
+            <i class="bi bi-calendar3 mr-1"></i><?php echo date("d M Y", strtotime($row['postingdate'])); ?> | 
+            <?php echo htmlentities($row['views'] ?? 0); ?> views
+          </small>
+        </div>
+      </a>
+    </div>
+  <?php } ?>
+</div>
 
 <!-- Artikel per kategori -->
 <div class="mt-5">
@@ -229,32 +249,34 @@ while ($row = mysqli_fetch_array($secondPart)) {
       <div class="col-md-6 mb-4">
         <h5 class="mb-3"><span class="badge badge-danger"><?php echo htmlentities($catName); ?></span></h5>
         <div class="row">
-          <?php while ($post = mysqli_fetch_array($postQuery)) { ?>
+          <?php while ($post = mysqli_fetch_array($postQuery)) { 
+            $postSnippet = strip_tags($post['PostDetails'] ?? '');
+            if (mb_strlen($postSnippet) > 80) {
+                $postSnippet = mb_substr($postSnippet, 0, 80) . '...';
+            }
+          ?>
             <div class="col-md-6 mb-3">
-              <div class="card h-100 shadow-sm border-0">
+              <div class="card h-100 shadow-sm border-0 overflow-hidden">
                 <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>">
-                  <div style="width:100%; height:180px; overflow:hidden; border-radius:6px 6px 0 0;">
-                    <img src="admin/uploads/<?php echo htmlentities($post['PostImage'] ?: 'default.jpg'); ?>" style="width:100%; height:100%; object-fit:cover;">
+                  <div style="width:100%; height:160px; overflow:hidden; border-radius:6px 6px 0 0;">
+                    <img src="admin/uploads/<?php echo htmlentities($post['PostImage'] ?: 'default.jpg'); ?>" style="width:100%; height:100%; object-fit:cover;" alt="<?php echo htmlentities($post['PostTitle']); ?>">
                   </div>
                 </a>
-                <div class="card-body p-2">
+                <div class="card-body p-3 d-flex flex-column">
                   <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>" class="text-dark text-decoration-none">
-                    <h6 class="mb-1" style="font-size:1rem; font-weight:600;"><?php echo htmlentities($post['PostTitle']); ?></h6>
+                    <h6 class="mb-1 font-weight-bold" style="font-size:0.95rem; line-height:1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?php echo htmlentities($post['PostTitle']); ?></h6>
                   </a>
-                  <small class="text-muted d-block mb-1">
-                    <?php echo date("d M Y", strtotime($post['PostingDate'])); ?> | 
-                    <?php echo htmlentities($post['author']); ?> | 
-                    <?php echo htmlentities($post['views']); ?> views
+                  <p class="text-muted mb-2 mt-1" style="font-size:0.82rem; line-height:1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?php echo htmlentities($postSnippet); ?></p>
+                  <small class="text-muted mt-auto d-block" style="font-size: 0.75rem;">
+                    <i class="bi bi-calendar3 mr-1"></i><?php echo date("d M Y", strtotime($post['PostingDate'])); ?> | 
+                    <?php echo htmlentities($post['views'] ?? 0); ?> views
                   </small>
-
-
-                  <p class="text-muted mb-0" style="font-size:0.85rem;"><?php echo substr(strip_tags($post['PostDetails']),0,80); ?>...</p>
                 </div>
               </div>
             </div>
           <?php } ?>
         </div>
-        <a href="category.php?catid=<?php echo $catId; ?>" class="text-danger small">Lihat semua »</a>
+        <a href="category.php?catid=<?php echo $catId; ?>" class="text-danger small font-weight-bold">Lihat semua &raquo;</a>
       </div>
     <?php } ?>
   </div>

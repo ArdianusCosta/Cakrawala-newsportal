@@ -10,35 +10,37 @@ if (!function_exists('getDynamicTrendingData')) {
             return ['tokoh' => [], 'peristiwa' => [], 'total' => 0];
         }
 
-        $postsQuery = mysqli_query($con, "SELECT PostTitle, PostDetails FROM tblposts WHERE Is_Active=1");
+        $postsQuery = mysqli_query($con, "SELECT PostTitle, SUBSTRING(PostDetails, 1, 300) as Excerpt FROM tblposts WHERE Is_Active=1");
         $posts = [];
-        while ($r = mysqli_fetch_assoc($postsQuery)) {
-            $posts[] = $r['PostTitle'] . " " . strip_tags($r['PostDetails']);
+        if ($postsQuery) {
+            while ($r = mysqli_fetch_assoc($postsQuery)) {
+                $posts[] = $r['PostTitle'] . " " . strip_tags($r['Excerpt'] ?? '');
+            }
         }
 
         // Tokoh candidates matched against actual published articles
         $tokohCandidates = [
             ["name" => "Wali Kota Jaksel", "search" => "Wali Kota Jaksel", "keywords" => ["Syafrin", "Walikota Syafrin", "Wali Kota Jaksel", "Walikota Jaksel", "Wali Kota Jakarta Selatan", "Walikota Jakarta Selatan"]],
             ["name" => "Bupati Sukabumi", "search" => "Bupati Sukabumi", "keywords" => ["Bupati Sukabumi", "Marwan Hamami"]],
-            ["name" => "Bupati Irwan Hamid", "search" => "Irwan Hamid", "keywords" => ["Irwan Hamid", "Bupati Pinrang"]],
+            ["name" => "Bupati Irwan Hamid", "search" => "Bupati Irwan Hamid", "keywords" => ["Irwan Hamid", "Bupati Pinrang"]],
             ["name" => "Kapolres Lebak", "search" => "Kapolres Lebak", "keywords" => ["Kapolres Lebak", "Polres Lebak"]],
             ["name" => "Paoji Nurjaman", "search" => "Paoji Nurjaman", "keywords" => ["Paoji Nurjaman"]],
             ["name" => "Prabowo Subianto", "search" => "Prabowo Subianto", "keywords" => ["Prabowo Subianto", "Prabowo"]],
-            ["name" => "Sekda A. Calo Kerrang", "search" => "Calo Kerrang", "keywords" => ["Calo Kerrang", "A. Calo Kerrang", "Sekda Pinrang"]],
-            ["name" => "Letkol I Nyoman Artawan", "search" => "Nyoman Artawan", "keywords" => ["Nyoman Artawan", "Letkol Kav I Nyoman", "Dandim 0504"]],
-            ["name" => "Kombes Putu Yuni", "search" => "Putu Yuni", "keywords" => ["Putu Yuni", "Kombes Pol I Putu Yuni", "Kapolres Jaksel"]],
+            ["name" => "Sekda A. Calo Kerrang", "search" => "Sekda A. Calo Kerrang", "keywords" => ["Calo Kerrang", "A. Calo Kerrang", "Sekda Pinrang"]],
+            ["name" => "Letkol I Nyoman Artawan", "search" => "Letkol I Nyoman Artawan", "keywords" => ["Nyoman Artawan", "Letkol Kav I Nyoman", "Dandim 0504"]],
+            ["name" => "Kombes Putu Yuni", "search" => "Kombes Putu Yuni", "keywords" => ["Putu Yuni", "Kombes Pol I Putu Yuni", "Kapolres Jaksel"]],
             ["name" => "Hasto Kristiyanto", "search" => "Hasto Kristiyanto", "keywords" => ["Hasto Kristiyanto", "Sekjen PDI-P Hasto"]],
-            ["name" => "Megawati Soekarnoputri", "search" => "Megawati", "keywords" => ["Megawati Soekarnoputri", "Megawati"]],
+            ["name" => "Megawati Soekarnoputri", "search" => "Megawati Soekarnoputri", "keywords" => ["Megawati Soekarnoputri", "Megawati"]],
             ["name" => "Shin Tae-yong", "search" => "Shin Tae-yong", "keywords" => ["Shin Tae-yong"]],
             ["name" => "Ufairha Nur Afifah", "search" => "Ufairha Nur Afifah", "keywords" => ["Ufairha Nur Afifah"]],
             ["name" => "Ence Benno", "search" => "Ence Benno", "keywords" => ["Ence Benno", "Kades Babakanjaya"]],
             ["name" => "Deliar Marzoeki", "search" => "Deliar Marzoeki", "keywords" => ["Deliar Marzoeki", "Kadisnakertrans Sumsel"]],
-            ["name" => "Mustari S.Pd", "search" => "Mustari", "keywords" => ["Mustari S.Pd", "UPT SDN 1 Pinrang"]],
+            ["name" => "Mustari S.Pd", "search" => "Mustari S.Pd", "keywords" => ["Mustari S.Pd", "UPT SDN 1 Pinrang"]],
             ["name" => "Totok Supriyadi", "search" => "Totok Supriyadi", "keywords" => ["Totok Supriyadi", "Camat Tanjungsari"]],
             ["name" => "Wabup Iing", "search" => "Wabup Iing", "keywords" => ["Wabup Iing"]],
-            ["name" => "Joko Widodo", "search" => "Jokowi", "keywords" => ["Joko Widodo", "Jokowi"]],
-            ["name" => "Gibran Rakabuming", "search" => "Gibran", "keywords" => ["Gibran Rakabuming", "Gibran"]],
-            ["name" => "Anies Baswedan", "search" => "Anies", "keywords" => ["Anies Baswedan", "Anies"]]
+            ["name" => "Joko Widodo", "search" => "Joko Widodo", "keywords" => ["Joko Widodo", "Jokowi"]],
+            ["name" => "Gibran Rakabuming", "search" => "Gibran Rakabuming", "keywords" => ["Gibran Rakabuming", "Gibran"]],
+            ["name" => "Anies Baswedan", "search" => "Anies Baswedan", "keywords" => ["Anies Baswedan", "Anies"]]
         ];
 
         $tokohCounts = [];
@@ -55,6 +57,7 @@ if (!function_exists('getDynamicTrendingData')) {
             if ($count > 0) {
                 $tokohCounts[] = [
                     'name' => $cand['name'],
+                    'full_name' => $cand['name'],
                     'search' => $cand['search'],
                     'count' => $count
                 ];
@@ -72,6 +75,7 @@ if (!function_exists('getDynamicTrendingData')) {
             if ($barWidth < 12) $barWidth = 12;
             $tokohData[] = [
                 'name' => $item['name'],
+                'full_name' => $item['full_name'],
                 'search' => $item['search'],
                 'count' => $item['count'],
                 'percentage' => number_format($pct, 2) . '%',
@@ -81,26 +85,26 @@ if (!function_exists('getDynamicTrendingData')) {
 
         // Peristiwa candidates matched against actual published articles
         $peristiwaCandidates = [
-            ["name" => "Reses & Paripurna DPRD", "search" => "DPRD", "keywords" => ["Rapat Paripurna", "Paripurna DPRD", "Reses DPRD", "Reses Kedua"]],
-            ["name" => "Jaga Jakarta On The Spot", "search" => "Jaga Jakarta", "keywords" => ["Jaga Jakarta", "Jakarta On The Spot", "Kondusif Jakarta"]],
-            ["name" => "Operasi Knalpot Brong", "search" => "Knalpot Brong", "keywords" => ["Knalpot Brong", "Amankan 207 Knalpot"]],
-            ["name" => "Santunan Anak Yatim", "search" => "Anak Yatim", "keywords" => ["Anak Yatim", "Baznas Bazis", "Pemberdayaan Yatim"]],
-            ["name" => "Perbaikan Jalan PUPR", "search" => "PJJ Lebak", "keywords" => ["PUPR", "UPTD PJJ", "Perbaikan Jalan"]],
-            ["name" => "Bantuan Sembako Lansia", "search" => "Sembako Lansia", "keywords" => ["Sembako", "Bantuan Paket Sembako", "Lansia"]],
-            ["name" => "Penangkaran Badak Jawa", "search" => "Badak Jawa", "keywords" => ["Badak Jawa", "Penangkaran Badak"]],
-            ["name" => "Pelepasan Murid SD", "search" => "Pelepasan Murid", "keywords" => ["Pelepasan Murid", "SDN 1 Penganjang"]],
-            ["name" => "Pelatihan AI Drone", "search" => "AI Drone", "keywords" => ["AI Drone", "Korea Drone Nusantara"]],
-            ["name" => "Surplus APBD Pinrang", "search" => "Surplus", "keywords" => ["Surplus Keuangan", "Surplus APBD"]],
-            ["name" => "Coffee Morning Forkopimko", "search" => "Coffee Morning", "keywords" => ["Coffee Morning", "FORKOPIMKO"]],
-            ["name" => "Penanganan Rutilahu", "search" => "Rutilahu", "keywords" => ["Rutilahu", "Rumah Tidak Layak Huni"]],
-            ["name" => "Program IJD Jalan", "search" => "IJD", "keywords" => ["Instruksi Presiden Jalan Daerah", "IJD"]],
-            ["name" => "Pemeriksaan KPK", "search" => "KPK", "keywords" => ["Pemeriksaan KPK", "Gedung KPK"]],
-            ["name" => "Ekspansi Hai Motion", "search" => "Hai Motion", "keywords" => ["Hai Motion", "Layanan Kreatif"]],
-            ["name" => "Pelantikan TP PKK", "search" => "TP PKK", "keywords" => ["TP PKK", "Pelantikan Enam Ketua"]],
-            ["name" => "Keberatan SK Kades", "search" => "Babakanjaya", "keywords" => ["Babakanjaya", "Keberatan SK Bupati"]],
-            ["name" => "Pemecatan Shin Tae-yong", "search" => "Shin Tae-yong", "keywords" => ["Shin Tae-yong", "Dipecat dari Kursi"]],
+            ["name" => "Reses & Paripurna DPRD", "search" => "Reses & Paripurna DPRD", "keywords" => ["Rapat Paripurna", "Paripurna DPRD", "Reses DPRD", "Reses Kedua", "DPRD"]],
+            ["name" => "Jaga Jakarta On The Spot", "search" => "Jaga Jakarta On The Spot", "keywords" => ["Jaga Jakarta", "Jakarta On The Spot", "Kondusif Jakarta"]],
+            ["name" => "Operasi Knalpot Brong", "search" => "Operasi Knalpot Brong", "keywords" => ["Knalpot Brong", "Amankan 207 Knalpot"]],
+            ["name" => "Santunan Anak Yatim", "search" => "Santunan Anak Yatim", "keywords" => ["Anak Yatim", "Baznas Bazis", "Pemberdayaan Yatim"]],
+            ["name" => "Perbaikan Jalan PUPR", "search" => "Perbaikan Jalan PUPR", "keywords" => ["PUPR", "UPTD PJJ", "Perbaikan Jalan"]],
+            ["name" => "Bantuan Sembako Lansia", "search" => "Bantuan Sembako Lansia", "keywords" => ["Sembako", "Bantuan Paket Sembako", "Lansia"]],
+            ["name" => "Penangkaran Badak Jawa", "search" => "Penangkaran Badak Jawa", "keywords" => ["Badak Jawa", "Penangkaran Badak"]],
+            ["name" => "Pelepasan Murid SD", "search" => "Pelepasan Murid SD", "keywords" => ["Pelepasan Murid", "SDN 1 Penganjang"]],
+            ["name" => "Pelatihan AI Drone", "search" => "Pelatihan AI Drone", "keywords" => ["AI Drone", "Korea Drone Nusantara"]],
+            ["name" => "Surplus APBD Pinrang", "search" => "Surplus APBD Pinrang", "keywords" => ["Surplus Keuangan", "Surplus APBD"]],
+            ["name" => "Coffee Morning Forkopimko", "search" => "Coffee Morning Forkopimko", "keywords" => ["Coffee Morning", "FORKOPIMKO"]],
+            ["name" => "Penanganan Rutilahu", "search" => "Penanganan Rutilahu", "keywords" => ["Rutilahu", "Rumah Tidak Layak Huni"]],
+            ["name" => "Program IJD Jalan", "search" => "Program IJD Jalan", "keywords" => ["Instruksi Presiden Jalan Daerah", "IJD"]],
+            ["name" => "Pemeriksaan KPK", "search" => "Pemeriksaan KPK", "keywords" => ["Pemeriksaan KPK", "Gedung KPK"]],
+            ["name" => "Ekspansi Hai Motion", "search" => "Ekspansi Hai Motion", "keywords" => ["Hai Motion", "Layanan Kreatif"]],
+            ["name" => "Pelantikan TP PKK", "search" => "Pelantikan TP PKK", "keywords" => ["TP PKK", "Pelantikan Enam Ketua"]],
+            ["name" => "Keberatan SK Kades", "search" => "Keberatan SK Kades", "keywords" => ["Babakanjaya", "Keberatan SK Bupati"]],
+            ["name" => "Pemecatan Shin Tae-yong", "search" => "Pemecatan Shin Tae-yong", "keywords" => ["Shin Tae-yong", "Dipecat dari Kursi"]],
             ["name" => "Bazaar Ramadhan", "search" => "Bazaar Ramadhan", "keywords" => ["Bazaar Ramadhan"]],
-            ["name" => "HUT PDIP & Pidato", "search" => "HUT PDIP", "keywords" => ["HUT ke-52 PDIP", "Pidato Politik"]]
+            ["name" => "HUT PDIP & Pidato", "search" => "HUT PDIP & Pidato", "keywords" => ["HUT ke-52 PDIP", "Pidato Politik"]]
         ];
 
         $peristiwaCounts = [];
@@ -117,6 +121,7 @@ if (!function_exists('getDynamicTrendingData')) {
             if ($count > 0) {
                 $peristiwaCounts[] = [
                     'name' => $cand['name'],
+                    'full_name' => $cand['name'],
                     'search' => $cand['search'],
                     'count' => $count
                 ];
@@ -135,7 +140,7 @@ if (!function_exists('getDynamicTrendingData')) {
             $displayName = strlen($item['name']) > 22 ? substr($item['name'], 0, 20) . '...' : $item['name'];
             $peristiwaData[] = [
                 'name' => $displayName,
-                'full_name' => $item['name'],
+                'full_name' => $item['full_name'],
                 'search' => $item['search'],
                 'count' => $item['count'],
                 'percentage' => number_format($pct, 2) . '%',
@@ -154,6 +159,11 @@ if (!function_exists('getDynamicTrendingData')) {
 $trendingData = getDynamicTrendingData($con);
 $tokohList = $trendingData['tokoh'];
 $peristiwaList = $trendingData['peristiwa'];
+
+$sidebarActiveTab = isset($_GET['tab']) ? trim($_GET['tab']) : 'tokoh';
+if (!in_array($sidebarActiveTab, ['tokoh', 'peristiwa'])) {
+    $sidebarActiveTab = 'tokoh';
+}
 ?>
 
 <div class="col-md-4">
@@ -166,20 +176,20 @@ $peristiwaList = $trendingData['peristiwa'];
     <div class="card-body">
       <ul class="nav custom-tabs mb-3" id="trendingTab" role="tablist" style="margin-bottom: 10px;">
         <li class="nav-item">
-          <a class="nav-link active py-1 px-3" id="tokoh-tab" data-toggle="tab" href="#tokoh" role="tab" aria-controls="tokoh" aria-selected="true" style="font-size: 0.85rem;">Tokoh</a>
+          <a class="nav-link <?php echo ($sidebarActiveTab === 'tokoh') ? 'active' : ''; ?> py-1 px-3" id="tokoh-tab" data-toggle="tab" href="#tokoh" role="tab" aria-controls="tokoh" aria-selected="<?php echo ($sidebarActiveTab === 'tokoh') ? 'true' : 'false'; ?>" style="font-size: 0.85rem;">Tokoh</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link py-1 px-3" id="peristiwa-tab" data-toggle="tab" href="#peristiwa" role="tab" aria-controls="peristiwa" aria-selected="false" style="font-size: 0.85rem;">Peristiwa</a>
+          <a class="nav-link <?php echo ($sidebarActiveTab === 'peristiwa') ? 'active' : ''; ?> py-1 px-3" id="peristiwa-tab" data-toggle="tab" href="#peristiwa" role="tab" aria-controls="peristiwa" aria-selected="<?php echo ($sidebarActiveTab === 'peristiwa') ? 'true' : 'false'; ?>" style="font-size: 0.85rem;">Peristiwa</a>
         </li>
       </ul>
       <div class="tab-content" id="trendingTabContent">
-        <div class="tab-pane fade show active" id="tokoh" role="tabpanel" aria-labelledby="tokoh-tab">
+        <div class="tab-pane fade <?php echo ($sidebarActiveTab === 'tokoh') ? 'show active' : ''; ?>" id="tokoh" role="tabpanel" aria-labelledby="tokoh-tab">
           <ul class="trending-list mt-3">
             <?php if (!empty($tokohList)) {
               foreach ($tokohList as $item) { ?>
                 <li class="d-flex align-items-center mb-2" style="display: flex !important; align-items: center !important; margin-bottom: 10px !important;">
-                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" 
-                     title="Cari berita seputar <?php echo htmlentities($item['name']); ?>"
+                  <a href="search.php?s=<?php echo urlencode($item['full_name']); ?>&tab=tokoh" 
+                     title="Cari berita seputar <?php echo htmlentities($item['full_name']); ?>"
                      class="d-flex align-items-center w-100 text-decoration-none"
                      style="display: flex !important; align-items: center !important; width: 100% !important; text-decoration: none !important; color: inherit !important; padding: 4px 6px; border-radius: 6px;">
                     <div class="trending-name" style="width: 130px !important; min-width: 130px !important; font-size: 0.85rem !important; color: #444 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-right: 8px !important; text-decoration: none !important;">
@@ -199,12 +209,12 @@ $peristiwaList = $trendingData['peristiwa'];
             <?php } ?>
           </ul>
         </div>
-        <div class="tab-pane fade" id="peristiwa" role="tabpanel" aria-labelledby="peristiwa-tab">
+        <div class="tab-pane fade <?php echo ($sidebarActiveTab === 'peristiwa') ? 'show active' : ''; ?>" id="peristiwa" role="tabpanel" aria-labelledby="peristiwa-tab">
           <ul class="trending-list mt-3">
             <?php if (!empty($peristiwaList)) {
               foreach ($peristiwaList as $item) { ?>
                 <li class="d-flex align-items-center mb-2" style="display: flex !important; align-items: center !important; margin-bottom: 10px !important;">
-                  <a href="search.php?s=<?php echo urlencode($item['search']); ?>" 
+                  <a href="search.php?s=<?php echo urlencode($item['full_name']); ?>&tab=peristiwa" 
                      title="Cari berita seputar <?php echo htmlentities($item['full_name']); ?>"
                      class="d-flex align-items-center w-100 text-decoration-none"
                      style="display: flex !important; align-items: center !important; width: 100% !important; text-decoration: none !important; color: inherit !important; padding: 4px 6px; border-radius: 6px;">
@@ -237,7 +247,7 @@ $peristiwaList = $trendingData['peristiwa'];
     <div class="card-body p-0">
       <ul class="list-group list-group-flush">
         <?php
-        $query = mysqli_query($con,"
+        $sideQuery = mysqli_query($con,"
           SELECT p.id AS pid, p.PostTitle, p.PostImage, p.PostingDate, 
                  p.views, p.PostUrl, 
                  c.CategoryName,
@@ -249,29 +259,33 @@ $peristiwaList = $trendingData['peristiwa'];
           ORDER BY p.PostingDate DESC 
           LIMIT 8
         ");
-        while ($row = mysqli_fetch_array($query)) {
+        if ($sideQuery) {
+          while ($sideRow = mysqli_fetch_array($sideQuery)) {
         ?>
           <li class="list-group-item border-0 pt-3 pb-3" style="border-bottom: 1px solid #f0f0f0 !important;">
             <div class="d-flex">
-              <img src="admin/uploads/<?php echo htmlentities($row['PostImage']);?>" 
+              <img src="admin/uploads/<?php echo htmlentities($sideRow['PostImage']);?>" 
                    class="mr-3 rounded" style="width:100px; height:75px; object-fit:cover;">
               <div class="d-flex flex-column justify-content-between">
                 <div>
                   <span class="badge badge-danger mb-1" style="font-size: 0.65rem;">
-                    <?php echo htmlentities($row['CategoryName']);?>
+                    <?php echo htmlentities($sideRow['CategoryName']);?>
                   </span>
-                  <a href="news-details.php?nid=<?php echo htmlentities($row['pid'])?>" 
+                  <a href="news-details.php?nid=<?php echo htmlentities($sideRow['pid'])?>" 
                      class="font-weight-bold d-block text-dark" style="font-size:0.85rem; line-height: 1.3;">
-                    <?php echo htmlentities($row['PostTitle']);?>
+                    <?php echo htmlentities($sideRow['PostTitle']);?>
                   </a>
                 </div>
                 <small class="text-muted" style="font-size: 0.65rem;">
-                  Redaksi Cakrawala | <?php echo date("d M Y", strtotime($row['PostingDate']));?> | <?php echo htmlentities($row['views']);?> Views
+                  Redaksi Cakrawala | <?php echo date("d M Y", strtotime($sideRow['PostingDate']));?> | <?php echo htmlentities($sideRow['views']);?> Views
                 </small>
               </div>
             </div>
           </li>
-        <?php } ?>
+        <?php 
+          }
+        }
+        ?>
       </ul>
     </div>
   </div>
