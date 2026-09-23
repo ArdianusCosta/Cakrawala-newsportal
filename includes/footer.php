@@ -243,7 +243,7 @@
             <div class="container">
                 <div class="row py-4">
                     <div class="col-12 text-center">
-                        <p class="mb-0 text-white" style="font-size: 0.85rem; letter-spacing: 0.5px;">&copy; © 2026 Cakrawala Online. Seluruh Hak Cipta Dilindungi Undang-Undang</p>
+                        <p class="mb-0 text-white" style="font-size: 0.85rem; letter-spacing: 0.5px;">&copy; 2026 Cakrawala Online. Seluruh Hak Cipta Dilindungi Undang-Undang</p>
                     </div>
                 </div>
             </div>
