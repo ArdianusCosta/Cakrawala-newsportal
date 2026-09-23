@@ -152,6 +152,19 @@ while ($row = mysqli_fetch_array($secondPart)) {
   <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
     <a class="page-link" href="<?php if($pageno <= 1){ echo '#'; } else { echo "?catid=".$_SESSION['catid']."&pageno=".($pageno - 1); } ?>">‹</a>
   </li>
+  
+  <?php 
+  $start_page = max(1, $pageno - 2);
+  $end_page = min($total_pages, $pageno + 2);
+  for($i = $start_page; $i <= $end_page; $i++): 
+  ?>
+    <?php if ($i == $pageno): ?>
+      <li class="page-item active"><a class="page-link"><?php echo $i; ?></a></li>
+    <?php else: ?>
+      <li class="page-item"><a class="page-link" href="?catid=<?php echo $_SESSION['catid']; ?>&pageno=<?php echo $i; ?>"><?php echo $i; ?></a></li>
+    <?php endif; ?>
+  <?php endfor; ?>
+
   <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
     <a class="page-link" href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?catid=".$_SESSION['catid']."&pageno=".($pageno + 1); } ?>">›</a>
   </li>
@@ -247,7 +260,11 @@ while ($row = mysqli_fetch_array($secondPart)) {
       ");
       ?>
       <div class="col-md-6 mb-4">
-        <h5 class="mb-3"><span class="badge badge-danger"><?php echo htmlentities($catName); ?></span></h5>
+        <h5 class="mb-3">
+          <a href="category.php?catid=<?php echo $catId; ?>" class="text-decoration-none">
+            <span class="badge badge-danger px-3 py-2" style="border-radius: 6px;"><?php echo htmlentities($catName); ?></span>
+          </a>
+        </h5>
         <div class="row">
           <?php while ($post = mysqli_fetch_array($postQuery)) { 
             $postSnippet = strip_tags($post['PostDetails'] ?? '');
@@ -276,9 +293,13 @@ while ($row = mysqli_fetch_array($secondPart)) {
             </div>
           <?php } ?>
         </div>
-        <a href="category.php?catid=<?php echo $catId; ?>" class="text-danger small font-weight-bold">Lihat semua &raquo;</a>
       </div>
     <?php } ?>
+  </div>
+  <div class="text-center mt-3 mb-4">
+    <a href="all-news.php" class="btn btn-outline-danger font-weight-bold px-4 py-2" style="border-radius: 25px; font-size: 0.9rem;">
+      Lihat Semua Berita <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i>
+    </a>
   </div>
 </div>
 </div>

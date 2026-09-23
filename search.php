@@ -191,19 +191,29 @@ $pageTitle = !empty($st) ? 'Hasil Pencarian: "' . htmlspecialchars($st) . '" - C
           <!-- Pagination -->
           <ul class="pagination justify-content-center mb-4">
             <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
-              <a href="?s=<?php echo urlencode($st); ?>&pageno=1" class="page-link">Awal</a>
+              <a href="?s=<?php echo urlencode($st); ?>&pageno=1" class="page-link">«</a>
             </li>
             <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
-              <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?s=" . urlencode($st) . "&pageno=" . ($pageno - 1); } ?>" class="page-link">&laquo; Prev</a>
+              <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?s=" . urlencode($st) . "&pageno=" . ($pageno - 1); } ?>" class="page-link">‹</a>
             </li>
-            <li class="page-item active">
-              <span class="page-link bg-danger border-danger"><?php echo $pageno; ?> / <?php echo $total_pages; ?></span>
+
+            <?php 
+            $start_page = max(1, $pageno - 2);
+            $end_page = min($total_pages, $pageno + 2);
+            for($i = $start_page; $i <= $end_page; $i++): 
+            ?>
+              <?php if ($i == $pageno): ?>
+                <li class="page-item active"><a class="page-link"><?php echo $i; ?></a></li>
+              <?php else: ?>
+                <li class="page-item"><a class="page-link" href="?s=<?php echo urlencode($st); ?>&pageno=<?php echo $i; ?>"><?php echo $i; ?></a></li>
+              <?php endif; ?>
+            <?php endfor; ?>
+
+            <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+              <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?s=" . urlencode($st) . "&pageno=" . ($pageno + 1); } ?>" class="page-link">›</a>
             </li>
             <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-              <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?s=" . urlencode($st) . "&pageno=" . ($pageno + 1); } ?>" class="page-link">Next &raquo;</a>
-            </li>
-            <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-              <a href="?s=<?php echo urlencode($st); ?>&pageno=<?php echo $total_pages; ?>" class="page-link">Akhir</a>
+              <a href="?s=<?php echo urlencode($st); ?>&pageno=<?php echo $total_pages; ?>" class="page-link">»</a>
             </li>
           </ul>
 <?php } ?>

@@ -13,6 +13,7 @@ $pageDescription = 'Kumpulan seluruh artikel dan berita terbaru Indramayu, Jawa 
 <?php include('includes/seo-meta.php'); ?>
 <!-- CSS -->
 <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="css/modern-business.css" rel="stylesheet">
 <link href="style.css?v=<?php echo time(); ?>" rel="stylesheet">
@@ -29,8 +30,14 @@ $pageDescription = 'Kumpulan seluruh artikel dan berita terbaru Indramayu, Jawa 
     <div class="row">
       <!-- Blog Entries Column -->
       <div class="col-md-8">
-      <h4 class="mb-3">Semua Artikel</h4>
-      <!-- Pagination -->
+      <div class="category-header mb-4 p-3 bg-light rounded border-left border-danger" style="border-left-width: 5px !important;">
+        <h4 class="mb-1 font-weight-bold" style="font-size: 1.25rem;">
+          <i class="bi bi-newspaper text-danger mr-2"></i>Semua Artikel & Berita
+        </h4>
+        <p class="text-muted mb-0" style="font-size: 0.88rem;">Menampilkan seluruh kumpulan berita dan artikel terbaru Cakrawala Online.</p>
+      </div>
+
+      <!-- Articles Loop -->
       <?php 
       $pageno = isset($_GET['pageno']) ? $_GET['pageno'] : 1;
       $no_of_records_per_page = 8;
@@ -89,16 +96,36 @@ $pageDescription = 'Kumpulan seluruh artikel dan berita terbaru Indramayu, Jawa 
       <?php } ?>
 
       <ul class="pagination justify-content-center mt-4">
-        <li class="page-item"><a href="?pageno=1" class="page-link">«</a></li>
+        <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
+          <a href="?pageno=1" class="page-link">«</a>
+        </li>
         <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
           <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>" class="page-link">‹</a>
         </li>
+        
+        <?php 
+        $start_page = max(1, $pageno - 2);
+        $end_page = min($total_pages, $pageno + 2);
+        for($i = $start_page; $i <= $end_page; $i++): 
+        ?>
+          <?php if ($i == $pageno): ?>
+            <li class="page-item active"><a class="page-link"><?php echo $i; ?></a></li>
+          <?php else: ?>
+            <li class="page-item"><a href="?pageno=<?php echo $i; ?>" class="page-link"><?php echo $i; ?></a></li>
+          <?php endif; ?>
+        <?php endfor; ?>
+
         <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
           <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?pageno=".($pageno + 1); } ?>" class="page-link">›</a>
         </li>
-        <li class="page-item"><a href="?pageno=<?php echo $total_pages; ?>" class="page-link">»</a></li>
+        <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+          <a href="?pageno=<?php echo $total_pages; ?>" class="page-link">»</a>
+        </li>
       </ul>
       </div><!-- /col-md-8 -->
+
+      <!-- Sidebar -->
+      <?php include('includes/sidebar.php');?>
     </div><!-- /row -->
   </div><!-- /.container -->
 

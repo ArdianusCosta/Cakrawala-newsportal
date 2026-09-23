@@ -1375,13 +1375,49 @@ html, body {
   }
 }
 
+/* ==========================================================================
+   CUSTOM PAGINATION STYLING (RED ACTIVE BADGE - GAMBAR 2)
+   ========================================================================== */
+.pagination {
+  gap: 4px;
+}
 
+.pagination .page-link {
+  color: #6c757d !important;
+  background-color: transparent !important;
+  border: none !important;
+  font-weight: 500 !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
 
+.pagination .page-link:hover {
+  color: #dc3545 !important;
+  background-color: rgba(220, 53, 69, 0.08) !important;
+  border: none !important;
+}
 
+.pagination .page-link:focus,
+.pagination .page-link:active {
+  box-shadow: none !important;
+  outline: none !important;
+}
 
+.pagination .page-item.active .page-link {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3) !important;
+}
 
-
-
-
-
-
+.pagination .page-item.disabled .page-link {
+  color: #ced4da !important;
+  background-color: transparent !important;
+  border: none !important;
+  opacity: 0.6;
+}

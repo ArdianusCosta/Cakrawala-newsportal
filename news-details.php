@@ -299,11 +299,8 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
       </div><!-- /row -->
 
        <!-- TERBARU -->
-      <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+      <div class="mt-5 mb-3">
         <h4 class="mb-0 font-weight-bold" style="font-size: 1.3rem; color: #1e293b;">Terbaru</h4>
-        <a href="all-news.php" class="text-danger font-weight-bold text-decoration-none" style="font-size: 0.9rem;">Lihat Semua
-          <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i>
-        </a>
       </div>
 
       <div class="row mb-4">
@@ -376,13 +373,12 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
             ");
             ?>
             <div class="col-lg-6 col-12 mb-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="mb-3">
                 <h5 class="mb-0 font-weight-bold" style="font-size: 1.1rem;">
-                  <span class="badge badge-danger px-3 py-2" style="border-radius: 6px;"><?php echo htmlentities($catName); ?></span>
+                  <a href="category.php?catid=<?php echo $catId; ?>" class="text-decoration-none">
+                    <span class="badge badge-danger px-3 py-2" style="border-radius: 6px;"><?php echo htmlentities($catName); ?></span>
+                  </a>
                 </h5>
-                <a href="category.php?catid=<?php echo $catId; ?>" class="text-danger font-weight-bold small text-decoration-none">
-                  Lihat semua »
-                </a>
               </div>
               <div class="row">
                 <?php while ($post = mysqli_fetch_array($postQuery)) { ?>
@@ -412,6 +408,11 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
               </div>
             </div>
           <?php } ?>
+        </div>
+        <div class="text-center mt-3 mb-4">
+          <a href="all-news.php" class="btn btn-outline-danger font-weight-bold px-4 py-2" style="border-radius: 25px; font-size: 0.9rem;">
+            Lihat Semua Berita <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i>
+          </a>
         </div>
       </div><!-- /kategori -->
 
