@@ -243,7 +243,7 @@
             <div class="container">
                 <div class="row py-4">
                     <div class="col-12 text-center">
-                        <p class="mb-0 text-white" style="font-size: 0.85rem; letter-spacing: 0.5px;">&copy; 2026 Cakrawala Online. Seluruh Hak Cipta Dilindungi Undang-Undang</p>
+                        <p class="mb-0 text-white" style="font-size: 0.85rem; letter-spacing: 0.5px;">&copy; 2026 <a href="https://haimotion.com" target="_blank" rel="noopener" class="text-white text-decoration-underline" style="color: #ffffff;">Hai Motion</a> - Dibuat untuk Cakrawala Online. Seluruh Hak Cipta Dilindungi Undang-Undang</p>
                     </div>
                 </div>
             </div>
@@ -327,7 +327,7 @@
       <!-- Bottom Copyright Bar -->
       <div class="mobile-footer-bottom py-3 px-3 text-center w-100" style="background-color: #16181f; border-top: 1px solid rgba(255,255,255,0.15);">
         <p class="m-0 mobile-copyright-text text-center" style="font-size: 0.82rem; text-align: center !important; color: #ffffff !important; opacity: 0.95;">
-          &copy; 2025 Hai Motion - Created for PT Cakrawala Pers Media. All rights reserved.
+          &copy; 2026 <a href="https://haimotion.com" target="_blank" rel="noopener" class="text-white text-decoration-underline" style="color: #ffffff !important;">Hai Motion</a> - Dibuat untuk Cakrawala Online. Seluruh Hak Cipta Dilindungi Undang-Undang
         </p>
       </div>
     </footer>
