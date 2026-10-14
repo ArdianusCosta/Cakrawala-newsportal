@@ -156,7 +156,7 @@ $pageTitle = !empty($st) ? 'Hasil Pencarian: "' . htmlspecialchars($st) . '" - C
                   <img src="admin/uploads/<?php echo htmlentities((string)$img); ?>" 
                        class="img-fluid rounded w-100" 
                        alt="<?php echo htmlentities((string)($row['posttitle'] ?? '')); ?>"
-                       style="height: 140px; object-fit: cover;">
+                       style="height: 140px; object-fit: cover; object-position: center 30%;">
                 </div>
                 <div class="col-md-8 d-flex flex-column justify-content-between">
                   <div>

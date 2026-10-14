@@ -195,12 +195,12 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
                    src="admin/uploads/<?php echo htmlentities($row['PostImage']); ?>" 
                    onerror="this.onerror=null;this.src='admin/uploads/default.jpg';"
                    alt="<?php echo htmlentities($row['posttitle']); ?>" 
-                   style="max-height:400px; width:100%; object-fit:cover;">
+                   style="max-height:450px; width:100%; object-fit:cover; object-position: center 30%;">
             <?php else: ?>
               <img class="card-img-top" 
                    src="admin/uploads/default.jpg" 
                    alt="No Image" 
-                   style="max-height:400px; width:100%; object-fit:cover;">
+                   style="max-height:450px; width:100%; object-fit:cover; object-position: center 30%;">
             <?php endif; ?>
 
             <?php if (!empty($row['PostImageDesc'])): ?>

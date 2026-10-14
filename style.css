@@ -67,7 +67,7 @@
     width: 100%;
     height: 420px;
     object-fit: cover !important;
-    object-position: top center !important;
+    object-position: center 30% !important;
     display: block;
     border-radius: 16px !important;
   }
@@ -352,7 +352,7 @@
     aspect-ratio: 16 / 9;
     height: auto;
     min-height: 220px;
-    max-height: 380px;
+    max-height: 420px;
     overflow: hidden;
     background-color: #f3f4f6;
     border-radius: 12px 12px 0 0 !important;
@@ -361,7 +361,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover !important;
-    object-position: top center !important;
+    object-position: center 30% !important;
     display: block;
   }
   .article-card .card-body {
@@ -936,7 +936,7 @@
     height: 280px !important;
     max-height: 280px !important;
     object-fit: cover !important;
-    object-position: top center !important;
+    object-position: center 30% !important;
     display: block !important;
     width: 100% !important;
     border-radius: 16px !important;
@@ -1238,7 +1238,7 @@
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
-  object-position: top center !important;
+  object-position: center 30% !important;
   transition: transform 0.3s ease !important;
 }
 

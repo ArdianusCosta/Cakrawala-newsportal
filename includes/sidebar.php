@@ -265,7 +265,7 @@ if (!in_array($sidebarActiveTab, ['tokoh', 'peristiwa'])) {
           <li class="list-group-item border-0 pt-3 pb-3" style="border-bottom: 1px solid #f0f0f0 !important;">
             <div class="d-flex">
               <img src="admin/uploads/<?php echo htmlentities($sideRow['PostImage']);?>" 
-                   class="mr-3 rounded" style="width:100px; height:75px; object-fit:cover;">
+                   class="mr-3 rounded sidebar-thumb-img" style="width:100px; height:75px; object-fit:cover; object-position: center 30%;">
               <div class="d-flex flex-column justify-content-between">
                 <div>
                   <span class="badge badge-danger mb-1" style="font-size: 0.65rem;">
