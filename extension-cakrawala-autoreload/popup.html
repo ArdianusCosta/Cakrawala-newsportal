@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cakrawala Auto Reload</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body class="theme-dark">
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-logo">
+          <svg class="icon icon-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+            <path d="M16 21h5v-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title-wrap">
+            <h1 class="brand-title">Cakrawala</h1>
+            <span class="brand-badge">Auto Reload</span>
+          </div>
+          <span class="brand-subtitle">Testing & View Counter Tool</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="btn-icon" title="Ganti Tema (Light / Dark)">
+          <svg id="themeIconSun" class="icon icon-theme d-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2"/><path d="M12 20v2"/>
+            <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/><path d="M20 12h2"/>
+            <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+          <svg id="themeIconMoon" class="icon icon-theme" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Status Banner & Master Controls -->
+    <section class="control-panel card-surface">
+      <div class="status-row">
+        <div class="status-indicator">
+          <span id="statusPulse" class="pulse-dot idle"></span>
+          <span id="statusLabel" class="status-text">SIAP (IDLE)</span>
+        </div>
+        <div class="timer-badge" title="Waktu pengujian berjalan">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span id="durationDisplay">00:00</span>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-wrap">
+        <div class="progress-header">
+          <span class="progress-label">Progres Reload</span>
+          <span id="progressText" class="progress-value">0 / 10 (0%)</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-group-main">
+        <button id="startBtn" class="btn btn-primary flex-1">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="6 3 20 12 6 21 6 3"/>
+          </svg>
+          <span>Mulai Pengujian</span>
+        </button>
+
+        <button id="pauseBtn" class="btn btn-secondary" disabled title="Jeda / Lanjutkan">
+          <svg id="pauseIcon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+          </svg>
+        </button>
+
+        <button id="stopBtn" class="btn btn-danger" disabled title="Hentikan Pengujian">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+          </svg>
+          <span>Stop</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Metric Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-blue">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-label">Total URL</span>
+          <span id="statTotalUrls" class="stat-val">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-green">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-label">Sukses</span>
+          <span id="statSuccessCount" class="stat-val text-success">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-red">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-label">Gagal</span>
+          <span id="statFailureCount" class="stat-val text-danger">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-purple">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12h20"/><path d="M20 12v8H4v-8"/>
+            <path d="m4 4 16 0"/><path d="m8 8 8 0"/>
+          </svg>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-label">Target Siklus</span>
+          <span id="statTargetTotal" class="stat-val">10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs-wrapper">
+      <button class="nav-tab active" data-tab="tab-urls">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+        <span>URL & Setelan</span>
+      </button>
+
+      <button class="nav-tab" data-tab="tab-views">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span>View Counter</span>
+      </button>
+
+      <button class="nav-tab" data-tab="tab-logs">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <span>Log Aktivitas</span>
+      </button>
+    </nav>
+
+    <!-- Tab Contents -->
+    <main class="tab-content-area">
+
+      <!-- TAB 1: URL MANAGER & SETTINGS -->
+      <section id="tab-urls" class="tab-pane active">
+        <!-- Add URL Box -->
+        <div class="input-card card-surface">
+          <div class="input-header">
+            <span class="input-title">Input URL Artikel</span>
+            <button id="grabCurrentTabBtn" class="btn-subtle" title="Gunakan URL tab browser yang sedang terbuka">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              <span>Ambil Tab Aktif</span>
+            </button>
+          </div>
+
+          <div class="input-row">
+            <input type="url" id="urlInput" class="form-input" placeholder="https://cakrawalaonline.com/news-details.php?nid=..." autocomplete="off">
+            <button id="addUrlBtn" class="btn btn-primary btn-sm">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span>Tambah</span>
+            </button>
+          </div>
+          <div id="urlFeedback" class="input-feedback d-none"></div>
+        </div>
+
+        <!-- URL List Queue -->
+        <div class="section-sub-header">
+          <span class="sub-title">Daftar Antrean URL (<span id="activeUrlCount">0</span> aktif)</span>
+        </div>
+
+        <div id="urlListContainer" class="url-list">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Reload Configuration Settings -->
+        <div class="settings-card card-surface mt-3">
+          <div class="settings-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Parameter Pengujian</span>
+          </div>
+
+          <div class="settings-grid">
+            <div class="form-group">
+              <label for="intervalInput" class="form-label">
+                Interval Reload
+                <span class="label-unit">(detik)</span>
+              </label>
+              <div class="input-with-stepper">
+                <input type="number" id="intervalInput" class="form-input text-center" min="2" max="120" value="5">
+              </div>
+              <span class="form-help">Minimal 2 detik (default 5s)</span>
+            </div>
+
+            <div class="form-group">
+              <label for="maxReloadsInput" class="form-label">
+                Target Pengujian
+                <span class="label-unit">(siklus)</span>
+              </label>
+              <div class="input-with-stepper">
+                <input type="number" id="maxReloadsInput" class="form-input text-center" min="1" max="100" value="10">
+              </div>
+              <span class="form-help">Batas maksimum reload</span>
+            </div>
+          </div>
+
+          <div class="form-toggle-row">
+            <label class="toggle-switch">
+              <input type="checkbox" id="autoStopOnErrorCheckbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <div class="toggle-text">
+              <span class="toggle-title">Hentikan otomatis jika terjadi error</span>
+              <span class="toggle-desc">Menghentikan pengujian jika halaman artikel 404, 500, atau crash database</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: VIEW COUNTER MONITOR -->
+      <section id="tab-views" class="tab-pane">
+        <div class="disclaimer-alert">
+          <div class="alert-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="alert-body">
+            <strong>Catatan Pengujian Bertanggung Jawab:</strong>
+            Fitur ini dirancang khusus untuk memverifikasi logika counter website milik sendiri pada lingkungan pengujian / staging. Jangan menganggap reload sebagai pembaca unik atau mengirim spam trafik berlebih.
+          </div>
+        </div>
+
+        <div class="view-counter-header">
+          <span class="sub-title">Perbandingan Counter Artikel</span>
+          <button id="resetResultsBtn" class="btn-subtle" title="Bersihkan data hasil pengujian counter">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+            <span>Reset Data</span>
+          </button>
+        </div>
+
+        <div id="viewResultsContainer" class="view-results-list">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- TAB 3: LOG AKTIVITAS -->
+      <section id="tab-logs" class="tab-pane">
+        <div class="logs-header">
+          <span class="sub-title">Riwayat Pengujian Terakhir</span>
+          <button id="clearLogsBtn" class="btn-subtle" title="Bersihkan log riwayat">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14H6L5 6"/>
+            </svg>
+            <span>Hapus Log</span>
+          </button>
+        </div>
+
+        <div id="logListContainer" class="log-stream">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-info">
+        <span class="pulse-dot-mini green"></span>
+        <span>Cakrawala Test Engine v1.0 • Manifest V3</span>
+      </div>
+      <a href="https://cakrawalaonline.com/" target="_blank" rel="noopener" class="footer-link">
+        cakrawalaonline.com
+      </a>
+    </footer>
+
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
+

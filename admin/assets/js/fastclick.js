@@ -229,13 +229,15 @@
 
 		// Don't send a synthetic click to disabled inputs (issue #62)
 		case 'button':
-		case 'select':
 		case 'textarea':
 			if (target.disabled) {
 				return true;
 			}
 
 			break;
+		case 'select':
+			// Native select elements must receive real touch events on mobile devices
+			return true;
 		case 'input':
 
 			// File inputs need real clicks on iOS 6 due to a browser bug (issue #68)

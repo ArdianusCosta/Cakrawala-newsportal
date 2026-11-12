@@ -130,7 +130,7 @@ $pageDescription = 'Cakrawala Online, situs berita daerah dan nasional terpercay
     </div>
 
     <!-- Blog Entries Column -->
-    <div class="col-md-8 px-2 px-md-3">
+    <div class="col-lg-8 col-12 px-2 px-md-3">
 
       <!-- Tabs Nav (Close gap with carousel) -->
       <ul class="nav custom-tabs mb-2" id="mainTab" role="tablist">

@@ -50,7 +50,7 @@ $pageTitle = !empty($st) ? 'Hasil Pencarian: "' . htmlspecialchars($st) . '" - C
       <div class="row">
 
         <!-- Blog Entries Column -->
-        <div class="col-md-8">
+        <div class="col-lg-8 col-12">
 
           <div class="search-header mb-4 p-3 bg-light rounded border-left border-danger" style="border-left-width: 5px !important;">
             <h4 class="mb-1 font-weight-bold" style="font-size: 1.25rem;">

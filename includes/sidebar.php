@@ -166,7 +166,7 @@ if (!in_array($sidebarActiveTab, ['tokoh', 'peristiwa'])) {
 }
 ?>
 
-<div class="col-md-4">
+<div class="col-lg-4 col-12">
 
   <!-- Trending Topik Widget -->
   <div class="card mb-4 border-1 sidebar-trending-card">
@@ -192,7 +192,7 @@ if (!in_array($sidebarActiveTab, ['tokoh', 'peristiwa'])) {
                      title="Cari berita seputar <?php echo htmlentities($item['full_name']); ?>"
                      class="d-flex align-items-center w-100 text-decoration-none"
                      style="display: flex !important; align-items: center !important; width: 100% !important; text-decoration: none !important; color: inherit !important; padding: 4px 6px; border-radius: 6px;">
-                    <div class="trending-name" style="width: 130px !important; min-width: 130px !important; font-size: 0.85rem !important; color: #444 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-right: 8px !important; text-decoration: none !important;">
+                    <div class="trending-name" style="max-width: 46% !important; min-width: 60px !important; font-size: 0.85rem !important; color: #444 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-right: 8px !important; text-decoration: none !important;">
                       <?php echo htmlentities($item['name']); ?>
                     </div>
                     <div class="trending-bar-container d-flex align-items-center flex-grow-1" style="display: flex !important; align-items: center !important; flex-grow: 1 !important;">
@@ -218,7 +218,7 @@ if (!in_array($sidebarActiveTab, ['tokoh', 'peristiwa'])) {
                      title="Cari berita seputar <?php echo htmlentities($item['full_name']); ?>"
                      class="d-flex align-items-center w-100 text-decoration-none"
                      style="display: flex !important; align-items: center !important; width: 100% !important; text-decoration: none !important; color: inherit !important; padding: 4px 6px; border-radius: 6px;">
-                    <div class="trending-name" style="width: 130px !important; min-width: 130px !important; font-size: 0.85rem !important; color: #444 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-right: 8px !important; text-decoration: none !important;">
+                    <div class="trending-name" style="max-width: 46% !important; min-width: 60px !important; font-size: 0.85rem !important; color: #444 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-right: 8px !important; text-decoration: none !important;">
                       <?php echo htmlentities($item['name']); ?>
                     </div>
                     <div class="trending-bar-container d-flex align-items-center flex-grow-1" style="display: flex !important; align-items: center !important; flex-grow: 1 !important;">
@@ -263,20 +263,20 @@ if (!in_array($sidebarActiveTab, ['tokoh', 'peristiwa'])) {
           while ($sideRow = mysqli_fetch_array($sideQuery)) {
         ?>
           <li class="list-group-item border-0 pt-3 pb-3" style="border-bottom: 1px solid #f0f0f0 !important;">
-            <div class="d-flex">
+            <div class="d-flex align-items-center" style="min-width: 0;">
               <img src="admin/uploads/<?php echo htmlentities($sideRow['PostImage']);?>" 
-                   class="mr-3 rounded sidebar-thumb-img" style="width:100px; height:75px; object-fit:cover; object-position: center 30%;">
-              <div class="d-flex flex-column justify-content-between">
+                   class="mr-3 rounded sidebar-thumb-img flex-shrink-0" style="width:85px; height:65px; min-width:85px; object-fit:cover; object-position: center 30%;">
+              <div class="d-flex flex-column justify-content-between flex-grow-1" style="min-width: 0; overflow: hidden;">
                 <div>
                   <span class="badge badge-danger mb-1" style="font-size: 0.65rem;">
                     <?php echo htmlentities($sideRow['CategoryName']);?>
                   </span>
                   <a href="news-details.php?nid=<?php echo htmlentities($sideRow['pid'])?>" 
-                     class="font-weight-bold d-block text-dark" style="font-size:0.85rem; line-height: 1.3;">
+                     class="font-weight-bold d-block text-dark" style="font-size:0.85rem; line-height: 1.35; word-break: break-word; overflow-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
                     <?php echo htmlentities($sideRow['PostTitle']);?>
                   </a>
                 </div>
-                <small class="text-muted" style="font-size: 0.65rem;">
+                <small class="text-muted d-block text-truncate mt-1" style="font-size: 0.65rem;" title="Redaksi Cakrawala | <?php echo date("d M Y", strtotime($sideRow['PostingDate']));?> | <?php echo htmlentities($sideRow['views']);?> Views">
                   Redaksi Cakrawala | <?php echo date("d M Y", strtotime($sideRow['PostingDate']));?> | <?php echo htmlentities($sideRow['views']);?> Views
                 </small>
               </div>

@@ -29,7 +29,7 @@ $pageDescription = 'Kumpulan seluruh artikel dan berita terbaru Indramayu, Jawa 
     </div>
     <div class="row">
       <!-- Blog Entries Column -->
-      <div class="col-md-8">
+      <div class="col-lg-8 col-12">
       <div class="category-header mb-4 p-3 bg-light rounded border-left border-danger" style="border-left-width: 5px !important;">
         <h4 class="mb-1 font-weight-bold" style="font-size: 1.25rem;">
           <i class="bi bi-newspaper text-danger mr-2"></i>Semua Artikel & Berita

@@ -35,7 +35,7 @@ $pageDescription = 'Kumpulan berita terkini kategori ' . $catName . ' seputar In
     </div>
   </div>
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-lg-8 col-12">
 
 <?php 
 if($_GET['catid']!=''){

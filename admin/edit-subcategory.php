@@ -30,6 +30,8 @@ $error="Something went wrong . Please try again.";
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>Cakrawala | Edit Sub Kategory</title>
          
@@ -136,7 +138,7 @@ while($row=mysqli_fetch_array($query))
 	                                            <div class="form-group">
 	                                                <label class="col-md-2 control-label">Category</label>
 	                                                <div class="col-md-10">
-	                                                  <select class="form-control" name="category" required>
+	                                                  <select class="form-control needsclick" name="category" required>
                                                    <option value="<?php echo htmlentities($row['catid']);?>"><?php echo htmlentities($row['catname']);?></option>
 <?php
 // Feching active categories

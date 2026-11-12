@@ -1421,3 +1421,49 @@ html, body {
   border: none !important;
   opacity: 0.6;
 }
+
+
+/* ==========================================================================
+   COMPREHENSIVE RESPONSIVE & OVERFLOW FIXES (Samsung Fold, Mobile & Tablets)
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Ensure no text ever breaks out of its parent card or flex container */
+.card, .card-body, .list-group-item, .article-card, .article-card-uniform, .grid-card {
+  min-width: 0 !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+}
+
+.article-card-uniform h6,
+.article-card h5,
+.article-card h6,
+.list-group-item a,
+.card-title {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Trending Topik responsive name width for narrow cards & Fold */
+.trending-list .trending-name {
+  width: auto !important;
+  min-width: 60px !important;
+  max-width: 48% !important;
+}
+
+/* Foldable devices (Samsung Galaxy Z Fold unfolded: ~768px - 884px) */
+@media (max-width: 991.98px) {
+  /* Prevent sidebar cards from squishing or overflowing */
+  .sidebar-trending-card,
+  .sidebar-thumb-img {
+    max-width: 100% !important;
+  }
+  
+  /* Give container proper breathing room */
+  .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}

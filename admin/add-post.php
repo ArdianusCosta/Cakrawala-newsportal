@@ -79,6 +79,7 @@ else{
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
         <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
         <title>Cakrawala | Tambah Artikel</title>
@@ -173,7 +174,7 @@ function getSubCat(val) {
 
 <div class="form-group m-b-20">
 <label for="exampleInputEmail1">Kategori</label>
-<select class="form-control" name="category" id="category" onChange="getSubCat(this.value);" required>
+<select class="form-control needsclick" name="category" id="category" onChange="getSubCat(this.value);" required>
 <option value="">Pilih Kategori</option>
 <?php
 // Feching active categories
@@ -189,8 +190,8 @@ while($result=mysqli_fetch_array($ret))
     
 <div class="form-group m-b-20">
 <label for="exampleInputEmail1">Sub Kategori</label>
-<select class="form-control" name="subcategory" id="subcategory" required>
-
+<select class="form-control needsclick" name="subcategory" id="subcategory" required>
+<option value="">Pilih Sub Kategori</option>
 </select>  
 </div>
           

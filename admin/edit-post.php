@@ -77,6 +77,7 @@ else{
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cakrawala | Edit Artikel</title>
      
     <link rel="icon" href="assets/images/Logo.ico" type="image/x-icon">
@@ -171,7 +172,7 @@ else{
 
                                     <div class="form-group m-b-20">
                                         <label>Category</label>
-                                        <select class="form-control" name="category" id="category" onChange="getSubCat(this.value);" required>
+                                        <select class="form-control needsclick" name="category" id="category" onChange="getSubCat(this.value);" required>
                                             <option value="<?php echo htmlentities($row['CategoryId']);?>"><?php echo htmlentities($row['category']);?></option>
                                             <?php
                                             $retCat = $con->prepare("SELECT id, CategoryName FROM tblcategory WHERE Is_Active=1");
@@ -188,7 +189,7 @@ else{
 
                                     <div class="form-group m-b-20">
                                         <label>Sub Category</label>
-                                        <select class="form-control" name="subcategory" id="subcategory" required>
+                                        <select class="form-control needsclick" name="subcategory" id="subcategory" required>
                                             <option value="<?php echo htmlentities($row['SubCategoryId']);?>"><?php echo htmlentities($row['subcategory']);?></option>
                                         </select> 
                                     </div>

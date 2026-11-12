@@ -162,7 +162,7 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
     </div>
     <div class="row">
       <!-- Blog Entries Column -->
-      <div class="col-md-8">
+      <div class="col-lg-8 col-12">
 
         <!-- Blog Post -->
         <?php
@@ -382,8 +382,8 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
               </div>
               <div class="row">
                 <?php while ($post = mysqli_fetch_array($postQuery)) { ?>
-                  <div class="col-6 mb-3">
-                    <div class="card h-100 border-0 shadow-sm rounded-lg overflow-hidden article-card-uniform">
+                  <div class="col-sm-6 col-12 mb-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-lg overflow-hidden article-card-uniform" style="min-width: 0;">
                       <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>" class="text-decoration-none text-dark">
                         <div class="thumb-landscape" style="height: 140px;">
                           <img src="admin/uploads/<?php echo htmlentities($post['PostImage'] ?: 'default.jpg'); ?>" 
@@ -391,13 +391,13 @@ $pageUrl = 'https://cakrawalaonline.com/news-details.php?nid=' . $pid;
                                alt="<?php echo htmlentities($post['PostTitle']); ?>">
                         </div>
                       </a>
-                      <div class="card-body p-2 d-flex flex-column">
-                        <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>" class="text-dark text-decoration-none flex-grow-1">
-                          <h6 class="mb-1 font-weight-bold" style="font-size: 0.88rem; line-height: 1.35; height: 2.7em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                      <div class="card-body p-2 d-flex flex-column" style="min-width: 0;">
+                        <a href="news-details.php?nid=<?php echo htmlentities($post['id']); ?>" class="text-dark text-decoration-none flex-grow-1" style="min-width: 0;">
+                          <h6 class="mb-1 font-weight-bold" style="font-size: 0.88rem; line-height: 1.35; height: 2.7em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; overflow-wrap: break-word;">
                             <?php echo htmlentities($post['PostTitle']); ?>
                           </h6>
                         </a>
-                        <small class="text-muted d-block mt-auto" style="font-size: 0.75rem;">
+                        <small class="text-muted d-block mt-auto text-truncate" style="font-size: 0.75rem;">
                           <?php echo date("d M Y", strtotime($post['PostingDate'])); ?> | 
                           <?php echo htmlentities($post['views'] ?: 0); ?> views
                         </small>
